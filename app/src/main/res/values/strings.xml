@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">MQTT Hub</string>
+
+    <string name="brokers_title">Brokers</string>
+    <string name="brokers_empty">There are no brokers yet :(</string>
+
+    <string name="add_broker">Add broker</string>
+    <string name="edit_broker">Edit broker</string>
+    <string name="save">Save</string>
+    <string name="broker_name">Broker name</string>
+    <string name="broker_address">Address</string>
+    <string name="broker_address_hint">100.0.0.1</string>
+    <string name="broker_port">Port</string>
+    <string name="broker_default_port">1883</string>
+    <string name="broker_client_id">Client ID</string>
+    <string name="broker_default_client_id">MqttHub-%s</string>
+    <string name="broker_remove_dialog_title">Delete %s?</string>
+    <string name="broker_remove_dialog_message">This action cannot be undone</string>
+    <string name="broker_remove_dialog_yes">Delete</string>
+    <string name="broker_remove_dialog_cancel">Cancel</string>
+
+</resources>

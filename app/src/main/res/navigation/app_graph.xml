@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_graph"
+    app:startDestination="@id/brokersFragment">
+
+    <fragment
+        android:id="@+id/brokersFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment"
+        android:label="BrokersFragment"
+        tools:layout="@layout/fragment_brokers" >
+
+        <action
+            android:id="@+id/navigateHome"
+            app:destination="@id/home_graph" />
+
+        <action
+            android:id="@+id/navigateAddBroker"
+            app:destination="@id/addBrokerFragment" />
+
+    </fragment>
+
+    <include app:graph="@navigation/home_graph" />
+
+    <fragment
+        android:id="@+id/addBrokerFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerFragment"
+        android:label="AddBrokerFragment"
+        tools:layout="@layout/fragment_add_broker">
+
+        <argument
+            android:name="brokerInfo"
+            app:argType="com.github.burachevsky.mqtthub.feature.addbroker.BrokerInfo"
+            app:nullable="true" />
+
+    </fragment>
+
+
+</navigation>
