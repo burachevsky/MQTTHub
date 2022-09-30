@@ -27,6 +27,8 @@ object Libs {
     const val NAVIGATION_UI_KTX = "androidx.navigation:navigation-ui-ktx"
     const val OKHTTP = "com.squareup.okhttp3:okhttp"
     const val OKHTTP_LOGGING_INTERCEPTOR = "com.squareup.okhttp3:logging-interceptor"
+    const val PAHO = "org.eclipse.paho:org.eclipse.paho.client.mqttv3"
+    const val PAHO_ANDROID = "org.eclipse.paho:org.eclipse.paho.android.service"
     const val ROOM_COMPILER = "androidx.room:room-compiler"
     const val ROOM_KTX = "androidx.room:room-ktx"
     const val ROOM_RUNTIME = "androidx.room:room-runtime"

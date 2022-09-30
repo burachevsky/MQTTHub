@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.data.local.entity
+package com.github.burachevsky.mqtthub.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,6 +8,10 @@ import androidx.room.PrimaryKey
     tableName = "brokers"
 )
 data class Broker(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
+
     @ColumnInfo(name = "name")
     val name: String,
 
@@ -19,8 +23,4 @@ data class Broker(
 
     @ColumnInfo(name = "clientId")
     val clientId: String,
-) {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    var id: Long = 0
-}
+)

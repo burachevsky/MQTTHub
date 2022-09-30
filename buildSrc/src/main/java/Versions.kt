@@ -29,6 +29,7 @@ object Versions {
     const val LIFECYCLE = "2.5.1"
     const val MATERIAL = "1.6.1"
     const val OKHTTP = "4.10.0"
+    const val PAHO = "1.1.2-SNAPSHOT"
     const val ROOM = "2.4.3"
     const val TIMBER = "5.0.1"
     const val VIEWPAGER2 = "1.0.0"

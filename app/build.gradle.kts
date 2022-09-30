@@ -108,4 +108,8 @@ dependencies {
 
     // Solve conflicts with gson. DataBinding is using an old version.
     implementation("${Libs.GSON}:${Versions.GSON}")
+
+    //Paho
+    implementation("${Libs.PAHO}:${Versions.PAHO}")
+    implementation("${Libs.PAHO_ANDROID}:${Versions.PAHO}")
 }

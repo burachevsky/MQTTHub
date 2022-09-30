@@ -1,21 +1,11 @@
 package com.github.burachevsky.mqtthub.feature.home
 
-import com.github.burachevsky.mqtthub.di.AppComponent
 import com.github.burachevsky.mqtthub.di.FragmentScope
-import dagger.BindsInstance
-import dagger.Component
+import dagger.Subcomponent
 
 @FragmentScope
-@Component(dependencies = [AppComponent::class])
+@Subcomponent(modules = [HomeModule::class])
 interface HomeComponent {
-
-    @Component.Factory
-    interface Factory {
-        fun create(
-            appComponent: AppComponent,
-            @BindsInstance args: HomeFragmentArgs,
-        ): HomeComponent
-    }
 
     fun inject(fragment: HomeFragment)
 }

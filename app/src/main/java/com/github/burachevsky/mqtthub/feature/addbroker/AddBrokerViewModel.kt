@@ -13,7 +13,7 @@ import com.github.burachevsky.mqtthub.common.text.withArgs
 import com.github.burachevsky.mqtthub.common.widget.ButtonItem
 import com.github.burachevsky.mqtthub.common.widget.FieldType
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
-import com.github.burachevsky.mqtthub.data.entity.DomainBroker
+import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.AddBroker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.UpdateBroker
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +69,7 @@ class AddBrokerViewModel @Inject constructor(
 
     fun saveResult() {
         container.launch(Dispatchers.Main) {
-            var broker = DomainBroker(
+            var broker = Broker(
                 id = initialBrokerInfo?.id ?: 0,
                 name = brokerName.text,
                 address = address.text,

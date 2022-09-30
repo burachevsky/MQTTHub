@@ -1,5 +1,7 @@
 package com.github.burachevsky.mqtthub.common.container
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataScope
 import com.github.burachevsky.mqtthub.common.effect.Navigate
 import com.github.burachevsky.mqtthub.common.effect.ToastMessage
 import com.github.burachevsky.mqtthub.common.effect.UIEffect
@@ -42,9 +44,6 @@ class ViewModelContainer<N : Navigator>(
             action()
         } catch (e: Exception) {
             Timber.e(e)
-            raiseEffect {
-                ToastMessage(Txt.of(e.message))
-            }
             null
         }
     }
@@ -68,5 +67,13 @@ class ViewModelContainer<N : Navigator>(
         crossinline action: suspend CoroutineScope.() -> T
     ): Deferred<T?> = scope.libAsync(dispatcher) {
         runSafely { action() }
+    }
+
+    inline fun <T> liveData(crossinline block: suspend LiveDataScope<T>.() -> Unit): LiveData<T> {
+        return androidx.lifecycle.liveData {
+            runSafely {
+                block()
+            }
+        }
     }
 }

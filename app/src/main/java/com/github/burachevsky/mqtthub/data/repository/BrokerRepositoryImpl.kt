@@ -1,56 +1,32 @@
 package com.github.burachevsky.mqtthub.data.repository
 
-import com.github.burachevsky.mqtthub.data.entity.DomainBroker
-import com.github.burachevsky.mqtthub.data.local.AppDatabase
-import com.github.burachevsky.mqtthub.data.local.entity.Broker
+import com.github.burachevsky.mqtthub.data.dao.BrokerDao
+import com.github.burachevsky.mqtthub.data.entity.Broker
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class BrokerRepositoryImpl @Inject constructor(
-    private val db: AppDatabase
+    private val brokerDao: BrokerDao
 ) : BrokerRepository {
 
-    override suspend fun getBrokers(): List<DomainBroker> {
-        return db.brokerDao()
-            .getAllBrokers()
-            .map {
-                DomainBroker(
-                    id = it.id,
-                    name = it.name,
-                    address = it.address,
-                    port = it.port,
-                    clientId = it.clientId
-                )
-            }
+    override suspend fun getBrokers(): List<Broker> {
+        return brokerDao.getAll()
     }
 
-    override suspend fun insertBroker(domainBroker: DomainBroker): DomainBroker {
-        return db.brokerDao()
-            .insertBroker(
-                Broker(
-                    name = domainBroker.name,
-                    address = domainBroker.address,
-                    port = domainBroker.port,
-                    clientId = domainBroker.clientId
-                )
-            )
-            .let { id ->
-                domainBroker.copy(id = id)
-            }
+    override suspend fun getBroker(id: Long): Broker {
+        return brokerDao.getById(id)
     }
 
-    override suspend fun updateBroker(domainBroker: DomainBroker) {
-        return db.brokerDao()
-            .updateBroker(
-                Broker(
-                    name = domainBroker.name,
-                    address = domainBroker.address,
-                    port = domainBroker.port,
-                    clientId = domainBroker.clientId
-                ).also { it.id = domainBroker.id }
-            )
+    override suspend fun insertBroker(broker: Broker): Broker {
+        val id = brokerDao.insert(broker)
+        return broker.copy(id = id)
+    }
+
+    override suspend fun updateBroker(broker: Broker) {
+        return brokerDao.update(broker)
     }
 
     override suspend fun deleteBroker(id: Long) {
-        return db.brokerDao().deleteBroker(id)
+        return brokerDao.delete(id)
     }
 }

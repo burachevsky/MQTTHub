@@ -15,7 +15,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         tools:listitem="@layout/list_item_input_field"/>
 

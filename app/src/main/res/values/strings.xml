@@ -19,4 +19,10 @@
     <string name="broker_remove_dialog_yes">Delete</string>
     <string name="broker_remove_dialog_cancel">Cancel</string>
 
+    <string name="new_tile">New tile</string>
+    <string name="tile_name">Tile name</string>
+    <string name="subscribe_topic">Subscribe topic</string>
+
+    <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
+
 </resources>

@@ -12,8 +12,24 @@
         tools:layout="@layout/fragment_home">
 
         <argument
-            android:name="text"
-            app:argType="string" />
+            android:name="brokerId"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/navigateAddTextTile"
+            app:destination="@id/addTextTileFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/addTextTileFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragment"
+        android:label="AddTextTileFragment"
+        tools:layout="@layout/fragment_add_text_tile">
+
+        <argument
+            android:name="brokerId"
+            app:argType="long" />
 
     </fragment>
 

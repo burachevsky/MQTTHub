@@ -6,6 +6,7 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.common.recycler.SupportsSwipeToDelete
 import com.github.burachevsky.mqtthub.databinding.ListItemBrokerBinding
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerInfo
 
@@ -33,7 +34,7 @@ data class BrokerItem(
 class BrokerItemViewHolder(
     itemView: View,
     private val listener: BrokerItem.Listener
-) : ItemViewHolder(itemView) {
+) : ItemViewHolder(itemView), SupportsSwipeToDelete {
 
     private val binding = ListItemBrokerBinding.bind(itemView)
 

@@ -11,9 +11,9 @@ class BrokersNavigator(
     navController: NavController
 ): Navigator(navController) {
 
-    fun navigateBroker(text: String) = navController.navigate(
+    fun navigateHome(id: Long) = navController.navigate(
         R.id.navigateHome,
-        HomeFragmentArgs(text).toBundle(),
+        HomeFragmentArgs(id).toBundle(),
     )
 
     fun navigateAddBroker(

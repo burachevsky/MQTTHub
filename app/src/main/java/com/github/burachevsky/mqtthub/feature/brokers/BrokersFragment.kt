@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
-import com.github.burachevsky.mqtthub.common.recycler.ListAdapter
+import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentBrokersBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
@@ -31,7 +31,7 @@ class BrokersFragment : Fragment() {
 
     lateinit var viewModel: BrokersViewModel
 
-    private val listAdapter = ListAdapter(
+    private val listAdapter = CompositeAdapter(
         BrokerItemAdapter(
             object : BrokerItem.Listener {
                 override fun onClick(position: Int) {

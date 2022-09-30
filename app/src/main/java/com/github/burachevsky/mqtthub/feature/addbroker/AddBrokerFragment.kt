@@ -14,10 +14,8 @@ import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
-import com.github.burachevsky.mqtthub.common.recycler.ListAdapter
-import com.github.burachevsky.mqtthub.common.widget.ButtonItem
+import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
-import com.github.burachevsky.mqtthub.common.widget.ButtonItemViewHolder
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItemAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentAddBrokerBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
@@ -35,7 +33,7 @@ class AddBrokerFragment : Fragment() {
     private var _binding: FragmentAddBrokerBinding? = null
     private val binding get() = _binding!!
 
-    private val listAdapter = ListAdapter(
+    private val listAdapter = CompositeAdapter(
         InputFieldItemAdapter(),
         ButtonItemAdapter(
             listener = {

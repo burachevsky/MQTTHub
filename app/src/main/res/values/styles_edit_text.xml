@@ -7,7 +7,8 @@
         <item name="boxCornerRadiusBottomStart">4dp</item>
         <item name="boxCornerRadiusTopStart">4dp</item>
         <item name="labelStyle">@style/TextAppearance.MQTTHub.Label</item>
-        <item name="boxStrokeColor">@color/purple_200</item>
+        <item name="boxStrokeColor">@drawable/input_field_selector</item>
+
         <item name="placeholderTextAppearance">@style/TextAppearance.MQTTHub.Placeholder</item>
         <item name="errorTextAppearance">@style/TextAppearance.MQTTHub.SecondaryBody</item>
        <!-- <item name="errorTextColor">?android:attr/errorTextColor</item>

@@ -1,22 +1,26 @@
-package com.github.burachevsky.mqtthub.data.local
+package com.github.burachevsky.mqtthub.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.github.burachevsky.mqtthub.data.local.dao.BrokerDao
-import com.github.burachevsky.mqtthub.data.local.entity.Broker
+import com.github.burachevsky.mqtthub.data.dao.BrokerDao
+import com.github.burachevsky.mqtthub.data.dao.TileDao
+import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.Tile
 
 @Database(
     entities = [
         Broker::class,
+        Tile::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun brokerDao(): BrokerDao
+    abstract fun tileDao(): TileDao
 
     companion object {
 
@@ -32,6 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context): AppDatabase {
             return Room
                 .databaseBuilder(context, AppDatabase::class.java, APP_DB_NAME)
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

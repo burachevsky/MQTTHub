@@ -1,10 +1,8 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://repo.eclipse.org/content/repositories/paho-snapshots/")
     }
 
     dependencies {
@@ -18,5 +16,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://repo.eclipse.org/content/repositories/paho-snapshots/")
     }
 }

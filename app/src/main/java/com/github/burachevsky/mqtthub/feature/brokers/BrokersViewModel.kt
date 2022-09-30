@@ -55,10 +55,8 @@ class BrokersViewModel @Inject constructor(
 
     fun brokerClicked(position: Int) {
         container.navigator {
-            navigateBroker(
-                _items.get<BrokerItem>(position).info.let {
-                    "${it.name} [${it.clientId}]\ntcp://${it.address}:${it.port}"
-                }
+            navigateHome(
+                _items.get<BrokerItem>(position).info.id
             )
         }
     }
@@ -91,7 +89,7 @@ class BrokersViewModel @Inject constructor(
         }
     }
 
-    fun removeBroker(position: Int) {
+    private fun removeBroker(position: Int) {
         container.launch(Dispatchers.Main) {
             val id = items.get<BrokerItem>(position).info.id
             deleteBroker(id)

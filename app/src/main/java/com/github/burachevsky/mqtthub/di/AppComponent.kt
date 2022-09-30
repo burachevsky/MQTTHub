@@ -7,6 +7,10 @@ import com.github.burachevsky.mqtthub.data.di.RemoteDataModule
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerComponent
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment
+import com.github.burachevsky.mqtthub.feature.home.HomeComponent
+import com.github.burachevsky.mqtthub.feature.home.HomeModule
+import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileComponent
+import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -29,5 +33,7 @@ interface AppComponent {
     fun inject(activity: AppActivity)
     fun inject(fragment: BrokersFragment)
 
-    fun addBrokerComponent(fragment: AddBrokerModule): AddBrokerComponent
+    fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
+    fun homeComponent(module: HomeModule): HomeComponent
+    fun addTextTileComponent(module: AddTextTileModule): AddTextTileComponent
 }

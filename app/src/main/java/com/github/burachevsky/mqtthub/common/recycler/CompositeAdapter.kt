@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter as RecyclerViewListAdapter
 
-class ListAdapter(
+class CompositeAdapter(
     vararg itemAdapters: ItemAdapter
 ) : RecyclerViewListAdapter<ListItem, ItemViewHolder>(DiffCallback) {
 
