@@ -4,32 +4,38 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.effect.AlertDialog
 import com.github.burachevsky.mqtthub.common.effect.ToastMessage
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.common.ext.get
+import com.github.burachevsky.mqtthub.common.ext.getServerAddress
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.text.withArgs
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
-import com.github.burachevsky.mqtthub.domain.usecase.tile.GetBrokerTiles
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerInfo
+import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.Tile
+import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.tile.DeleteTile
+import com.github.burachevsky.mqtthub.domain.usecase.tile.PayloadUpdate
+import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
+import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
-    private val getBroker: GetBroker,
-    private val getBrokerTiles: GetBrokerTiles,
-    private val eventBus: EventBus,
+    private val getBrokerWithTiles: GetBrokerWithTiles,
+    private val saveUpdatedPayload: SaveUpdatedPayload,
+    private val deleteTile: DeleteTile,
+    eventBus: EventBus,
     args: HomeFragmentArgs,
 ) : ViewModel() {
 
@@ -43,67 +49,162 @@ class HomeViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
+    val noTilesYet: Flow<Boolean> = items.map { it.isEmpty() }
+
     private val subscribeTopics = mutableListOf<String>()
 
-    private var brokerInfo: BrokerInfo? = null
+    private var broker: Broker? = null
 
     init {
         container.launch(Dispatchers.Main) {
-            val broker = getBroker(args.brokerId).let(BrokerInfo::map)
-            brokerInfo = broker
-            _title.value = broker.name
+            val brokerWithTiles = getBrokerWithTiles(args.brokerId)
 
-            initMqttClient(broker)
+            broker = brokerWithTiles.broker
+            _title.value = broker?.name.orEmpty()
 
-            getBrokerTiles(broker.id)
-                .forEach { tileAdded(UITile.map(it)) }
+            _items.value = brokerWithTiles.tiles.map(::TextTileItem)
+
+            broker?.let { brokerInfo ->
+                initMqttClient(brokerInfo)
+
+                brokerWithTiles.tiles.forEach {
+                    subscribeIfNotSubscribed(it.subscribeTopic)
+                }
+            }
         }
 
-        eventBus.subscribe<TileAdded>(viewModelScope) {
-            tileAdded(it.tile)
+        eventBus.apply{
+            subscribe<TileAdded>(viewModelScope) {
+                tileAdded(it.tile)
+            }
+
+            subscribe<TileEdited>(viewModelScope) {
+                tileEdited(it.tile)
+            }
         }
     }
 
     fun addTileClicked() {
         container.navigator {
-            brokerInfo?.id?.let { brokerId ->
+            broker?.id?.let { brokerId ->
                 navigateAddTextTile(brokerId)
             }
         }
     }
 
-    private fun initMqttClient(broker: BrokerInfo) {
-        try {
-            mqtt = MqttClient(broker.getServerAddress(), broker.clientId, MemoryPersistence())
-            mqtt?.connect()
-        } catch (e: Exception) {
-            container.raiseEffect {
-                Timber.d("$broker")
-                ToastMessage(
-                    text = Txt.of(R.string.error_failed_to_connect_to_broker)
-                        .withArgs(broker.name, broker.getServerAddress())
-                )
+    fun editTileClicked(position: Int) {
+        val tileId = items.get<TileItem>(position).tile.id
+
+        container.navigator {
+            broker?.id?.let { brokerId ->
+                navigateAddTextTile(brokerId, tileId)
             }
         }
     }
 
-    private fun tileAdded(tile: UITile) {
-        _items.update {
-            it + TextTileItem(tile, "")
-        }
+    fun deleteTileClicked(position: Int) {
+        val tile = items.get<TileItem>(position).tile
 
-        trySubscribe(tile.subscribeTopic)
+        container.raiseEffect {
+            AlertDialog(
+                title = Txt.of(R.string.remove_dialog_title)
+                    .withArgs(tile.name),
+                message = Txt.of(R.string.remove_dialog_message),
+                yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
+                    container.launch(Dispatchers.Main) {
+                        tileRemoved(position)
+                    }
+                },
+                no = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
+            )
+        }
     }
 
-    private fun trySubscribe(topic: String) {
+    private suspend fun initMqttClient(broker: Broker) {
+        withContext(Dispatchers.IO) {
+            try {
+                mqtt = MqttClient(broker.getServerAddress(), broker.clientId, MemoryPersistence())
+                mqtt?.connect()
+            } catch (e: Exception) {
+                container.raiseEffect {
+                    Timber.d("$broker")
+                    ToastMessage(
+                        text = Txt.of(R.string.error_failed_to_connect_to_broker)
+                            .withArgs(broker.name, broker.getServerAddress())
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun tileRemoved(position: Int) {
+        val tile = items.get<TileItem>(position).tile
+
+        _items.update {
+            it.filterIndexed { i, _ -> i != position }
+        }
+
         container.launch(Dispatchers.IO) {
-            if (!subscribeTopics.contains(topic)) {
-                subscribeTopics.add(topic)
-                mqtt?.subscribe(topic) { topic, message ->
+            deleteTile(tile.id)
+        }
+
+        unsubscribeIfNoReceivers(tile.subscribeTopic)
+    }
+
+    private suspend fun tileAdded(tile: Tile) {
+        _items.update {
+            it + TextTileItem(tile)
+        }
+
+        subscribeIfNotSubscribed(tile.subscribeTopic)
+    }
+
+    private suspend fun tileEdited(tile: Tile) {
+        val i = _items.value.indexOfFirst { it is TileItem && it.tile.id == tile.id }
+        val oldItem = items.get<TileItem>(i)
+
+        _items.update {
+            it.toMutableList().apply {
+                this[i] = oldItem.copyTile(tile) as ListItem
+            }
+        }
+
+        val oldTopic = oldItem.tile.subscribeTopic
+
+        if (oldTopic != tile.subscribeTopic) {
+            unsubscribeIfNoReceivers(oldTopic)
+            subscribeIfNotSubscribed(tile.subscribeTopic)
+        }
+    }
+
+    private suspend fun subscribeIfNotSubscribed(topic: String) {
+        if (topic.isNotEmpty() && !subscribeTopics.contains(topic)) {
+            subscribeTopics.add(topic)
+
+            container.withContext(Dispatchers.IO) {
+                mqtt?.subscribe(topic) { subscribeTopic, message ->
                     container.launch(Dispatchers.Main) {
-                        updatePayload(topic, payload = String(message.payload))
+                        val payload = String(message.payload)
+
+                        updatePayload(subscribeTopic, payload = payload)
+
+                        broker?.id?.let { brokerId ->
+                            saveUpdatedPayload(PayloadUpdate(brokerId, subscribeTopic, payload))
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun unsubscribeIfNoReceivers(topic: String) {
+        val hasReceiver = items.value.any {
+            it is TileItem && it.tile.subscribeTopic == topic
+        }
+
+        if (!hasReceiver) {
+            container.withContext(Dispatchers.IO) {
+                mqtt?.unsubscribe(topic)
             }
         }
     }
@@ -112,7 +213,7 @@ class HomeViewModel @Inject constructor(
         _items.update { item ->
             item.map {
                 if (it is TileItem && it.tile.subscribeTopic == topic) {
-                    it.copyTile(payload) as ListItem
+                    it.copyTile(it.tile.copy(payload = payload)) as ListItem
                 } else it
             }
         }

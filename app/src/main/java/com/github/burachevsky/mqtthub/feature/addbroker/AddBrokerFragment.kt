@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.addbroker
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -63,10 +64,11 @@ class AddBrokerFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         container.onViewCreated(viewModel.container, this)
 
-        binding.toolbar.title = viewModel.title.get(requireContext())
+        binding.toolbar.setTitle(viewModel.title)
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
@@ -77,6 +79,10 @@ class AddBrokerFragment : Fragment() {
         }
 
         collectOnStarted(viewModel.items, listAdapter::submitList)
+
+        collectOnStarted(viewModel.itemsChanged) {
+            listAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroyView() {

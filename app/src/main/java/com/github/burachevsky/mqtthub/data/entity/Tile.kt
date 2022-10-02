@@ -2,10 +2,20 @@ package com.github.burachevsky.mqtthub.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "tiles"
+    tableName = "tiles",
+    foreignKeys = [
+        ForeignKey(
+            entity = Broker::class,
+            parentColumns = ["id"],
+            childColumns = ["broker_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class Tile(
     @PrimaryKey(autoGenerate = true)
@@ -25,8 +35,16 @@ data class Tile(
     val retained: Boolean,
 
     @ColumnInfo(name = "type")
-    val type: String,
+    val type: Type,
+
+    @ColumnInfo(name = "last_payload")
+    val payload: String = "",
 
     @ColumnInfo(name = "broker_id")
     val brokerId: Long,
-)
+) {
+
+    enum class Type {
+        TEXT
+    }
+}

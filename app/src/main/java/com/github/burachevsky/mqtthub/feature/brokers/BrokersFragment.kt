@@ -42,8 +42,8 @@ class BrokersFragment : Fragment() {
                     viewModel.editBrokerClicked(position)
                 }
 
-                override fun onLongClick(position: Int) {
-                    viewModel.showBrokerRemoveDialog(position)
+                override fun onDeleteClick(position: Int) {
+                    viewModel.deleteBrokerClicked(position)
                 }
             }
         )

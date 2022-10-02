@@ -4,7 +4,6 @@ import androidx.navigation.NavController
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerInfo
 import com.github.burachevsky.mqtthub.feature.home.HomeFragmentArgs
 
 class BrokersNavigator(
@@ -16,10 +15,8 @@ class BrokersNavigator(
         HomeFragmentArgs(id).toBundle(),
     )
 
-    fun navigateAddBroker(
-        brokerInfo: BrokerInfo? = null
-    ) = navController.navigate(
+    fun navigateAddBroker(brokerId: Long = 0) = navController.navigate(
         R.id.navigateAddBroker,
-        AddBrokerFragmentArgs(brokerInfo).toBundle()
+        AddBrokerFragmentArgs(brokerId).toBundle()
     )
 }

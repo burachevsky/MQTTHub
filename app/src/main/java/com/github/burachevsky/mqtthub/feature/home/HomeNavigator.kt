@@ -7,8 +7,8 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragm
 
 class HomeNavigator(navController: NavController) : Navigator(navController) {
 
-    fun navigateAddTextTile(brokerId: Long) = navController.navigate(
+    fun navigateAddTextTile(brokerId: Long, tileId: Long = 0) = navController.navigate(
         R.id.navigateAddTextTile,
-        AddTextTileFragmentArgs(brokerId).toBundle()
+        AddTextTileFragmentArgs(brokerId, tileId).toBundle()
     )
 }
