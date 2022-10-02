@@ -3,22 +3,23 @@ package com.github.burachevsky.mqtthub.feature.home.item
 import android.view.View
 import android.view.ViewGroup
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
-import com.github.burachevsky.mqtthub.feature.home.UITile
+import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.NAME_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.PAYLOAD_CHANGED
 
 interface TileItem {
-    val tile: UITile
-    val payload: String
+    val tile: Tile
 
-    fun copyTile(payload: String): TileItem
+    fun copyTile(tile: Tile): TileItem
 }
 
 data class TextTileItem(
-    override val tile: UITile,
-    override val payload: String,
+    override val tile: Tile,
 ) : ListItem, TileItem {
 
     override fun layout() = LAYOUT
@@ -27,17 +28,30 @@ data class TextTileItem(
         return that is TextTileItem && that.tile.id == tile.id
     }
 
-    override fun copyTile(payload: String): TextTileItem {
-        return copy(payload = payload)
+    override fun getChangePayload(that: ListItem): List<Int> {
+        that as TextTileItem
+
+        return listOfNotNull(
+            if (tile.name != that.tile.name) NAME_CHANGED else null,
+            if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null
+        )
+    }
+
+    override fun copyTile(tile: Tile): TileItem {
+        return copy(tile = tile)
     }
 
     companion object {
         const val LAYOUT = R.layout.list_item_text_tile
+
+        const val NAME_CHANGED = 1
+        const val PAYLOAD_CHANGED = 2
     }
 
     interface Listener {
         fun onClick(position: Int)
-        fun onLongClick(position: Int)
+        fun onDeleteClick(position: Int)
+        fun onEditClick(position: Int)
     }
 }
 
@@ -52,12 +66,50 @@ class TextTileItemViewHolder(
         binding.tile.setOnClickListener {
             listener.onClick(adapterPosition)
         }
+
+        binding.tile.setOnLongClickListener { view ->
+            view.showPopupMenu(R.menu.tile_item_menu) {
+                when (it) {
+                    R.id.delete -> {
+                        listener.onDeleteClick(adapterPosition)
+                        true
+                    }
+
+                    R.id.edit -> {
+                        listener.onEditClick(adapterPosition)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+            true
+        }
+    }
+
+    override fun bind(item: ListItem, payloads: List<Int>) {
+        item as TextTileItem
+
+        payloads.forEach {
+            when (it) {
+                NAME_CHANGED -> bindTileName(item)
+                PAYLOAD_CHANGED -> bindTilePayload(item)
+            }
+        }
     }
 
     override fun bind(item: ListItem) {
         item as TextTileItem
+        bindTileName(item)
+        bindTilePayload(item)
+    }
+
+    fun bindTileName(item: TextTileItem) {
         binding.tileName.text = item.tile.name
-        binding.tilePayload.text = item.payload
+    }
+
+    fun bindTilePayload(item: TextTileItem) {
+        binding.tilePayload.text = item.tile.payload
     }
 }
 

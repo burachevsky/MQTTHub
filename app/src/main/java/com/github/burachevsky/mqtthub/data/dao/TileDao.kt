@@ -16,8 +16,18 @@ interface TileDao {
     suspend fun insert(tile: Tile): Long
 
     @Update
-    fun update(tile: Tile)
+    suspend fun update(tile: Tile)
 
     @Query("DELETE FROM tiles WHERE id = :id")
-    fun delete(id: Long)
+    suspend fun delete(id: Long)
+
+    @Query("""
+        UPDATE tiles 
+        SET last_payload = :payload
+        WHERE broker_id = :brokerId AND subscribe_topic = :subscribeTopic"""
+    )
+    suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String)
+
+    @Query("SELECT * FROM tiles WHERE id = :id")
+    suspend fun getById(id: Long): Tile
 }

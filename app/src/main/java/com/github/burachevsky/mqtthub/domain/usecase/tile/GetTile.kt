@@ -4,10 +4,10 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.data.repository.TileRepository
 import javax.inject.Inject
 
-class UpdateTile @Inject constructor(
+class GetTile @Inject constructor(
     private val tileRepository: TileRepository
 ) {
-    suspend operator fun invoke(tile: Tile) {
-        return tileRepository.updateTile(tile)
+    suspend operator fun invoke(tileId: Long): Tile {
+        return tileRepository.getTile(tileId)
     }
 }

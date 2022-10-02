@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class UIContainer(
     val lifecycleOwner: LifecycleOwner,
-    val navigatorFactory: NavigatorFactory? = null
+    val navigatorFactory: NavigatorFactory?
 ) {
     var vmContainer: ViewModelContainer<*>? = null
         private set

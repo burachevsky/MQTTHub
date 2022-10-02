@@ -28,6 +28,18 @@ class CompositeAdapter(
         holder.bind(getItem(position))
     }
 
+    override fun onBindViewHolder(
+        holder: ItemViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isEmpty()) {
+            holder.bind(getItem(position))
+        } else {
+            holder.bind(getItem(position), payloads.first() as List<Int>)
+        }
+    }
+
     private object DiffCallback : DiffUtil.ItemCallback<ListItem>() {
 
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
@@ -36,6 +48,10 @@ class CompositeAdapter(
 
         override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
             return oldItem.areContentsTheSame(newItem)
+        }
+
+        override fun getChangePayload(oldItem: ListItem, newItem: ListItem): Any? {
+            return oldItem.getChangePayload(newItem)
         }
     }
 }

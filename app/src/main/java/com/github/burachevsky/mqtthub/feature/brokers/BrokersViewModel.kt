@@ -12,11 +12,11 @@ import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.text.withArgs
+import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.DeleteBroker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerAdded
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerInfo
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerUpdated
+import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -37,26 +37,23 @@ class BrokersViewModel @Inject constructor(
     init {
         eventBus.apply{
             subscribe<BrokerAdded>(viewModelScope) {
-                addBrokerToList(it.brokerInfo)
+                addBrokerToList(it.broker)
             }
 
-            eventBus.subscribe<BrokerUpdated>(viewModelScope) {
-                updateBrokerInList(it.brokerInfo)
+            eventBus.subscribe<BrokerEdited>(viewModelScope) {
+                updateBrokerInList(it.broker)
             }
         }
 
         container.launch(Dispatchers.Main) {
-            _items.value = getBrokers()
-                .map { domain ->
-                    BrokerItem(BrokerInfo.map(domain))
-                }
+            _items.value = getBrokers().map(::BrokerItem)
         }
     }
 
     fun brokerClicked(position: Int) {
         container.navigator {
             navigateHome(
-                _items.get<BrokerItem>(position).info.id
+                _items.get<BrokerItem>(position).broker.id
             )
         }
     }
@@ -69,48 +66,48 @@ class BrokersViewModel @Inject constructor(
 
     fun editBrokerClicked(position: Int) {
         container.navigator {
-            navigateAddBroker(_items.get<BrokerItem>(position).info)
+            navigateAddBroker(_items.get<BrokerItem>(position).broker.id)
         }
     }
 
-    fun showBrokerRemoveDialog(position: Int) {
-        val brokerInfo = items.get<BrokerItem>(position).info
+    fun deleteBrokerClicked(position: Int) {
+        val brokerInfo = items.get<BrokerItem>(position).broker
 
         container.raiseEffect {
             AlertDialog(
-                title = Txt.of(R.string.broker_remove_dialog_title)
+                title = Txt.of(R.string.remove_dialog_title)
                     .withArgs(brokerInfo.name),
-                message = Txt.of(R.string.broker_remove_dialog_message),
-                yes = AlertDialog.Button(Txt.of(R.string.broker_remove_dialog_yes)) {
+                message = Txt.of(R.string.remove_dialog_message),
+                yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
                     removeBroker(position)
                 },
-                no = AlertDialog.Button(Txt.of(R.string.broker_remove_dialog_cancel))
+                no = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
             )
         }
     }
 
     private fun removeBroker(position: Int) {
         container.launch(Dispatchers.Main) {
-            val id = items.get<BrokerItem>(position).info.id
+            val id = items.get<BrokerItem>(position).broker.id
             deleteBroker(id)
             _items.value = _items.value.filterIndexed { i, _ -> i != position }
         }
     }
 
-    private fun addBrokerToList(brokerInfo: BrokerInfo) {
+    private fun addBrokerToList(broker: Broker) {
         _items.update {
-            it + BrokerItem(brokerInfo)
+            it + BrokerItem(broker)
         }
     }
 
-    private fun updateBrokerInList(brokerInfo: BrokerInfo) {
+    private fun updateBrokerInList(broker: Broker) {
         val pos = _items.value.indexOfFirst {
-            it is BrokerItem && it.info.id == brokerInfo.id
+            it is BrokerItem && it.broker.id == broker.id
         }
 
         if (pos >= 0) {
             _items.value = items.value.toMutableList().apply {
-                this[pos] = (this[pos] as BrokerItem).copy(info = brokerInfo)
+                this[pos] = (this[pos] as BrokerItem).copy(broker = broker)
             }
         }
     }

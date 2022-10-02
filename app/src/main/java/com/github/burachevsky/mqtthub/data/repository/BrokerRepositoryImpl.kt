@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.dao.BrokerDao
 import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.BrokerWithTiles
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -28,5 +29,9 @@ class BrokerRepositoryImpl @Inject constructor(
 
     override suspend fun deleteBroker(id: Long) {
         return brokerDao.delete(id)
+    }
+
+    override suspend fun getBrokerWithTiles(id: Long): BrokerWithTiles {
+        return brokerDao.getBrokerWithTiles(id)
     }
 }

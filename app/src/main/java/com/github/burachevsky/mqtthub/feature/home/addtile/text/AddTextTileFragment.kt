@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home.addtile.text
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
+import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItemAdapter
@@ -25,7 +27,7 @@ class AddTextTileFragment : Fragment() {
     private var _binding: FragmentAddTextTileBinding? = null
     private val binding get() = _binding!!
 
-    private val container = UIContainer(this)
+    private val container = UIContainer(this, ::Navigator)
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AddTextTileViewModel>
@@ -62,6 +64,7 @@ class AddTextTileFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         container.onViewCreated(viewModel.container, this)
 
@@ -76,7 +79,13 @@ class AddTextTileFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        binding.toolbar.setTitle(viewModel.title)
+
         collectOnStarted(viewModel.items, listAdapter::submitList)
+
+        collectOnStarted(viewModel.itemsChanged) {
+            listAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroy() {

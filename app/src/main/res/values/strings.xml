@@ -4,6 +4,8 @@
     <string name="brokers_title">Brokers</string>
     <string name="brokers_empty">There are no brokers yet :(</string>
 
+    <string name="tiles_empty">There are no tiles yet :(</string>
+
     <string name="add_broker">Add broker</string>
     <string name="edit_broker">Edit broker</string>
     <string name="save">Save</string>
@@ -14,15 +16,20 @@
     <string name="broker_default_port">1883</string>
     <string name="broker_client_id">Client ID</string>
     <string name="broker_default_client_id">MqttHub-%s</string>
-    <string name="broker_remove_dialog_title">Delete %s?</string>
-    <string name="broker_remove_dialog_message">This action cannot be undone</string>
-    <string name="broker_remove_dialog_yes">Delete</string>
-    <string name="broker_remove_dialog_cancel">Cancel</string>
+
+    <string name="remove_dialog_title">Delete %s?</string>
+    <string name="remove_dialog_message">This action cannot be undone</string>
+    <string name="remove_dialog_yes">Delete</string>
+    <string name="remove_dialog_cancel">Cancel</string>
 
     <string name="new_tile">New tile</string>
+    <string name="edit_tile">Edit tile</string>
     <string name="tile_name">Tile name</string>
     <string name="subscribe_topic">Subscribe topic</string>
 
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
+
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
 
 </resources>

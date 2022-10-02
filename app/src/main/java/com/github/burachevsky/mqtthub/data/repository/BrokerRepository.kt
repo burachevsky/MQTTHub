@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.BrokerWithTiles
 
 interface BrokerRepository {
 
@@ -13,4 +14,6 @@ interface BrokerRepository {
     suspend fun updateBroker(broker: Broker)
 
     suspend fun deleteBroker(id: Long)
+
+    suspend fun getBrokerWithTiles(id: Long): BrokerWithTiles
 }

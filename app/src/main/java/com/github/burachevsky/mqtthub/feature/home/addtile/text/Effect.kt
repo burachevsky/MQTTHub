@@ -1,8 +1,12 @@
 package com.github.burachevsky.mqtthub.feature.home.addtile.text
 
 import com.github.burachevsky.mqtthub.common.effect.UIEffect
-import com.github.burachevsky.mqtthub.feature.home.UITile
+import com.github.burachevsky.mqtthub.data.entity.Tile
 
 data class TileAdded(
-    val tile: UITile
+    val tile: Tile
+) : UIEffect
+
+data class TileEdited(
+    val tile: Tile
 ) : UIEffect
