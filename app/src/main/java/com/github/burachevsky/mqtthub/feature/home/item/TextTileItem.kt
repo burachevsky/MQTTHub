@@ -12,21 +12,11 @@ import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.PAYLOAD_CHANGED
 
-interface TileItem {
-    val tile: Tile
-
-    fun copyTile(tile: Tile): TileItem
-}
-
 data class TextTileItem(
     override val tile: Tile,
-) : ListItem, TileItem {
+) : TileItem {
 
     override fun layout() = LAYOUT
-
-    override fun areItemsTheSame(that: ListItem): Boolean {
-        return that is TextTileItem && that.tile.id == tile.id
-    }
 
     override fun getChangePayload(that: ListItem): List<Int> {
         that as TextTileItem
@@ -47,17 +37,11 @@ data class TextTileItem(
         const val NAME_CHANGED = 1
         const val PAYLOAD_CHANGED = 2
     }
-
-    interface Listener {
-        fun onClick(position: Int)
-        fun onDeleteClick(position: Int)
-        fun onEditClick(position: Int)
-    }
 }
 
 class TextTileItemViewHolder(
     itemView: View,
-    listener: TextTileItem.Listener,
+    listener: TileItem.Listener,
 ) : ItemViewHolder(itemView) {
 
     val binding = ListItemTextTileBinding.bind(itemView)
@@ -114,7 +98,7 @@ class TextTileItemViewHolder(
 }
 
 class TextTileItemAdapter(
-    private val listener: TextTileItem.Listener
+    private val listener: TileItem.Listener
 ) : ItemAdapter {
     override fun viewType() = TextTileItem.LAYOUT
 

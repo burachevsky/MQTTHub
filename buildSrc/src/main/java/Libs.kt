@@ -12,6 +12,7 @@ object Libs {
     const val ESPRESSO_CONTRIB = "androidx.test.espresso:espresso-contrib"
     const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core"
     const val EXT_JUNIT = "androidx.test.ext:junit"
+    const val FLEXBOX = "com.google.android.flexbox:flexbox"
     const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx"
     const val GLIDE = "com.github.bumptech.glide:glide"
     const val GLIDE_COMPILER = "com.github.bumptech.glide:compiler"

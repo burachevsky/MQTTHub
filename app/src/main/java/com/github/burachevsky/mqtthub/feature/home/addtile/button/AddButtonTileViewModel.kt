@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.text
+package com.github.burachevsky.mqtthub.feature.home.addtile.button
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,16 +15,21 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
+import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
+import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-class AddTextTileViewModel @Inject constructor(
+class AddButtonTileViewModel @Inject constructor(
     private val eventBus: EventBus,
-    private val addTile: AddTile,
-    private val updateTile: UpdateTile,
+    args: AddButtonTileFragmentArgs,
     private val getTile: GetTile,
-    args: AddTextTileFragmentArgs,
+    private val updateTile: UpdateTile,
+    private val addTile: AddTile,
 ) : ViewModel() {
 
     private val brokerId = args.brokerId
@@ -38,8 +43,12 @@ class AddTextTileViewModel @Inject constructor(
         label = Txt.of(R.string.tile_name)
     )
 
-    private val subscribeTopic = InputFieldItem(
-        label = Txt.of(R.string.subscribe_topic)
+    private val publishTopic = InputFieldItem(
+        label = Txt.of(R.string.publish_topic)
+    )
+
+    private val payload = InputFieldItem(
+        label = Txt.of(R.string.publish_payload)
     )
 
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(list())
@@ -56,7 +65,8 @@ class AddTextTileViewModel @Inject constructor(
                 val tile = getTile(tileId)
                 oldTile = tile
                 name.text = tile.name
-                subscribeTopic.text = tile.subscribeTopic
+                publishTopic.text = tile.publishTopic
+                payload.text = tile.payload
                 _itemsChanged.emit(Unit)
             }
         }
@@ -66,15 +76,16 @@ class AddTextTileViewModel @Inject constructor(
         container.launch(Dispatchers.Main) {
             val tile = oldTile?.copy(
                 name = name.text,
-                subscribeTopic = subscribeTopic.text,
+                publishTopic = publishTopic.text
             ) ?: Tile(
                 name = name.text,
-                subscribeTopic = subscribeTopic.text,
-                publishTopic = "",
+                subscribeTopic = "",
+                publishTopic = publishTopic.text,
+                payload = payload.text,
                 qos = 0,
                 retained = false,
                 brokerId = brokerId,
-                type = Tile.Type.TEXT,
+                type = Tile.Type.BUTTON,
             )
 
             if (isEditMode()) {
@@ -90,13 +101,14 @@ class AddTextTileViewModel @Inject constructor(
         }
     }
 
-    private fun isEditMode() = tileId > 0
-
     private fun list(): List<ListItem> {
         return listOf(
             name,
-            subscribeTopic,
+            publishTopic,
+            payload,
             ButtonItem(Txt.of(R.string.save)),
         )
     }
+
+    private fun isEditMode() = tileId > 0
 }

@@ -28,6 +28,9 @@ data class Tile(
     @ColumnInfo(name = "subscribe_topic")
     val subscribeTopic: String,
 
+    @ColumnInfo(name = "publish_topic")
+    val publishTopic: String,
+
     @ColumnInfo(name = "qos")
     val qos: Int,
 
@@ -45,6 +48,6 @@ data class Tile(
 ) {
 
     enum class Type {
-        TEXT
+        TEXT, BUTTON
     }
 }

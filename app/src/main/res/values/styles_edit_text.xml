@@ -14,13 +14,13 @@
        <!-- <item name="errorTextColor">?android:attr/errorTextColor</item>
         <item name="boxStrokeErrorColor">?android:attr/errorTextColor</item>-->
         <!--<item name="errorIconTint">?attr/errorTextColor</item>-->
-        <item name="endIconTint">@color/textSecondary</item>
+        <item name="endIconTint">?attr/colorOnSecondaryContainer</item>
         <item name="helperTextTextAppearance">@style/TextAppearance.MQTTHub.SecondaryBody</item>
-        <item name="helperTextTextColor">@color/textSecondary</item>
+        <item name="helperTextTextColor">?attr/colorOnSecondaryContainer</item>
        <!-- <item name="errorIconDrawable">@drawable/ic_sign</item>-->
         <item name="hintTextAppearance">@style/TextAppearance.MQTTHub.Placeholder</item>
         <!--        color when InputTextLayout is not focused-->
-        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="android:textColorHint">?attr/colorOnSecondaryContainer</item>
         <!--        color when InputTextLayout is focused-->
         <item name="hintTextColor">?android:attr/colorPrimary</item>
         <item name="editTextStyle">@style/Widget.MQTTHub.EditText</item>
@@ -31,7 +31,7 @@
     <style name="Widget.MQTTHub.EditText" parent="">
         <item name="android:textAppearance">@style/TextAppearance.MQTTHub.Body</item>
         <item name="android:scrollbars">vertical</item>
-        <item name="android:scrollbarThumbVertical">@color/purple_200</item>
+        <!--<item name="android:scrollbarThumbVertical">@color/purple_200</item>-->
         <item name="hintTextAppearance">@style/TextAppearance.MQTTHub.Label</item>
         <item name="textAppearanceSubtitle1">@style/TextAppearance.MQTTHub.Body</item>
         <item name="textAppearanceCaption">@style/TextAppearance.MQTTHub.Body</item>

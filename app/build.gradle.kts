@@ -74,6 +74,7 @@ dependencies {
     implementation("${Libs.CARDVIEW}:${Versions.CARDVIEW}")
     implementation("${Libs.CONSTRAINT_LAYOUT}:${Versions.CONSTRAINT_LAYOUT}")
     implementation("${Libs.MATERIAL}:${Versions.MATERIAL}")
+    implementation("${Libs.FLEXBOX}:${Versions.FLEXBOX}")
 
     // Architecture Components
     implementation("${Libs.LIFECYCLE_LIVE_DATA_KTX}:${Versions.LIFECYCLE}")
