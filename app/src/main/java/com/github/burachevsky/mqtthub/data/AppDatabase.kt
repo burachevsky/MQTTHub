@@ -14,7 +14,7 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
         Broker::class,
         Tile::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {

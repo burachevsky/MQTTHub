@@ -26,10 +26,16 @@
     <string name="edit_tile">Edit tile</string>
     <string name="tile_name">Tile name</string>
     <string name="subscribe_topic">Subscribe topic</string>
+    <string name="publish_topic">Publish topic</string>
+    <string name="publish_payload">Payload</string>
 
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
 
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
+
+    <string name="select_tile_type">Choose tile type</string>
+    <string name="tile_type_text">Text</string>
+    <string name="tile_type_button">Button</string>
 
 </resources>

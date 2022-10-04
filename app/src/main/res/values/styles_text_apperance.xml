@@ -2,7 +2,7 @@
 <resources>
 
     <style name="TextAppearance.MQTTHub" parent="">
-        <item name="android:textColor">@color/text</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.MQTTHub.Title">
@@ -35,7 +35,7 @@
     </style>
 
     <style name="TextAppearance.MQTTHub.Body.Secondary">
-        <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="TextAppearance.MQTTHub.Placeholder">

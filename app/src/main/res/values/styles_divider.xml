@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.MQTTHub.Divider" parent="Widget.Material3.MaterialDivider">
+        <item name="dividerColor">@color/md_theme_light_outline_variant</item>
+     <!--   <item name="android:color">@color/md_theme_light_outline_variant</item>-->
+    </style>
+
+</resources>

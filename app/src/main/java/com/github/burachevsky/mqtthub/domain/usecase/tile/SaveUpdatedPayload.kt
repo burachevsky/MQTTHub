@@ -4,6 +4,7 @@ import com.github.burachevsky.mqtthub.data.repository.TileRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
@@ -16,7 +17,11 @@ import javax.inject.Singleton
 class SaveUpdatedPayload @Inject constructor(
     private val tileRepository: TileRepository
 ) {
-    private val payloadQueue = MutableSharedFlow<PayloadUpdate>()
+    private val payloadQueue = MutableSharedFlow<PayloadUpdate>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     init {
         CoroutineScope(Dispatchers.IO).launch {

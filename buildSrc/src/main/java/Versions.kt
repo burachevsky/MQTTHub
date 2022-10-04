@@ -19,6 +19,7 @@ object Versions {
     const val COROUTINES = "1.6.4"
     const val COROUTINES_TEST = "1.6.4"
     const val ESPRESSO = "3.1.1"
+    const val FLEXBOX = "3.0.0"
     const val FRAGMENT = "1.5.3"
     const val DAGGER = "2.44"
     const val GLIDE = "4.13.2"

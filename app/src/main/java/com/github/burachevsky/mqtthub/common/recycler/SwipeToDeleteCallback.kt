@@ -23,7 +23,7 @@ class SwipeToDeleteCallback(
     }
 
     private val mBackground: ColorDrawable = ColorDrawable()
-    private val backgroundColor: Int = context.getColor(R.color.red)
+    private val backgroundColor: Int = context.getColor(R.color.md_theme_light_error)
     private val deleteDrawable: Drawable = ContextCompat
         .getDrawable(context, R.drawable.ic_delete)!!
 

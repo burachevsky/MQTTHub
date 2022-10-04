@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.text
+package com.github.burachevsky.mqtthub.feature.home.addtile.button
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,12 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
+import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
@@ -22,17 +21,17 @@ import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import javax.inject.Inject
 
-class AddTextTileFragment : Fragment() {
+class AddButtonTileFragment : Fragment() {
 
-    private var _binding: FragmentAddTileBinding? = null
-    private val binding get() = _binding!!
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory<AddButtonTileViewModel>
+
+    lateinit var viewModel: AddButtonTileViewModel
 
     private val container = UIContainer(this, ::Navigator)
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory<AddTextTileViewModel>
-
-    lateinit var viewModel: AddTextTileViewModel
+    private var _binding: FragmentAddTileBinding? = null
+    private val binding get() = _binding!!
 
     private val listAdapter = CompositeAdapter(
         InputFieldItemAdapter(),
@@ -45,7 +44,7 @@ class AddTextTileFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.addTextTileComponent(AddTextTileModule(this))
+        appComponent.addButtonTileComponent(AddButtonTileModule(this))
             .inject(this)
     }
 
@@ -73,10 +72,6 @@ class AddTextTileFragment : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
             adapter = listAdapter
-        }
-
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
         }
 
         binding.toolbar.setTitle(viewModel.title)

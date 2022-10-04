@@ -21,9 +21,12 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.PayloadUpdate
 import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
+import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
@@ -55,6 +58,12 @@ class HomeViewModel @Inject constructor(
 
     private var broker: Broker? = null
 
+    private val updateReceiver = MutableSharedFlow<suspend () -> Unit>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     init {
         container.launch(Dispatchers.Main) {
             val brokerWithTiles = getBrokerWithTiles(args.brokerId)
@@ -62,7 +71,7 @@ class HomeViewModel @Inject constructor(
             broker = brokerWithTiles.broker
             _title.value = broker?.name.orEmpty()
 
-            _items.value = brokerWithTiles.tiles.map(::TextTileItem)
+            _items.value = brokerWithTiles.tiles.map(::makeTileItem)
 
             broker?.let { brokerInfo ->
                 initMqttClient(brokerInfo)
@@ -70,6 +79,12 @@ class HomeViewModel @Inject constructor(
                 brokerWithTiles.tiles.forEach {
                     subscribeIfNotSubscribed(it.subscribeTopic)
                 }
+            }
+        }
+
+        container.launch(Dispatchers.Default) {
+            updateReceiver.collect {
+                it.invoke()
             }
         }
 
@@ -81,23 +96,40 @@ class HomeViewModel @Inject constructor(
             subscribe<TileEdited>(viewModelScope) {
                 tileEdited(it.tile)
             }
+
+            subscribe<TileTypeSelected>(viewModelScope) {
+                navigateAddTile(it.type)
+            }
         }
     }
 
     fun addTileClicked() {
         container.navigator {
-            broker?.id?.let { brokerId ->
-                navigateAddTextTile(brokerId)
+            navigateSelectTileType()
+        }
+    }
+
+    fun tileClicked(position: Int) {
+        val tile = items.get<TileItem>(position).tile
+
+        when (tile.type) {
+            Tile.Type.BUTTON -> {
+                publish(tile, tile.payload)
             }
+
+            Tile.Type.TEXT -> {}
         }
     }
 
     fun editTileClicked(position: Int) {
-        val tileId = items.get<TileItem>(position).tile.id
+        val tile = items.get<TileItem>(position).tile
 
         container.navigator {
             broker?.id?.let { brokerId ->
-                navigateAddTextTile(brokerId, tileId)
+                when (tile.type) {
+                    Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
+                    Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
+                }
             }
         }
     }
@@ -120,6 +152,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun makeTileItem(tile: Tile): ListItem {
+        return when (tile.type) {
+            Tile.Type.BUTTON -> ButtonTileItem(tile)
+            Tile.Type.TEXT -> TextTileItem(tile)
+        }
+    }
+
     private suspend fun initMqttClient(broker: Broker) {
         withContext(Dispatchers.IO) {
             try {
@@ -132,6 +171,22 @@ class HomeViewModel @Inject constructor(
                         text = Txt.of(R.string.error_failed_to_connect_to_broker)
                             .withArgs(broker.name, broker.getServerAddress())
                     )
+                }
+            }
+        }
+    }
+
+    private fun navigateAddTile(type: Tile.Type) {
+        when (type) {
+            Tile.Type.BUTTON -> container.navigator {
+                broker?.id?.let { brokerId ->
+                    navigateAddButtonTile(brokerId)
+                }
+            }
+
+            Tile.Type.TEXT -> container.navigator {
+                broker?.id?.let { brokerId ->
+                    navigateAddTextTile(brokerId)
                 }
             }
         }
@@ -153,7 +208,7 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun tileAdded(tile: Tile) {
         _items.update {
-            it + TextTileItem(tile)
+            it + makeTileItem(tile)
         }
 
         subscribeIfNotSubscribed(tile.subscribeTopic)
@@ -183,7 +238,7 @@ class HomeViewModel @Inject constructor(
 
             container.withContext(Dispatchers.IO) {
                 mqtt?.subscribe(topic) { subscribeTopic, message ->
-                    container.launch(Dispatchers.Main) {
+                    updateReceiver.tryEmit {
                         val payload = String(message.payload)
 
                         updatePayload(subscribeTopic, payload = payload)
@@ -202,7 +257,7 @@ class HomeViewModel @Inject constructor(
             it is TileItem && it.tile.subscribeTopic == topic
         }
 
-        if (!hasReceiver) {
+        if (!hasReceiver && topic.isNotEmpty()) {
             container.withContext(Dispatchers.IO) {
                 mqtt?.unsubscribe(topic)
             }
@@ -215,6 +270,14 @@ class HomeViewModel @Inject constructor(
                 if (it is TileItem && it.tile.subscribeTopic == topic) {
                     it.copyTile(it.tile.copy(payload = payload)) as ListItem
                 } else it
+            }
+        }
+    }
+
+    private fun publish(tile: Tile, payload: String) {
+        if (tile.publishTopic.isNotEmpty()) {
+            container.launch(Dispatchers.IO) {
+                mqtt?.publish(tile.publishTopic, payload.toByteArray(), tile.qos, tile.retained)
             }
         }
     }
