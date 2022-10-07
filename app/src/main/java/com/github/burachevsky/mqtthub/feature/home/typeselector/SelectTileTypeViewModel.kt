@@ -26,6 +26,10 @@ class SelectTileTypeViewModel @Inject constructor(
         TileTypeItem(
             text = Txt.of(R.string.tile_type_button),
             type = Tile.Type.BUTTON
+        ),
+        TileTypeItem(
+            text = Txt.of(R.string.tile_type_switch),
+            type = Tile.Type.SWITCH
         )
     )
 

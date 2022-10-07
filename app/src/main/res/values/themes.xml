@@ -46,7 +46,7 @@
         <item name="android:textViewStyle">@style/TextAppearance.MQTTHub.Body</item>
         <item name="textInputStyle">@style/Widget.MQTTHub.TextInputLayout</item>
         <item name="materialDividerStyle">@style/Widget.MQTTHub.Divider</item>
-
+        <item name="switchStyle">@style/Widget.MQTTHub.Switch</item>
         <item name="bottomSheetDialogTheme">@style/Theme.MQTTHub.BottomSheetDialog</item>
     </style>
 </resources>

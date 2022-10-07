@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.github.burachevsky.mqtthub.data.dao.BrokerDao
 import com.github.burachevsky.mqtthub.data.dao.TileDao
 import com.github.burachevsky.mqtthub.data.entity.Broker
@@ -14,9 +15,10 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
         Broker::class,
         Tile::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = false,
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun brokerDao(): BrokerDao

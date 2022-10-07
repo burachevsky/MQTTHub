@@ -11,6 +11,8 @@ import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
 import com.github.burachevsky.mqtthub.feature.home.addtile.button.AddButtonTileComponent
 import com.github.burachevsky.mqtthub.feature.home.addtile.button.AddButtonTileModule
+import com.github.burachevsky.mqtthub.feature.home.addtile.switch.AddSwitchComponent
+import com.github.burachevsky.mqtthub.feature.home.addtile.switch.AddSwitchModule
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileComponent
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileModule
 import com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment
@@ -41,4 +43,5 @@ interface AppComponent {
     fun homeComponent(module: HomeModule): HomeComponent
     fun addTextTileComponent(module: AddTextTileModule): AddTextTileComponent
     fun addButtonTileComponent(module: AddButtonTileModule): AddButtonTileComponent
+    fun addSwitchComponent(module: AddSwitchModule): AddSwitchComponent
 }

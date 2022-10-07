@@ -17,10 +17,7 @@ import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
-import com.github.burachevsky.mqtthub.feature.home.item.TextTileItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.*
 import javax.inject.Inject
 
 class HomeFragment : Fragment() {
@@ -52,7 +49,8 @@ class HomeFragment : Fragment() {
 
     private val listAdapter = CompositeAdapter(
         TextTileItemAdapter(tileItemListener),
-        ButtonTileItemAdapter(tileItemListener)
+        ButtonTileItemAdapter(tileItemListener),
+        SwitchTileItemAdapter(tileItemListener),
     )
 
     override fun onAttach(context: Context) {
@@ -91,6 +89,7 @@ class HomeFragment : Fragment() {
         binding.recyclerView.apply {
             addItemDecoration(TileLayoutDecoration(requireContext()))
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             adapter = listAdapter
         }

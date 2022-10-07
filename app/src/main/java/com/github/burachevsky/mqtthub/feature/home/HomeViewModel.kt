@@ -9,6 +9,7 @@ import com.github.burachevsky.mqtthub.common.effect.ToastMessage
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.ext.getServerAddress
+import com.github.burachevsky.mqtthub.common.ext.getSwitchOppositeStatePayload
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
@@ -22,6 +23,7 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItem
+import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
@@ -117,19 +119,22 @@ class HomeViewModel @Inject constructor(
                 publish(tile, tile.payload)
             }
 
+            Tile.Type.SWITCH -> {
+                publish(tile, tile.getSwitchOppositeStatePayload())
+            }
+
             Tile.Type.TEXT -> {}
         }
     }
 
     fun editTileClicked(position: Int) {
         val tile = items.get<TileItem>(position).tile
-
+        val brokerId = broker?.id ?: return
         container.navigator {
-            broker?.id?.let { brokerId ->
-                when (tile.type) {
-                    Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
-                    Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
-                }
+            when (tile.type) {
+                Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
+                Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
+                Tile.Type.SWITCH -> navigateAddSwitch(brokerId, tile.id)
             }
         }
     }
@@ -156,6 +161,7 @@ class HomeViewModel @Inject constructor(
         return when (tile.type) {
             Tile.Type.BUTTON -> ButtonTileItem(tile)
             Tile.Type.TEXT -> TextTileItem(tile)
+            Tile.Type.SWITCH -> SwitchTileItem(tile)
         }
     }
 
@@ -177,17 +183,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun navigateAddTile(type: Tile.Type) {
+        val brokerId = broker?.id ?: return
+
         when (type) {
             Tile.Type.BUTTON -> container.navigator {
-                broker?.id?.let { brokerId ->
-                    navigateAddButtonTile(brokerId)
-                }
+                navigateAddButtonTile(brokerId)
             }
 
             Tile.Type.TEXT -> container.navigator {
-                broker?.id?.let { brokerId ->
-                    navigateAddTextTile(brokerId)
-                }
+                navigateAddTextTile(brokerId)
+            }
+
+            Tile.Type.SWITCH -> container.navigator {
+                navigateAddSwitch(brokerId)
             }
         }
     }
@@ -268,7 +276,7 @@ class HomeViewModel @Inject constructor(
         _items.update { item ->
             item.map {
                 if (it is TileItem && it.tile.subscribeTopic == topic) {
-                    it.copyTile(it.tile.copy(payload = payload)) as ListItem
+                    it.copyTile(it.tile.copy(payload = payload))
                 } else it
             }
         }

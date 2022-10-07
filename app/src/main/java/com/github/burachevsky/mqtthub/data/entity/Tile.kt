@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(
     tableName = "tiles",
@@ -43,11 +44,22 @@ data class Tile(
     @ColumnInfo(name = "last_payload")
     val payload: String = "",
 
+    @ColumnInfo(name = "state_list")
+    val stateList: List<State>,
+
     @ColumnInfo(name = "broker_id")
     val brokerId: Long,
 ) {
 
     enum class Type {
-        TEXT, BUTTON
+        TEXT, BUTTON, SWITCH
     }
+
+    data class State(
+        @SerializedName("id")
+        val id: Int,
+
+        @SerializedName("payload")
+        val payload: String
+    )
 }

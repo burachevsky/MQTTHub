@@ -44,6 +44,6 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="24dp"
         app:icon="@drawable/ic_add"
-        android:text="@string/new_tile" />
+        android:text="@string/new_text_tile" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

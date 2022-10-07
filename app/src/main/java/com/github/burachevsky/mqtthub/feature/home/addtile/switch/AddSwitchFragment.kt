@@ -1,4 +1,5 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.button
+package com.github.burachevsky.mqtthub.feature.home.addtile.switch
+
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,10 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
-import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
@@ -21,12 +22,12 @@ import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import javax.inject.Inject
 
-class AddButtonTileFragment : Fragment() {
+class AddSwitchFragment : Fragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory<AddButtonTileViewModel>
+    lateinit var viewModelFactory: ViewModelFactory<AddSwitchViewModel>
 
-    lateinit var viewModel: AddButtonTileViewModel
+    lateinit var viewModel: AddSwitchViewModel
 
     private val container = UIContainer(this, ::Navigator)
 
@@ -44,7 +45,7 @@ class AddButtonTileFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.addButtonTileComponent(AddButtonTileModule(this))
+        appComponent.addSwitchComponent(AddSwitchModule(this))
             .inject(this)
     }
 
