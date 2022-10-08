@@ -9,6 +9,7 @@ import com.github.burachevsky.mqtthub.common.effect.ToastMessage
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.ext.getServerAddress
+import com.github.burachevsky.mqtthub.common.ext.getSwitchOppositeStatePayload
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
@@ -19,9 +20,10 @@ import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
 import com.github.burachevsky.mqtthub.domain.usecase.tile.DeleteTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.PayloadUpdate
 import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
+import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
+import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItem
+import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
@@ -29,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
 import javax.inject.Inject
@@ -117,19 +119,24 @@ class HomeViewModel @Inject constructor(
                 publish(tile, tile.payload)
             }
 
+            Tile.Type.SWITCH -> {
+                val newPayload = tile.getSwitchOppositeStatePayload()
+
+                publish(tile, newPayload)
+            }
+
             Tile.Type.TEXT -> {}
         }
     }
 
     fun editTileClicked(position: Int) {
         val tile = items.get<TileItem>(position).tile
-
+        val brokerId = broker?.id ?: return
         container.navigator {
-            broker?.id?.let { brokerId ->
-                when (tile.type) {
-                    Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
-                    Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
-                }
+            when (tile.type) {
+                Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
+                Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
+                Tile.Type.SWITCH -> navigateAddSwitch(brokerId, tile.id)
             }
         }
     }
@@ -156,6 +163,7 @@ class HomeViewModel @Inject constructor(
         return when (tile.type) {
             Tile.Type.BUTTON -> ButtonTileItem(tile)
             Tile.Type.TEXT -> TextTileItem(tile)
+            Tile.Type.SWITCH -> SwitchTileItem(tile)
         }
     }
 
@@ -163,6 +171,21 @@ class HomeViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 mqtt = MqttClient(broker.getServerAddress(), broker.clientId, MemoryPersistence())
+                mqtt?.setCallback(
+                    object : MqttCallbackExtended {
+                        override fun connectionLost(cause: Throwable?) {
+                            Timber.e(cause)
+                        }
+
+                        override fun messageArrived(topic: String?, message: MqttMessage?) {}
+
+                        override fun deliveryComplete(token: IMqttDeliveryToken?) {}
+
+                        override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                            Timber.d("connect complete (reconnect: $reconnect)")
+                        }
+                    }
+                )
                 mqtt?.connect()
             } catch (e: Exception) {
                 container.raiseEffect {
@@ -177,17 +200,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun navigateAddTile(type: Tile.Type) {
+        val brokerId = broker?.id ?: return
+
         when (type) {
             Tile.Type.BUTTON -> container.navigator {
-                broker?.id?.let { brokerId ->
-                    navigateAddButtonTile(brokerId)
-                }
+                navigateAddButtonTile(brokerId)
             }
 
             Tile.Type.TEXT -> container.navigator {
-                broker?.id?.let { brokerId ->
-                    navigateAddTextTile(brokerId)
-                }
+                navigateAddTextTile(brokerId)
+            }
+
+            Tile.Type.SWITCH -> container.navigator {
+                navigateAddSwitch(brokerId)
             }
         }
     }
@@ -268,7 +293,7 @@ class HomeViewModel @Inject constructor(
         _items.update { item ->
             item.map {
                 if (it is TileItem && it.tile.subscribeTopic == topic) {
-                    it.copyTile(it.tile.copy(payload = payload)) as ListItem
+                    it.copyTile(it.tile.copy(payload = payload))
                 } else it
             }
         }
@@ -277,6 +302,7 @@ class HomeViewModel @Inject constructor(
     private fun publish(tile: Tile, payload: String) {
         if (tile.publishTopic.isNotEmpty()) {
             container.launch(Dispatchers.IO) {
+                Timber.d("publishing $payload, ${tile.publishTopic}")
                 mqtt?.publish(tile.publishTopic, payload.toByteArray(), tile.qos, tile.retained)
             }
         }

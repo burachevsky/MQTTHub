@@ -1,11 +1,7 @@
 package com.github.burachevsky.mqtthub.feature.home.addtile.text
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
-import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
@@ -15,24 +11,22 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
+import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
+import javax.inject.Named
 
 class AddTextTileViewModel @Inject constructor(
-    private val eventBus: EventBus,
-    private val addTile: AddTile,
-    private val updateTile: UpdateTile,
-    private val getTile: GetTile,
-    args: AddTextTileFragmentArgs,
-) : ViewModel() {
+    @Named(BROKER_ID) brokerId: Long,
+    @Named(TILE_ID) tileId: Long,
+    eventBus: EventBus,
+    addTile: AddTile,
+    updateTile: UpdateTile,
+    getTile: GetTile,
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
 
-    private val brokerId = args.brokerId
-    private val tileId = args.tileId
-
-    val title: Int = if (isEditMode()) R.string.edit_tile else R.string.new_tile
-
-    val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val title: Int = if (isEditMode()) R.string.edit_text_tile else R.string.new_text_tile
 
     private val name = InputFieldItem(
         label = Txt.of(R.string.tile_name)
@@ -42,57 +36,39 @@ class AddTextTileViewModel @Inject constructor(
         label = Txt.of(R.string.subscribe_topic)
     )
 
-    private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(list())
-    val items: StateFlow<List<ListItem>> = _items
-
-    private val _itemsChanged = MutableSharedFlow<Unit>()
-    val itemsChanged: SharedFlow<Unit> = _itemsChanged
-
-    private var oldTile: Tile? = null
-
     init {
-        if (isEditMode()) {
-            container.launch(Dispatchers.Main) {
-                val tile = getTile(tileId)
-                oldTile = tile
-                name.text = tile.name
-                subscribeTopic.text = tile.subscribeTopic
-                _itemsChanged.emit(Unit)
-            }
-        }
+        init()
     }
 
-    fun saveResult() {
-        container.launch(Dispatchers.Main) {
-            val tile = oldTile?.copy(
-                name = name.text,
-                subscribeTopic = subscribeTopic.text,
-            ) ?: Tile(
-                name = name.text,
-                subscribeTopic = subscribeTopic.text,
-                publishTopic = "",
-                qos = 0,
-                retained = false,
-                brokerId = brokerId,
-                type = Tile.Type.TEXT,
-            )
-
-            if (isEditMode()) {
-                updateTile(tile)
-                eventBus.send(TileEdited(tile))
-            } else {
-                eventBus.send(TileAdded(addTile(tile)))
-            }
-
-            container.navigator {
-                back()
-            }
-        }
+    override fun initFields(tile: Tile) {
+        name.text = tile.name
+        subscribeTopic.text = tile.subscribeTopic
+        _itemsChanged.tryEmit(Unit)
     }
 
-    private fun isEditMode() = tileId > 0
+    override fun collectTile(): Tile {
+        return oldTile?.copy(
+            name = name.text,
+            subscribeTopic = subscribeTopic.text,
+            publishTopic = "",
+            qos = 0,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.TEXT,
+            stateList = emptyList()
+        ) ?: Tile(
+            name = name.text,
+            subscribeTopic = subscribeTopic.text,
+            publishTopic = "",
+            qos = 0,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.TEXT,
+            stateList = emptyList()
+        )
+    }
 
-    private fun list(): List<ListItem> {
+    override fun list(): List<ListItem> {
         return listOf(
             name,
             subscribeTopic,

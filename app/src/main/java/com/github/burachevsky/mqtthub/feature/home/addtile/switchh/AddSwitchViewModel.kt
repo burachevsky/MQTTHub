@@ -1,7 +1,10 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.button
+package com.github.burachevsky.mqtthub.feature.home.addtile.switchh
 
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.constant.SWITCH_OFF
+import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.common.ext.getPayload
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
@@ -17,7 +20,7 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
 import javax.inject.Named
 
-class AddButtonTileViewModel @Inject constructor(
+class AddSwitchViewModel @Inject constructor(
     @Named(BROKER_ID) brokerId: Long,
     @Named(TILE_ID) tileId: Long,
     eventBus: EventBus,
@@ -26,18 +29,28 @@ class AddButtonTileViewModel @Inject constructor(
     addTile: AddTile,
 ) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
 
-    override val title: Int = if (isEditMode()) R.string.edit_button_tile else R.string.new_button_tile
+    override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
     private val name = InputFieldItem(
         label = Txt.of(R.string.tile_name)
+    )
+
+    private val subscribeTopic = InputFieldItem(
+        label = Txt.of(R.string.subscribe_topic)
     )
 
     private val publishTopic = InputFieldItem(
         label = Txt.of(R.string.publish_topic)
     )
 
-    private val payload = InputFieldItem(
-        label = Txt.of(R.string.publish_payload)
+    private val onState = InputFieldItem(
+        label = Txt.of(R.string.on_state),
+        placeholder = Txt.of("1")
+    )
+
+    private val offState = InputFieldItem(
+        label = Txt.of(R.string.off_state),
+        placeholder = Txt.of("0")
     )
 
     init {
@@ -46,41 +59,48 @@ class AddButtonTileViewModel @Inject constructor(
 
     override fun initFields(tile: Tile) {
         name.text = tile.name
+        subscribeTopic.text = tile.subscribeTopic
         publishTopic.text = tile.publishTopic
-        payload.text = tile.payload
-        _itemsChanged.tryEmit(Unit)
-    }
-
-    override fun collectTile(): Tile {
-        return oldTile?.copy(
-            name = name.text,
-            subscribeTopic = "",
-            publishTopic = publishTopic.text,
-            payload = payload.text,
-            qos = 0,
-            retained = false,
-            brokerId = brokerId,
-            type = Tile.Type.BUTTON,
-            stateList = emptyList()
-        ) ?: Tile(
-            name = name.text,
-            subscribeTopic = "",
-            publishTopic = publishTopic.text,
-            payload = payload.text,
-            qos = 0,
-            retained = false,
-            brokerId = brokerId,
-            type = Tile.Type.BUTTON,
-            stateList = emptyList()
-        )
+        onState.text = tile.stateList.getPayload(SWITCH_ON).orEmpty()
+        offState.text = tile.stateList.getPayload(SWITCH_OFF).orEmpty()
     }
 
     override fun list(): List<ListItem> {
         return listOf(
             name,
+            subscribeTopic,
             publishTopic,
-            payload,
+            onState,
+            offState,
             ButtonItem(Txt.of(R.string.save)),
+        )
+    }
+
+    override fun collectTile(): Tile {
+        return oldTile?.copy(
+            name = name.text,
+            subscribeTopic = subscribeTopic.text,
+            publishTopic = publishTopic.text,
+            qos = 2,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.SWITCH,
+            stateList = listOf(
+                Tile.State(SWITCH_ON, onState.text),
+                Tile.State(SWITCH_OFF, offState.text)
+            )
+        ) ?: Tile(
+            name = name.text,
+            subscribeTopic = subscribeTopic.text,
+            publishTopic = publishTopic.text,
+            qos = 2,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.SWITCH,
+            stateList = listOf(
+                Tile.State(SWITCH_ON, onState.text),
+                Tile.State(SWITCH_OFF, offState.text)
+            )
         )
     }
 }

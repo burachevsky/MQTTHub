@@ -1,53 +1,57 @@
-package com.github.burachevsky.mqtthub.feature.home.typeselector
+package com.github.burachevsky.mqtthub.feature.home.addtile
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.UIContainer
-import com.github.burachevsky.mqtthub.common.ext.appComponent
+import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
-import com.github.burachevsky.mqtthub.databinding.FragmentSelectTileTypeBinding
+import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
+import com.github.burachevsky.mqtthub.common.widget.InputFieldItemAdapter
+import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import javax.inject.Inject
+import kotlin.reflect.KClass
 
-class SelectTileTypeDialogFragment : BottomSheetDialogFragment() {
+abstract class AddTileFragment<VM : AddTileViewModel>(
+    private val viewModelClass: KClass<VM>,
+) : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory<SelectTileTypeViewModel>
+    lateinit var viewModel: VM
 
-    lateinit var viewModel: SelectTileTypeViewModel
+    abstract var viewModelFactory: ViewModelFactory<VM>
 
     private val container = UIContainer(this, ::Navigator)
 
-    private var _binding: FragmentSelectTileTypeBinding? = null
+    private var _binding: FragmentAddTileBinding? = null
     private val binding get() = _binding!!
 
-    private val listAdapter = CompositeAdapter(
-        TileTypeItemAdapter(
-            object : TileTypeItem.Listener {
-                override fun onClick(position: Int) {
-                    viewModel.tileTypeClicked(position)
-                }
+    open val listAdapter = CompositeAdapter(
+        InputFieldItemAdapter(),
+        ButtonItemAdapter(
+            listener = {
+                viewModel.saveResult()
             }
         )
     )
 
+    abstract fun inject()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.inject(this)
+        inject()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
+        viewModel = ViewModelProvider(this, viewModelFactory)[viewModelClass.java]
         container.onCreate()
     }
 
@@ -56,22 +60,28 @@ class SelectTileTypeDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSelectTileTypeBinding.inflate(inflater, container, false)
+        _binding = FragmentAddTileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         container.onViewCreated(viewModel.container, this)
 
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
-            adapter = listAdapter.also {
-                it.submitList(viewModel.items)
-            }
+            adapter = listAdapter
         }
 
+        binding.toolbar.setTitle(viewModel.title)
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
+        }
+
+        collectOnStarted(viewModel.items, listAdapter::submitList)
+
+        collectOnStarted(viewModel.itemsChanged) {
+            listAdapter.notifyDataSetChanged()
         }
     }
 

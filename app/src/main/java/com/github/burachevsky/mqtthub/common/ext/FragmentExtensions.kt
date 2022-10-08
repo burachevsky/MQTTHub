@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.burachevsky.mqtthub.App
 import com.github.burachevsky.mqtthub.di.AppComponent
 import kotlinx.coroutines.flow.Flow
@@ -22,3 +23,6 @@ fun <T> Fragment.collectOnStarted(flow: Flow<T>, collector: FlowCollector<T>) {
         }
     }
 }
+
+fun Fragment.verticalLinearLayoutManager() =
+    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

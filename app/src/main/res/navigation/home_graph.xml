@@ -27,6 +27,10 @@
             android:id="@+id/navigateAddButtonTile"
             app:destination="@id/addButtonTileFragment" />
 
+        <action
+            android:id="@+id/navigateAddSwitch"
+            app:destination="@id/addSwitchFragment" />
+
     </fragment>
 
     <fragment
@@ -67,5 +71,20 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/addSwitchFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.switchh.AddSwitchFragment"
+        android:label="AddSwitchFragment"
+        tools:layout="@layout/fragment_add_tile">
+
+        <argument
+            android:name="brokerId"
+            app:argType="long" />
+
+        <argument
+            android:name="tileId"
+            app:argType="long" />
+
+    </fragment>
 
 </navigation>

@@ -6,6 +6,10 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
+kapt {
+    generateStubs = true
+}
+
 android {
     namespace = "com.github.burachevsky.mqtthub"
     compileSdk = Versions.COMPILE_SDK

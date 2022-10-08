@@ -23,11 +23,18 @@
     <string name="remove_dialog_cancel">Cancel</string>
 
     <string name="new_tile">New tile</string>
-    <string name="edit_tile">Edit tile</string>
+    <string name="new_text_tile">New text tile</string>
+    <string name="edit_text_tile">Edit text tile</string>
+    <string name="new_button_tile">New button</string>
+    <string name="edit_button_tile">Edit button</string>
+    <string name="new_switch">New switch</string>
+    <string name="edit_switch">Edit switch</string>
     <string name="tile_name">Tile name</string>
     <string name="subscribe_topic">Subscribe topic</string>
     <string name="publish_topic">Publish topic</string>
     <string name="publish_payload">Payload</string>
+    <string name="on_state">On state</string>
+    <string name="off_state">Off state</string>
 
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
 
@@ -37,5 +44,6 @@
     <string name="select_tile_type">Choose tile type</string>
     <string name="tile_type_text">Text</string>
     <string name="tile_type_button">Button</string>
+    <string name="tile_type_switch">Switch</string>
 
 </resources>

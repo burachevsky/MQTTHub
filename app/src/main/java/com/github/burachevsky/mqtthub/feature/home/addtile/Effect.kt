@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.text
+package com.github.burachevsky.mqtthub.feature.home.addtile
 
 import com.github.burachevsky.mqtthub.common.effect.UIEffect
 import com.github.burachevsky.mqtthub.data.entity.Tile
