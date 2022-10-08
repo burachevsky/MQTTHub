@@ -32,10 +32,6 @@ class AddTextTileViewModel @Inject constructor(
         label = Txt.of(R.string.tile_name)
     )
 
-    private val subscribeTopic = InputFieldItem(
-        label = Txt.of(R.string.subscribe_topic)
-    )
-
     init {
         init()
     }
@@ -43,7 +39,8 @@ class AddTextTileViewModel @Inject constructor(
     override fun initFields(tile: Tile) {
         name.text = tile.name
         subscribeTopic.text = tile.subscribeTopic
-        _itemsChanged.tryEmit(Unit)
+        retain.isChecked = tile.retained
+        qos.selectedValue = tile.qos
     }
 
     override fun collectTile(): Tile {
@@ -51,8 +48,8 @@ class AddTextTileViewModel @Inject constructor(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = "",
-            qos = 0,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.TEXT,
             stateList = emptyList()
@@ -60,8 +57,8 @@ class AddTextTileViewModel @Inject constructor(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = "",
-            qos = 0,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.TEXT,
             stateList = emptyList()
@@ -72,6 +69,8 @@ class AddTextTileViewModel @Inject constructor(
         return listOf(
             name,
             subscribeTopic,
+            qos,
+            retain,
             ButtonItem(Txt.of(R.string.save)),
         )
     }

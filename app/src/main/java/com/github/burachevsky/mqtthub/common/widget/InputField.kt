@@ -2,7 +2,11 @@ package com.github.burachevsky.mqtthub.common.widget
 
 import android.text.InputType.*
 import android.view.View
+import android.view.View.FOCUS_DOWN
+import android.view.View.FOCUS_FORWARD
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView.OnEditorActionListener
 import androidx.core.widget.addTextChangedListener
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
@@ -11,6 +15,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.empty
 import com.github.burachevsky.mqtthub.databinding.ListItemInputFieldBinding
+
 
 data class InputFieldItem(
     val initText: Txt = Txt.empty,
@@ -43,6 +48,23 @@ class InputFieldItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
         binding.inputFieldEditText.addTextChangedListener {
             field?.text = it?.toString().orEmpty()
         }
+
+        binding.inputFieldEditText.setOnEditorActionListener(
+            OnEditorActionListener { textView, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    val view = textView.focusSearch(FOCUS_DOWN)
+
+                    if (view != null) {
+                        if (!view.requestFocus(FOCUS_FORWARD)) {
+                            return@OnEditorActionListener true
+                        }
+                    }
+                    return@OnEditorActionListener false
+                }
+                binding.inputFieldEditText.clearFocus()
+                false
+            }
+        )
     }
 
     override fun bind(item: ListItem) {

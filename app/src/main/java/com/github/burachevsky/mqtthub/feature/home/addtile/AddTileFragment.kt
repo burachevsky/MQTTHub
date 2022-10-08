@@ -14,8 +14,7 @@ import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
-import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
-import com.github.burachevsky.mqtthub.common.widget.InputFieldItemAdapter
+import com.github.burachevsky.mqtthub.common.widget.*
 import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import kotlin.reflect.KClass
@@ -39,7 +38,9 @@ abstract class AddTileFragment<VM : AddTileViewModel>(
             listener = {
                 viewModel.saveResult()
             }
-        )
+        ),
+        SwitchItemAdapter(),
+        QosSelectorItemAdapter(),
     )
 
     abstract fun inject()
