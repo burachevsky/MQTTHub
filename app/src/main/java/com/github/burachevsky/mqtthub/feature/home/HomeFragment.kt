@@ -15,6 +15,7 @@ import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
+import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.feature.home.item.*
@@ -77,6 +78,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         container.onViewCreated(viewModel.container, this)
 
+        collectOnStarted(viewModel.connectionState, binding.connection::applyState)
+
         collectOnStarted(viewModel.title) {
             binding.toolbar.title = it
         }
@@ -96,6 +99,10 @@ class HomeFragment : Fragment() {
 
         binding.addTileButton.setOnClickListener {
             viewModel.addTileClicked()
+        }
+
+        binding.connection.setOnClickListener {
+            viewModel.connectionClicked()
         }
 
         collectOnStarted(viewModel.items, listAdapter::submitList)

@@ -2,10 +2,17 @@ package com.github.burachevsky.mqtthub.feature.home.addtile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.common.text.of
+import com.github.burachevsky.mqtthub.common.widget.FieldType
+import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
+import com.github.burachevsky.mqtthub.common.widget.QosSelectorItem
+import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -35,6 +42,22 @@ abstract class AddTileViewModel (
     val itemsChanged: SharedFlow<Unit> = _itemsChanged
 
     protected var oldTile: Tile? = null
+
+    protected val subscribeTopic = InputFieldItem(
+        label = Txt.of(R.string.subscribe_topic),
+        type = FieldType.URI,
+    )
+
+    protected val publishTopic = InputFieldItem(
+        label = Txt.of(R.string.publish_topic),
+        type = FieldType.URI,
+    )
+
+    protected val retain = SwitchItem(
+        text = Txt.of(R.string.retain)
+    )
+
+    protected val qos = QosSelectorItem()
 
     fun init() {
         if (isEditMode()) {

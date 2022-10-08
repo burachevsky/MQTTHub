@@ -9,6 +9,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.ButtonItem
+import com.github.burachevsky.mqtthub.common.widget.FieldType
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
@@ -35,14 +36,6 @@ class AddSwitchViewModel @Inject constructor(
         label = Txt.of(R.string.tile_name)
     )
 
-    private val subscribeTopic = InputFieldItem(
-        label = Txt.of(R.string.subscribe_topic)
-    )
-
-    private val publishTopic = InputFieldItem(
-        label = Txt.of(R.string.publish_topic)
-    )
-
     private val onState = InputFieldItem(
         label = Txt.of(R.string.on_state),
         placeholder = Txt.of("1")
@@ -63,6 +56,8 @@ class AddSwitchViewModel @Inject constructor(
         publishTopic.text = tile.publishTopic
         onState.text = tile.stateList.getPayload(SWITCH_ON).orEmpty()
         offState.text = tile.stateList.getPayload(SWITCH_OFF).orEmpty()
+        retain.isChecked = tile.retained
+        qos.selectedValue = tile.qos
     }
 
     override fun list(): List<ListItem> {
@@ -72,6 +67,8 @@ class AddSwitchViewModel @Inject constructor(
             publishTopic,
             onState,
             offState,
+            qos,
+            retain,
             ButtonItem(Txt.of(R.string.save)),
         )
     }
@@ -81,8 +78,8 @@ class AddSwitchViewModel @Inject constructor(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = publishTopic.text,
-            qos = 2,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.SWITCH,
             stateList = listOf(
@@ -93,8 +90,8 @@ class AddSwitchViewModel @Inject constructor(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = publishTopic.text,
-            qos = 2,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.SWITCH,
             stateList = listOf(

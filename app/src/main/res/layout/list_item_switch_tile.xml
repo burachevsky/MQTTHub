@@ -22,8 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-
-        />
+        android:textAppearance="@style/TextAppearance.MQTTHub.Body" />
 
     <!--<View
         android:id="@+id/switchSurface"

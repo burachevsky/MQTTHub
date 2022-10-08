@@ -6,6 +6,6 @@
     <dimen name="dashboard_tile_spacing">8dp</dimen>
     <dimen name="dashboard_margin">16dp</dimen>
 
-    <dimen name="tile_default_height">96dp</dimen>
+    <dimen name="tile_default_height">108dp</dimen>
 
 </resources>

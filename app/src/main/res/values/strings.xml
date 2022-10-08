@@ -33,9 +33,11 @@
     <string name="subscribe_topic">Subscribe topic</string>
     <string name="publish_topic">Publish topic</string>
     <string name="publish_payload">Payload</string>
+    <string name="retain">Retain</string>
     <string name="on_state">On state</string>
     <string name="off_state">Off state</string>
 
+    <string name="error_failed_to_connect">Failed to connect</string>
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
 
     <string name="delete">Delete</string>
@@ -45,5 +47,14 @@
     <string name="tile_type_text">Text</string>
     <string name="tile_type_button">Button</string>
     <string name="tile_type_switch">Switch</string>
+
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="connecting">Connecting</string>
+
+    <string name="qos">Quality of service (QoS)</string>
+    <string name="qos_0">0</string>
+    <string name="qos_1">1</string>
+    <string name="qos_2">2</string>
 
 </resources>

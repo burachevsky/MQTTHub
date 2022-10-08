@@ -14,6 +14,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.text.withArgs
+import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
@@ -45,6 +46,9 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val container = ViewModelContainer<HomeNavigator>(viewModelScope)
+
+    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Connecting)
+    val connectionState: StateFlow<ConnectionState> = _connectionState
 
     private var mqtt: MqttClient? = null
 
@@ -159,6 +163,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun connectionClicked() {
+        if (connectionState.value == ConnectionState.Disconnected) {
+            container.launch(Dispatchers.IO) {
+                broker?.let {
+                    initMqttClient(it)
+                }
+            }
+        }
+    }
+
     private fun makeTileItem(tile: Tile): ListItem {
         return when (tile.type) {
             Tile.Type.BUTTON -> ButtonTileItem(tile)
@@ -168,12 +182,23 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun initMqttClient(broker: Broker) {
+        _connectionState.tryEmit(ConnectionState.Connecting)
+
         withContext(Dispatchers.IO) {
             try {
                 mqtt = MqttClient(broker.getServerAddress(), broker.clientId, MemoryPersistence())
                 mqtt?.setCallback(
                     object : MqttCallbackExtended {
                         override fun connectionLost(cause: Throwable?) {
+                            _connectionState.tryEmit(ConnectionState.Disconnected)
+
+                            container.raiseEffect {
+                                ToastMessage(
+                                    text = cause?.message?.let(Txt::of)
+                                        ?: Txt.of(R.string.error_failed_to_connect)
+                                )
+                            }
+
                             Timber.e(cause)
                         }
 
@@ -182,12 +207,19 @@ class HomeViewModel @Inject constructor(
                         override fun deliveryComplete(token: IMqttDeliveryToken?) {}
 
                         override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                            if (mqtt?.isConnected == true) {
+                                _connectionState.tryEmit(ConnectionState.Connected)
+                            } else {
+                                _connectionState.tryEmit(ConnectionState.Disconnected)
+                            }
                             Timber.d("connect complete (reconnect: $reconnect)")
                         }
                     }
                 )
                 mqtt?.connect()
             } catch (e: Exception) {
+                Timber.e(e)
+                _connectionState.tryEmit(ConnectionState.Disconnected)
                 container.raiseEffect {
                     Timber.d("$broker")
                     ToastMessage(

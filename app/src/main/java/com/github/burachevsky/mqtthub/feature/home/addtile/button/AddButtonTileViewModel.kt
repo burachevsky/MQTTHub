@@ -32,10 +32,6 @@ class AddButtonTileViewModel @Inject constructor(
         label = Txt.of(R.string.tile_name)
     )
 
-    private val publishTopic = InputFieldItem(
-        label = Txt.of(R.string.publish_topic)
-    )
-
     private val payload = InputFieldItem(
         label = Txt.of(R.string.publish_payload)
     )
@@ -48,7 +44,8 @@ class AddButtonTileViewModel @Inject constructor(
         name.text = tile.name
         publishTopic.text = tile.publishTopic
         payload.text = tile.payload
-        _itemsChanged.tryEmit(Unit)
+        retain.isChecked = tile.retained
+        qos.selectedValue = tile.qos
     }
 
     override fun collectTile(): Tile {
@@ -57,8 +54,8 @@ class AddButtonTileViewModel @Inject constructor(
             subscribeTopic = "",
             publishTopic = publishTopic.text,
             payload = payload.text,
-            qos = 0,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.BUTTON,
             stateList = emptyList()
@@ -67,8 +64,8 @@ class AddButtonTileViewModel @Inject constructor(
             subscribeTopic = "",
             publishTopic = publishTopic.text,
             payload = payload.text,
-            qos = 0,
-            retained = false,
+            qos = qos.selectedValue,
+            retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.BUTTON,
             stateList = emptyList()
@@ -80,6 +77,8 @@ class AddButtonTileViewModel @Inject constructor(
             name,
             publishTopic,
             payload,
+            qos,
+            retain,
             ButtonItem(Txt.of(R.string.save)),
         )
     }
