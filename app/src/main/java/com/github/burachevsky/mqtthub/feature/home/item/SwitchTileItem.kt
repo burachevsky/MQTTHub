@@ -13,6 +13,7 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSwitchTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem.Companion.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem.Companion.SWITCH_STATE_CHANGED
+import com.google.android.material.materialswitch.MaterialSwitch
 
 data class SwitchTileItem(
     override val tile: Tile
@@ -49,30 +50,21 @@ class SwitchTileItemViewHolder(
     val binding = ListItemSwitchTileBinding.bind(itemView)
 
     init {
-        binding.tile.setOnClickListener {
+        binding.tileSwitch.setOnClickListener {
+            binding.tileSwitch.isChecked = !binding.tileSwitch.isChecked
             listener.onClick(adapterPosition)
         }
 
-        binding.tile.setOnLongClickListener{ view ->
-            view.showPopupMenu(R.menu.tile_item_menu) {
-                when (it) {
-                    R.id.delete -> {
-                        listener.onDeleteClick(adapterPosition)
-                        true
-                    }
-
-                    R.id.edit -> {
-                        listener.onEditClick(adapterPosition)
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-            true
+        binding.tileSwitch.setOnLongClickListener {
+            showTilePopupMenu(it, listener)
         }
+    }
 
-        binding.tileSwitch.isClickable = false
+    override fun bind(item: ListItem) {
+        item as SwitchTileItem
+
+        bindName(item)
+        bindSwitchState(item)
     }
 
     override fun bind(item: ListItem, payloads: List<Int>) {

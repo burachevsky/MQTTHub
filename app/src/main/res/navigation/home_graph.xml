@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/addSwitchFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.switch.AddSwitchFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.switchh.AddSwitchFragment"
         android:label="AddSwitchFragment"
         tools:layout="@layout/fragment_add_tile">
 

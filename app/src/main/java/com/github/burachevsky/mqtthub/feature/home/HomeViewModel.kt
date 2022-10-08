@@ -20,8 +20,8 @@ import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
 import com.github.burachevsky.mqtthub.domain.usecase.tile.DeleteTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.PayloadUpdate
 import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
+import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
+import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
 import javax.inject.Inject
@@ -120,7 +120,9 @@ class HomeViewModel @Inject constructor(
             }
 
             Tile.Type.SWITCH -> {
-                publish(tile, tile.getSwitchOppositeStatePayload())
+                val newPayload = tile.getSwitchOppositeStatePayload()
+
+                publish(tile, newPayload)
             }
 
             Tile.Type.TEXT -> {}
@@ -169,6 +171,21 @@ class HomeViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 mqtt = MqttClient(broker.getServerAddress(), broker.clientId, MemoryPersistence())
+                mqtt?.setCallback(
+                    object : MqttCallbackExtended {
+                        override fun connectionLost(cause: Throwable?) {
+                            Timber.e(cause)
+                        }
+
+                        override fun messageArrived(topic: String?, message: MqttMessage?) {}
+
+                        override fun deliveryComplete(token: IMqttDeliveryToken?) {}
+
+                        override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                            Timber.d("connect complete (reconnect: $reconnect)")
+                        }
+                    }
+                )
                 mqtt?.connect()
             } catch (e: Exception) {
                 container.raiseEffect {
@@ -285,6 +302,7 @@ class HomeViewModel @Inject constructor(
     private fun publish(tile: Tile, payload: String) {
         if (tile.publishTopic.isNotEmpty()) {
             container.launch(Dispatchers.IO) {
+                Timber.d("publishing $payload, ${tile.publishTopic}")
                 mqtt?.publish(tile.publishTopic, payload.toByteArray(), tile.qos, tile.retained)
             }
         }

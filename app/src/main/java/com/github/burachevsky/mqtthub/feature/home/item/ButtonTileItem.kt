@@ -37,23 +37,12 @@ class ButtonTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
-        binding.buttonTile.setOnLongClickListener { view ->
-            view.showPopupMenu(R.menu.tile_item_menu) {
-                when (it) {
-                    R.id.delete -> {
-                        listener.onDeleteClick(adapterPosition)
-                        true
-                    }
+        binding.buttonTile.setOnLongClickListener {
+            showTilePopupMenu(it, listener)
+        }
 
-                    R.id.edit -> {
-                        listener.onEditClick(adapterPosition)
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-            true
+        binding.tile.setOnLongClickListener {
+            showTilePopupMenu(it, listener)
         }
     }
 

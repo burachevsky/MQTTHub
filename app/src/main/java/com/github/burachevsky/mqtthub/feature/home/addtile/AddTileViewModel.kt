@@ -10,8 +10,6 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileAdded
-import com.github.burachevsky.mqtthub.feature.home.addtile.text.TileEdited
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +40,9 @@ abstract class AddTileViewModel (
         if (isEditMode()) {
             container.launch(Dispatchers.Main) {
                 oldTile = getTile(tileId)
+                    .also(::initFields)
+
+                _itemsChanged.emit(Unit)
             }
         }
 

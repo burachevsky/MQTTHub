@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,24 +18,38 @@ import javax.inject.Singleton
 class SaveUpdatedPayload @Inject constructor(
     private val tileRepository: TileRepository
 ) {
-    private val payloadQueue = MutableSharedFlow<PayloadUpdate>(
-        replay = 0,
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val payloadQueues = ConcurrentHashMap<String, MutableSharedFlow<PayloadUpdate>>()
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            payloadQueue
-                .collect {
-                    Timber.d("saving payload(topic: ${it.subscribeTopic}, payload: ${it.payload})")
-                    tileRepository.updatePayload(it.brokerId, it.subscribeTopic, it.payload)
-                }
+    suspend operator fun invoke(payloadUpdate: PayloadUpdate) {
+        payloadQueues[payloadUpdate.subscribeTopic]
+            ?.emit(payloadUpdate)
+            ?: run {
+                addNewTopicAndEmit(payloadUpdate)
+            }
+    }
+
+    private suspend fun update(payloadUpdate: PayloadUpdate) {
+        payloadUpdate.let {
+            Timber.d("saving payload: ${it.payload}, ${it.subscribeTopic}")
+            tileRepository.updatePayload(it.brokerId, it.subscribeTopic, it.payload)
         }
     }
 
-    suspend operator fun invoke(payloadUpdate: PayloadUpdate) {
-        payloadQueue.emit(payloadUpdate)
+    private suspend fun addNewTopicAndEmit(payloadUpdate: PayloadUpdate) {
+        val flow = MutableSharedFlow<PayloadUpdate>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            flow.debounce(100)
+                .collect { update(it) }
+        }
+
+        payloadQueues[payloadUpdate.subscribeTopic] = flow
+
+        flow.emit(payloadUpdate)
     }
 }
 

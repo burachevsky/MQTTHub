@@ -2,17 +2,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingVertical="12dp">
+    android:layout_height="@dimen/tile_default_height"
+    android:background="@drawable/bg_tile_list_item">
 
     <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/buttonTile"
-        android:padding="16dp"
-        app:backgroundTint="?attr/colorPrimaryContainer"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        tools:text="Button" />
+        tools:text="Button"
+        android:layout_gravity="center"/>
 
 </FrameLayout>

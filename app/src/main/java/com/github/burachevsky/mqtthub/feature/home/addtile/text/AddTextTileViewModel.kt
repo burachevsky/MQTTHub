@@ -12,15 +12,19 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
+import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
+import javax.inject.Named
 
 class AddTextTileViewModel @Inject constructor(
+    @Named(BROKER_ID) brokerId: Long,
+    @Named(TILE_ID) tileId: Long,
     eventBus: EventBus,
     addTile: AddTile,
     updateTile: UpdateTile,
     getTile: GetTile,
-    args: AddTextTileFragmentArgs,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, args.brokerId, args.tileId) {
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
 
     override val title: Int = if (isEditMode()) R.string.edit_text_tile else R.string.new_text_tile
 
@@ -46,6 +50,12 @@ class AddTextTileViewModel @Inject constructor(
         return oldTile?.copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
+            publishTopic = "",
+            qos = 0,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.TEXT,
+            stateList = emptyList()
         ) ?: Tile(
             name = name.text,
             subscribeTopic = subscribeTopic.text,

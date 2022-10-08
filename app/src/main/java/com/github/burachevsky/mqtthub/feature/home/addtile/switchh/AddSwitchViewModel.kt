@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.switch
+package com.github.burachevsky.mqtthub.feature.home.addtile.switchh
 
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.SWITCH_OFF
@@ -15,15 +15,19 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
+import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
+import javax.inject.Named
 
 class AddSwitchViewModel @Inject constructor(
+    @Named(BROKER_ID) brokerId: Long,
+    @Named(TILE_ID) tileId: Long,
     eventBus: EventBus,
     getTile: GetTile,
     updateTile: UpdateTile,
     addTile: AddTile,
-    args: AddSwitchFragmentArgs,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, args.brokerId, args.tileId) {
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
 
     override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
@@ -76,11 +80,20 @@ class AddSwitchViewModel @Inject constructor(
         return oldTile?.copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
+            publishTopic = publishTopic.text,
+            qos = 2,
+            retained = false,
+            brokerId = brokerId,
+            type = Tile.Type.SWITCH,
+            stateList = listOf(
+                Tile.State(SWITCH_ON, onState.text),
+                Tile.State(SWITCH_OFF, offState.text)
+            )
         ) ?: Tile(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = publishTopic.text,
-            qos = 0,
+            qos = 2,
             retained = false,
             brokerId = brokerId,
             type = Tile.Type.SWITCH,

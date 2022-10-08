@@ -1,5 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.addtile.switch
-
+package com.github.burachevsky.mqtthub.feature.home.addtile
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,9 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.UIContainer
-import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -20,21 +18,22 @@ import com.github.burachevsky.mqtthub.common.widget.ButtonItemAdapter
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItemAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import javax.inject.Inject
+import kotlin.reflect.KClass
 
-class AddSwitchFragment : Fragment() {
+abstract class AddTileFragment<VM : AddTileViewModel>(
+    private val viewModelClass: KClass<VM>,
+) : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory<AddSwitchViewModel>
+    lateinit var viewModel: VM
 
-    lateinit var viewModel: AddSwitchViewModel
+    abstract var viewModelFactory: ViewModelFactory<VM>
 
     private val container = UIContainer(this, ::Navigator)
 
     private var _binding: FragmentAddTileBinding? = null
     private val binding get() = _binding!!
 
-    private val listAdapter = CompositeAdapter(
+    open val listAdapter = CompositeAdapter(
         InputFieldItemAdapter(),
         ButtonItemAdapter(
             listener = {
@@ -43,15 +42,16 @@ class AddSwitchFragment : Fragment() {
         )
     )
 
+    abstract fun inject()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.addSwitchComponent(AddSwitchModule(this))
-            .inject(this)
+        inject()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
+        viewModel = ViewModelProvider(this, viewModelFactory)[viewModelClass.java]
         container.onCreate()
     }
 
@@ -74,6 +74,9 @@ class AddSwitchFragment : Fragment() {
         }
 
         binding.toolbar.setTitle(viewModel.title)
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
 
         collectOnStarted(viewModel.items, listAdapter::submitList)
 

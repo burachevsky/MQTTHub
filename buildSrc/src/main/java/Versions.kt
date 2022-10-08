@@ -28,7 +28,7 @@ object Versions {
     const val EXT_JUNIT = "1.1.2"
     const val junitext = "1.1.1"
     const val LIFECYCLE = "2.5.1"
-    const val MATERIAL = "1.6.1"
+    const val MATERIAL = "1.8.0-alpha01"
     const val OKHTTP = "4.10.0"
     const val PAHO = "1.1.2-SNAPSHOT"
     const val ROOM = "2.4.3"

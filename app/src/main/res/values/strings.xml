@@ -22,6 +22,7 @@
     <string name="remove_dialog_yes">Delete</string>
     <string name="remove_dialog_cancel">Cancel</string>
 
+    <string name="new_tile">New tile</string>
     <string name="new_text_tile">New text tile</string>
     <string name="edit_text_tile">Edit text tile</string>
     <string name="new_button_tile">New button</string>
