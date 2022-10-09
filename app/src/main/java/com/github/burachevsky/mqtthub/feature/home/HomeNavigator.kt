@@ -9,20 +9,23 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragm
 
 class HomeNavigator(navController: NavController) : Navigator(navController) {
 
-    fun navigateAddTextTile(brokerId: Long, tileId: Long = 0) = navController.navigate(
-        R.id.navigateAddTextTile,
-        AddTextTileFragmentArgs(brokerId, tileId).toBundle()
-    )
+    fun navigateAddTextTile(brokerId: Long, tileId: Long = 0, dashboardPosition: Int) =
+        navController.navigate(
+            R.id.navigateAddTextTile,
+            AddTextTileFragmentArgs(brokerId, tileId, dashboardPosition).toBundle()
+        )
 
-    fun navigateAddButtonTile(brokerId: Long, tileId: Long = 0) = navController.navigate(
-        R.id.navigateAddButtonTile,
-        AddButtonTileFragmentArgs(brokerId, tileId).toBundle()
-    )
+    fun navigateAddButtonTile(brokerId: Long, tileId: Long = 0, dashboardPosition: Int) =
+        navController.navigate(
+            R.id.navigateAddButtonTile,
+            AddButtonTileFragmentArgs(brokerId, tileId, dashboardPosition).toBundle()
+        )
 
-    fun navigateAddSwitch(brokerId: Long, tileId: Long = 0) = navController.navigate(
-        R.id.navigateAddSwitch,
-        AddSwitchFragmentArgs(brokerId, tileId).toBundle()
-    )
+    fun navigateAddSwitch(brokerId: Long, tileId: Long = 0, dashboardPosition: Int) =
+        navController.navigate(
+            R.id.navigateAddSwitch,
+            AddSwitchFragmentArgs(brokerId, tileId, dashboardPosition).toBundle()
+        )
 
     fun navigateSelectTileType() = navController.navigate(R.id.navigateSelectTileType)
 }

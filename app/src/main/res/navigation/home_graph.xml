@@ -47,6 +47,10 @@
             android:name="tileId"
             app:argType="long" />
 
+        <argument
+            android:name="dashboardPosition"
+            app:argType="integer" />
+
     </fragment>
 
     <dialog
@@ -69,6 +73,10 @@
             android:name="tileId"
             app:argType="long" />
 
+        <argument
+            android:name="dashboardPosition"
+            app:argType="integer" />
+
     </fragment>
 
     <fragment
@@ -84,6 +92,10 @@
         <argument
             android:name="tileId"
             app:argType="long" />
+
+        <argument
+            android:name="dashboardPosition"
+            app:argType="integer" />
 
     </fragment>
 

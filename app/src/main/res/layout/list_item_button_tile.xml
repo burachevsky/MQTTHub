@@ -14,4 +14,13 @@
         tools:text="Button"
         android:layout_gravity="center"/>
 
+    <View
+        android:id="@+id/editModeOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_tile_edit_mode_selected"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true" />
+
 </FrameLayout>

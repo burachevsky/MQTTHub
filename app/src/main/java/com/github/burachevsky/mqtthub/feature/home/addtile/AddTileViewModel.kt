@@ -30,6 +30,7 @@ abstract class AddTileViewModel (
     protected val addTile: AddTile,
     protected val brokerId: Long,
     protected val tileId: Long,
+    protected val dashboardPosition: Int,
 ) : ViewModel() {
     abstract val title: Int
 

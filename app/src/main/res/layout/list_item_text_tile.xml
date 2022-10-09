@@ -9,8 +9,7 @@
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:padding="16dp">
+    app:layout_constraintEnd_toEndOf="parent">
 
     <TextView
         android:id="@+id/tileName"
@@ -20,6 +19,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
         tools:text="Tile name" />
 
     <TextView
@@ -30,6 +31,17 @@
         app:layout_constraintTop_toBottomOf="@id/tileName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp"/>
+
+    <View
+        android:id="@+id/editModeOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_tile_edit_mode_selected"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

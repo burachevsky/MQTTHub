@@ -8,6 +8,10 @@ class GetBrokerWithTiles @Inject constructor(
     private val brokerRepository: BrokerRepository
 ) {
     suspend operator fun invoke(id: Long): BrokerWithTiles {
-        return brokerRepository.getBrokerWithTiles(id)
+        return brokerRepository.getBrokerWithTiles(id).run {
+            copy(
+                tiles = tiles.sortedBy { it.dashboardPosition }
+            )
+        }
     }
 }
