@@ -185,6 +185,9 @@ class HomeFragment : Fragment() {
     private fun bindEditMode(editMode: EditModeState) {
         val showEditToolbar = editMode.isEditMode && !editMode.isMovingMode
         binding.editModeToolbarLayout.isVisible = showEditToolbar
+        binding.addTileButton.run {
+            if (showEditToolbar) hide() else show()
+        }
         binding.toolbarLayout.isVisible = !showEditToolbar
         binding.editModeToolbar.title = "${editMode.selectedCount}"
     }
