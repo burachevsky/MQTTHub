@@ -5,18 +5,15 @@ import android.view.ViewGroup
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
 import com.github.burachevsky.mqtthub.common.ext.isState
-import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSwitchTileBinding
-import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem.Companion.NAME_CHANGED
-import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem.Companion.SWITCH_STATE_CHANGED
-import com.google.android.material.materialswitch.MaterialSwitch
 
 data class SwitchTileItem(
-    override val tile: Tile
+    override val tile: Tile,
+    override val editMode: EditMode? = null
 ) : TileItem {
 
     override fun layout() = LAYOUT
@@ -25,20 +22,22 @@ data class SwitchTileItem(
         return copy(tile = tile)
     }
 
+    override fun withEditMode(editMode: EditMode?): TileItem {
+        return copy(editMode = editMode)
+    }
+
     override fun getChangePayload(that: ListItem): List<Int> {
         that as SwitchTileItem
 
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
             if (tile.payload != that.tile.payload) SWITCH_STATE_CHANGED else null,
+            if (editMode != that.editMode) EDIT_MODE_CHANGED else null
         )
     }
 
     companion object {
         const val LAYOUT = R.layout.list_item_switch_tile
-
-        const val NAME_CHANGED = 1
-        const val SWITCH_STATE_CHANGED = 2
     }
 }
 
@@ -55,8 +54,12 @@ class SwitchTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
-        binding.tileSwitch.setOnLongClickListener {
-            showTilePopupMenu(it, listener)
+        binding.editModeOverlay.setOnClickListener {
+            listener.onClick(adapterPosition)
+        }
+
+        binding.editModeOverlay.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
         }
     }
 
@@ -74,6 +77,7 @@ class SwitchTileItemViewHolder(
             when (it) {
                 NAME_CHANGED -> bindName(item)
                 SWITCH_STATE_CHANGED -> bindSwitchState(item)
+                EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
             }
         }
     }

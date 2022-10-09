@@ -3,7 +3,6 @@ package com.github.burachevsky.mqtthub.feature.home.item
 import android.view.View
 import android.view.ViewGroup
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
@@ -12,12 +11,17 @@ import com.github.burachevsky.mqtthub.databinding.ListItemButtonTileBinding
 
 data class ButtonTileItem(
     override val tile: Tile,
+    override val editMode: EditMode? = null
 ) : TileItem {
 
     override fun layout() = LAYOUT
 
     override fun copyTile(tile: Tile): TileItem {
         return copy(tile = tile)
+    }
+
+    override fun withEditMode(editMode: EditMode?): TileItem {
+        return copy(editMode = editMode)
     }
 
     companion object {
@@ -37,18 +41,19 @@ class ButtonTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
-        binding.buttonTile.setOnLongClickListener {
-            showTilePopupMenu(it, listener)
+        binding.editModeOverlay.setOnClickListener {
+            listener.onClick(adapterPosition)
         }
 
-        binding.tile.setOnLongClickListener {
-            showTilePopupMenu(it, listener)
+        binding.editModeOverlay.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
         }
     }
 
     override fun bind(item: ListItem) {
         item as ButtonTileItem
         binding.buttonTile.text = item.tile.name
+        bindEditMode(item.editMode)
     }
 }
 

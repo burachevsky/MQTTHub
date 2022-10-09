@@ -10,7 +10,11 @@ interface TileRepository {
 
     suspend fun updateTile(tile: Tile)
 
+    suspend fun updateTiles(tiles: List<Tile>)
+
     suspend fun deleteTile(id: Long)
+
+    suspend fun deleteTiles(tiles: List<Tile>)
 
     suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String)
 

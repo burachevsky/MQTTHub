@@ -20,7 +20,14 @@ class AddTileModule(fragment: AddTileFragment<*>) {
     fun provideTileId(): Long {
         return args.getLong(TILE_ID)
     }
+
+    @Provides
+    @Named(DASHBOARD_POSITION)
+    fun provideDashboardPosition(): Int {
+        return args.getInt(DASHBOARD_POSITION)
+    }
 }
 
 const val BROKER_ID = "brokerId"
 const val TILE_ID = "tileId"
+const val DASHBOARD_POSITION = "dashboardPosition"

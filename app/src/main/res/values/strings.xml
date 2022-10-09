@@ -17,6 +17,8 @@
     <string name="broker_client_id">Client ID</string>
     <string name="broker_default_client_id">MqttHub-%s</string>
 
+    <string name="remove_selected_tiles">Delete selected tiles?</string>
+    <string name="remove_tile">Delete tile?</string>
     <string name="remove_dialog_title">Delete %s?</string>
     <string name="remove_dialog_message">This action cannot be undone</string>
     <string name="remove_dialog_yes">Delete</string>
@@ -42,6 +44,7 @@
 
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
+    <string name="duplicate">Duplicate</string>
 
     <string name="select_tile_type">Choose tile type</string>
     <string name="tile_type_text">Text</string>

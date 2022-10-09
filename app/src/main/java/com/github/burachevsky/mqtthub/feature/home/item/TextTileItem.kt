@@ -3,17 +3,15 @@ package com.github.burachevsky.mqtthub.feature.home.item
 import android.view.View
 import android.view.ViewGroup
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
-import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.NAME_CHANGED
-import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem.Companion.PAYLOAD_CHANGED
 
 data class TextTileItem(
     override val tile: Tile,
+    override val editMode: EditMode? = null
 ) : TileItem {
 
     override fun layout() = LAYOUT
@@ -23,7 +21,8 @@ data class TextTileItem(
 
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
-            if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null
+            if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null,
+            if (editMode != that.editMode) EDIT_MODE_CHANGED else null
         )
     }
 
@@ -31,11 +30,12 @@ data class TextTileItem(
         return copy(tile = tile)
     }
 
+    override fun withEditMode(editMode: EditMode?): TileItem {
+        return copy(editMode = editMode)
+    }
+
     companion object {
         const val LAYOUT = R.layout.list_item_text_tile
-
-        const val NAME_CHANGED = 1
-        const val PAYLOAD_CHANGED = 2
     }
 }
 
@@ -51,8 +51,12 @@ class TextTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
-        binding.tile.setOnLongClickListener {
-            showTilePopupMenu(it, listener)
+        binding.editModeOverlay.setOnClickListener {
+            listener.onClick(adapterPosition)
+        }
+
+        binding.editModeOverlay.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
         }
     }
 
@@ -63,6 +67,7 @@ class TextTileItemViewHolder(
             when (it) {
                 NAME_CHANGED -> bindTileName(item)
                 PAYLOAD_CHANGED -> bindTilePayload(item)
+                EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
             }
         }
     }
@@ -71,6 +76,7 @@ class TextTileItemViewHolder(
         item as TextTileItem
         bindTileName(item)
         bindTilePayload(item)
+        bindEditMode(item.editMode)
     }
 
     fun bindTileName(item: TextTileItem) {

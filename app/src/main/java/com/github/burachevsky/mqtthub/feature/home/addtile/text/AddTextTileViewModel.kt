@@ -13,6 +13,7 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
 import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.DASHBOARD_POSITION
 import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
 import javax.inject.Named
@@ -20,11 +21,12 @@ import javax.inject.Named
 class AddTextTileViewModel @Inject constructor(
     @Named(BROKER_ID) brokerId: Long,
     @Named(TILE_ID) tileId: Long,
+    @Named(DASHBOARD_POSITION) dashboardPosition: Int,
     eventBus: EventBus,
     addTile: AddTile,
     updateTile: UpdateTile,
     getTile: GetTile,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId, dashboardPosition) {
 
     override val title: Int = if (isEditMode()) R.string.edit_text_tile else R.string.new_text_tile
 
@@ -61,7 +63,8 @@ class AddTextTileViewModel @Inject constructor(
             retained = retain.isChecked,
             brokerId = brokerId,
             type = Tile.Type.TEXT,
-            stateList = emptyList()
+            stateList = emptyList(),
+            dashboardPosition = dashboardPosition,
         )
     }
 

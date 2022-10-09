@@ -18,15 +18,10 @@ import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
-import com.github.burachevsky.mqtthub.domain.usecase.tile.DeleteTile
-import com.github.burachevsky.mqtthub.domain.usecase.tile.PayloadUpdate
-import com.github.burachevsky.mqtthub.domain.usecase.tile.SaveUpdatedPayload
+import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
-import com.github.burachevsky.mqtthub.feature.home.item.ButtonTileItem
-import com.github.burachevsky.mqtthub.feature.home.item.SwitchTileItem
-import com.github.burachevsky.mqtthub.feature.home.item.TextTileItem
-import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -41,6 +36,9 @@ class HomeViewModel @Inject constructor(
     private val getBrokerWithTiles: GetBrokerWithTiles,
     private val saveUpdatedPayload: SaveUpdatedPayload,
     private val deleteTile: DeleteTile,
+    private val updateTiles: UpdateTiles,
+    private val deleteTiles: DeleteTiles,
+    private val addTile: AddTile,
     eventBus: EventBus,
     args: HomeFragmentArgs,
 ) : ViewModel() {
@@ -69,6 +67,9 @@ class HomeViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
+    private val _editMode = MutableStateFlow(EditModeState())
+    val editMode: StateFlow<EditModeState> = _editMode
 
     init {
         container.launch(Dispatchers.Main) {
@@ -115,21 +116,114 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun tileLongClicked(position: Int): Boolean {
+        if (editMode.value.isEditMode) {
+            tileClicked(position)
+            return true
+        }
+
+        showEditMode(true, position)
+
+        return true
+    }
+
     fun tileClicked(position: Int) {
-        val tile = items.get<TileItem>(position).tile
+        val item = items.get<TileItem>(position)
+        val tile = item.tile
 
-        when (tile.type) {
-            Tile.Type.BUTTON -> {
-                publish(tile, tile.payload)
+        if (editMode.value.isEditMode) {
+            val itemEditMode = item.editMode!!
+
+            _editMode.value.selectedTiles.apply {
+                if (itemEditMode.isSelected) remove(tile) else add(tile)
+
+                if (isEmpty()) {
+                    showEditMode(false)
+                } else {
+                    _editMode.update {
+                        it.copy(selectedCount = size)
+                    }
+
+                    _items.update {
+                        it.toMutableList().apply {
+                            set(
+                                position,
+                                item.withEditMode(itemEditMode.copy(!itemEditMode.isSelected))
+                            )
+                        }
+                    }
+                }
             }
 
-            Tile.Type.SWITCH -> {
-                val newPayload = tile.getSwitchOppositeStatePayload()
+        } else {
+            when (tile.type) {
+                Tile.Type.BUTTON -> {
+                    publish(tile, tile.payload)
+                }
 
-                publish(tile, newPayload)
+                Tile.Type.SWITCH -> {
+                    val newPayload = tile.getSwitchOppositeStatePayload()
+
+                    publish(tile, newPayload)
+                }
+
+                Tile.Type.TEXT -> {}
             }
+        }
+    }
 
-            Tile.Type.TEXT -> {}
+    fun canMoveItem(): Boolean {
+        return editMode.value.canMoveItem
+    }
+
+    private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
+        if (!value) {
+            _editMode.tryEmit(EditModeState(false))
+        } else {
+            val selected = selectedPosition >= 0
+            _editMode.tryEmit(
+                EditModeState(
+                    isEditMode = true,
+                    selectedTiles = if (selected) {
+                        hashSetOf(items.get<TileItem>(selectedPosition).tile)
+                    } else {
+                        hashSetOf()
+                    },
+                    selectedCount = if (selected) 1 else 0,
+                    canMoveItem = selected
+                )
+            )
+
+        }
+
+        _items.update { list ->
+            list.mapIndexed { i, it ->
+                if (it is TileItem)
+                    it.withEditMode(
+                        if (value) EditMode(isSelected = i == selectedPosition) else null
+                    )
+                else it
+            }
+        }
+    }
+
+    fun editTileClicked() {
+        findSingleSelectedItemPosition()?.let(::editTileClicked)
+    }
+
+    fun duplicateTileClicked() {
+        findSingleSelectedItemPosition()?.let { position ->
+            showEditMode(false)
+
+            container.launch(Dispatchers.Default) {
+                val tile = addTile(
+                    items.get<TileItem>(position)
+                        .tile
+                        .copy(id = 0, dashboardPosition = items.value.size)
+                )
+
+                tileAdded(tile)
+            }
         }
     }
 
@@ -138,10 +232,28 @@ class HomeViewModel @Inject constructor(
         val brokerId = broker?.id ?: return
         container.navigator {
             when (tile.type) {
-                Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id)
-                Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id)
-                Tile.Type.SWITCH -> navigateAddSwitch(brokerId, tile.id)
+                Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id, position)
+                Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id, position)
+                Tile.Type.SWITCH -> navigateAddSwitch(brokerId, tile.id, position)
             }
+        }
+    }
+
+    fun deleteTilesClicked() {
+        container.raiseEffect {
+            AlertDialog(
+                title = Txt.of(
+                    if (editMode.value.selectedCount == 1) R.string.remove_tile
+                    else R.string.remove_selected_tiles
+                ),
+                message = Txt.of(R.string.remove_dialog_message),
+                yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
+                    container.launch(Dispatchers.Main) {
+                        tilesRemoved()
+                    }
+                },
+                no = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
+            )
         }
     }
 
@@ -163,6 +275,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun findSingleSelectedItemPosition(): Int? {
+        editMode.value.run {
+            if (!isEditMode) return null
+            if (selectedTiles.size != 1) return null
+            val tile = selectedTiles.first()
+
+            val position = items.value.indexOfFirst { it is TileItem && it.tile == tile }
+
+            if (position >= 0) {
+                return position
+            }
+
+            return null
+        }
+    }
+
     fun connectionClicked() {
         if (connectionState.value == ConnectionState.Disconnected) {
             container.launch(Dispatchers.IO) {
@@ -170,6 +298,59 @@ class HomeViewModel @Inject constructor(
                     initMqttClient(it)
                 }
             }
+        }
+    }
+
+    fun navigateUp() {
+        if (editMode.value.isEditMode) {
+            showEditMode(false)
+
+        } else container.navigator {
+            back()
+        }
+    }
+
+    fun moveItem(positionFrom: Int, positionTo: Int) {
+        _editMode.update {
+            it.copy(isMovingMode = true)
+        }
+        _items.update {
+            val list = it.toMutableList()
+            val item = list.removeAt(positionFrom)
+            list.add(positionTo, item)
+            list
+        }
+    }
+
+    fun commitReorder(position: Int) {
+        val dashboardPosition = items.get<TileItem>(position).tile.dashboardPosition
+
+        if (dashboardPosition == position && !editMode.value.isMovingMode) {
+            _editMode.update {
+                if (it.isEditMode) it.copy(canMoveItem = false) else it
+            }
+            return
+        }
+
+        showEditMode(false)
+
+        _items.update { list ->
+            val result = list.mapIndexed { i, it ->
+                if (it is TileItem) {
+                    it.copyTile(it.tile.copy(dashboardPosition = i))
+                } else {
+                    it
+                }
+            }
+
+            container.launch(Dispatchers.IO) {
+                updateTiles(
+                    result.filterIsInstance<TileItem>()
+                        .map { it.tile }
+                )
+            }
+
+            result
         }
     }
 
@@ -236,15 +417,35 @@ class HomeViewModel @Inject constructor(
 
         when (type) {
             Tile.Type.BUTTON -> container.navigator {
-                navigateAddButtonTile(brokerId)
+                navigateAddButtonTile(brokerId, dashboardPosition = items.value.size)
             }
 
             Tile.Type.TEXT -> container.navigator {
-                navigateAddTextTile(brokerId)
+                navigateAddTextTile(brokerId, dashboardPosition = items.value.size)
             }
 
             Tile.Type.SWITCH -> container.navigator {
-                navigateAddSwitch(brokerId)
+                navigateAddSwitch(brokerId, dashboardPosition = items.value.size)
+            }
+        }
+    }
+
+    private suspend fun tilesRemoved() {
+        val tiles = editMode.value.selectedTiles
+
+        showEditMode(false)
+
+        _items.update {
+            it.filter {
+                it is TileItem && !tiles.contains(it.tile)
+            }
+        }
+
+        container.launch(Dispatchers.IO) {
+            deleteTiles(tiles.toList())
+
+            tiles.forEach {
+                unsubscribeIfNoReceivers(it.subscribeTopic)
             }
         }
     }

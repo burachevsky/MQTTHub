@@ -20,8 +20,16 @@ class TileRepositoryImpl @Inject constructor(
         tileDao.update(tile)
     }
 
+    override suspend fun updateTiles(tiles: List<Tile>) {
+        tileDao.update(tiles)
+    }
+
     override suspend fun deleteTile(id: Long) {
         tileDao.delete(id)
+    }
+
+    override suspend fun deleteTiles(tiles: List<Tile>) {
+        tileDao.delete(tiles)
     }
 
     override suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String) {

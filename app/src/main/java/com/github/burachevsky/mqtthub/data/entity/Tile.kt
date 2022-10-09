@@ -49,6 +49,9 @@ data class Tile(
 
     @ColumnInfo(name = "broker_id")
     val brokerId: Long,
+
+    @ColumnInfo(name = "dashboard_position")
+    val dashboardPosition: Int = 0,
 ) {
 
     enum class Type {

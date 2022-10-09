@@ -17,6 +17,7 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
 import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.DASHBOARD_POSITION
 import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
 import javax.inject.Named
@@ -24,11 +25,12 @@ import javax.inject.Named
 class AddSwitchViewModel @Inject constructor(
     @Named(BROKER_ID) brokerId: Long,
     @Named(TILE_ID) tileId: Long,
+    @Named(DASHBOARD_POSITION) dashboardPosition: Int,
     eventBus: EventBus,
     getTile: GetTile,
     updateTile: UpdateTile,
     addTile: AddTile,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId) {
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId, dashboardPosition) {
 
     override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
@@ -97,7 +99,8 @@ class AddSwitchViewModel @Inject constructor(
             stateList = listOf(
                 Tile.State(SWITCH_ON, onState.text),
                 Tile.State(SWITCH_OFF, offState.text)
-            )
+            ),
+            dashboardPosition = dashboardPosition,
         )
     }
 }
