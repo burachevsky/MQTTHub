@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Widget.MQTTHub.AppBarLayout" parent="">
+
+        <item name="android:background">@drawable/bg_appbar</item>
+        <item name="liftOnScroll">true</item>
+        <item name="android:animateLayoutChanges">true</item>
+        <item name="android:stateListAnimator">@drawable/appbar_elevation</item>
+
+    </style>
+
     <style name="Widget.MQTTHub.Toolbar" parent="Widget.Material3.Toolbar.Surface" >
         <!--<item name="titleTextAppearance">@style/TextAppearance.MQTTHub.H.2</item>
         <item name="android:actionMenuTextAppearance">@style/TextAppearance.MQTTHub.Body</item>
