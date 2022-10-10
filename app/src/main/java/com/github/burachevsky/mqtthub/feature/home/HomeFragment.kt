@@ -2,10 +2,9 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +16,6 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.UIContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
-import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
@@ -142,17 +140,6 @@ class HomeFragment : Fragment() {
 
         val touchHelper = ItemTouchHelper(moveCallback)
         touchHelper.attachToRecyclerView(binding.recyclerView)
-
-        binding.editModeMore.setOnClickListener {
-            it.showPopupMenu(
-                if (viewModel.editMode.value.selectedCount == 1) {
-                    R.menu.tile_item_menu
-                } else {
-                    R.menu.home_edit_mode_menu
-                },
-                onItemSelected = ::handleContextMenuAction
-            )
-        }
     }
 
     private fun observeViewModel() {
@@ -170,9 +157,13 @@ class HomeFragment : Fragment() {
         collectOnStarted(viewModel.items, listAdapter::submitList)
 
         collectOnStarted(viewModel.editMode, ::bindEditMode)
+
+        binding.editModeToolbar.setOnMenuItemClickListener {
+            handleContextMenuAction(it.itemId)
+        }
     }
 
-    private fun handleContextMenuAction(id: Int): Boolean {
+    private fun handleContextMenuAction(id: Int?): Boolean {
         when (id) {
             R.id.edit -> viewModel.editTileClicked()
             R.id.delete -> viewModel.deleteTilesClicked()
@@ -184,12 +175,29 @@ class HomeFragment : Fragment() {
 
     private fun bindEditMode(editMode: EditModeState) {
         val showEditToolbar = editMode.isEditMode && !editMode.isMovingMode
-        binding.editModeToolbarLayout.isVisible = showEditToolbar
+
+        binding.editModeToolbar.isVisible = showEditToolbar
+        binding.toolbarLayout.isVisible = !showEditToolbar
+
+        binding.editModeToolbar.title = requireContext()
+            .getString(R.string.tiles_selected, editMode.selectedCount)
+
         binding.addTileButton.run {
             if (showEditToolbar) hide() else show()
         }
-        binding.toolbarLayout.isVisible = !showEditToolbar
-        binding.editModeToolbar.title = "${editMode.selectedCount}"
+
+        if (editMode.isEditMode) {
+            val menuRes = if (viewModel.editMode.value.selectedCount == 1) {
+                R.menu.tile_item_menu
+            } else {
+                R.menu.home_edit_mode_menu
+            }
+
+            binding.editModeToolbar.run {
+                menu.clear()
+                inflateMenu(menuRes)
+            }
+        }
     }
 
     override fun onDestroyView() {

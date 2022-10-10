@@ -30,6 +30,7 @@ import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
@@ -58,15 +59,9 @@ class HomeViewModel @Inject constructor(
 
     val noTilesYet: Flow<Boolean> = items.map { it.isEmpty() }
 
-    private val subscribeTopics = mutableListOf<String>()
+    private val topicHandler = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
 
     private var broker: Broker? = null
-
-    private val updateReceiver = MutableSharedFlow<suspend () -> Unit>(
-        replay = 0,
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
 
     private val _editMode = MutableStateFlow(EditModeState())
     val editMode: StateFlow<EditModeState> = _editMode
@@ -86,12 +81,6 @@ class HomeViewModel @Inject constructor(
                 brokerWithTiles.tiles.forEach {
                     subscribeIfNotSubscribed(it.subscribeTopic)
                 }
-            }
-        }
-
-        container.launch(Dispatchers.Default) {
-            updateReceiver.collect {
-                it.invoke()
             }
         }
 
@@ -176,7 +165,7 @@ class HomeViewModel @Inject constructor(
         return editMode.value.canMoveItem
     }
 
-    private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
+    fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
         if (!value) {
             _editMode.tryEmit(EditModeState(false))
         } else {
@@ -209,6 +198,7 @@ class HomeViewModel @Inject constructor(
 
     fun editTileClicked() {
         findSingleSelectedItemPosition()?.let(::editTileClicked)
+        showEditMode(false)
     }
 
     fun duplicateTileClicked() {
@@ -294,8 +284,14 @@ class HomeViewModel @Inject constructor(
     fun connectionClicked() {
         if (connectionState.value == ConnectionState.Disconnected) {
             container.launch(Dispatchers.IO) {
-                broker?.let {
-                    initMqttClient(it)
+                broker?.let { broker ->
+                    initMqttClient(broker)
+                    topicHandler.clear()
+                    items.value.forEach {
+                        if (it is TileItem) {
+                            subscribeIfNotSubscribed(it.tile.subscribeTopic)
+                        }
+                    }
                 }
             }
         }
@@ -491,22 +487,34 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun subscribeIfNotSubscribed(topic: String) {
-        if (topic.isNotEmpty() && !subscribeTopics.contains(topic)) {
-            subscribeTopics.add(topic)
+        if (topic.isNotEmpty() && !topicHandler.contains(topic)) {
+            topicHandler[topic] = MutableSharedFlow(
+                replay = 0,
+                extraBufferCapacity = 1,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST
+            )
+
+            container.launch(Dispatchers.Default) {
+                topicHandler[topic]?.collect { message ->
+                    messageReceived(topic, message)
+                }
+            }
 
             container.withContext(Dispatchers.IO) {
                 mqtt?.subscribe(topic) { subscribeTopic, message ->
-                    updateReceiver.tryEmit {
-                        val payload = String(message.payload)
-
-                        updatePayload(subscribeTopic, payload = payload)
-
-                        broker?.id?.let { brokerId ->
-                            saveUpdatedPayload(PayloadUpdate(brokerId, subscribeTopic, payload))
-                        }
-                    }
+                    topicHandler[subscribeTopic]?.tryEmit(message)
                 }
             }
+        }
+    }
+
+    private suspend fun messageReceived(subscribeTopic: String, message: MqttMessage) {
+        val payload = String(message.payload)
+
+        updatePayload(subscribeTopic, payload = payload)
+
+        broker?.id?.let { brokerId ->
+            saveUpdatedPayload(PayloadUpdate(brokerId, subscribeTopic, payload))
         }
     }
 
