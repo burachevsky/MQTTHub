@@ -3,8 +3,10 @@ package com.github.burachevsky.mqtthub.feature.home.addtile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.common.ext.toast
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
@@ -31,10 +33,10 @@ abstract class AddTileViewModel (
     protected val brokerId: Long,
     protected val tileId: Long,
     protected val dashboardPosition: Int,
-) : ViewModel() {
+) : ViewModel(), VM<Navigator> {
     abstract val title: Int
 
-    val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = ViewModelContainer<Navigator>(viewModelScope)
 
     protected val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items
@@ -87,6 +89,7 @@ abstract class AddTileViewModel (
 
             if (isEditMode()) {
                 updateTile(tile)
+                toast(R.string.toast_tile_edited)
                 eventBus.send(TileEdited(tile))
             } else {
                 eventBus.send(TileAdded(addTile(tile)))

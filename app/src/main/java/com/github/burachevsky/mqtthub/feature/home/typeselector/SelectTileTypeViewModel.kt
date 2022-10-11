@@ -3,6 +3,7 @@ package com.github.burachevsky.mqtthub.feature.home.typeselector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -14,9 +15,9 @@ import javax.inject.Inject
 
 class SelectTileTypeViewModel @Inject constructor(
     private val eventBus: EventBus,
-) : ViewModel() {
+) : ViewModel(), VM<Navigator> {
 
-    val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = ViewModelContainer<Navigator>(viewModelScope)
 
     val items: List<TileTypeItem> = listOf(
         TileTypeItem(

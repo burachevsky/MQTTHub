@@ -3,6 +3,7 @@ package com.github.burachevsky.mqtthub.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.effect.AlertDialog
 import com.github.burachevsky.mqtthub.common.effect.ToastMessage
@@ -10,6 +11,7 @@ import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.ext.getServerAddress
 import com.github.burachevsky.mqtthub.common.ext.getSwitchOppositeStatePayload
+import com.github.burachevsky.mqtthub.common.ext.toast
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
@@ -42,9 +44,9 @@ class HomeViewModel @Inject constructor(
     private val addTile: AddTile,
     eventBus: EventBus,
     args: HomeFragmentArgs,
-) : ViewModel() {
+) : ViewModel(), VM<HomeNavigator> {
 
-    val container = ViewModelContainer<HomeNavigator>(viewModelScope)
+    override val container = ViewModelContainer<HomeNavigator>(viewModelScope)
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Connecting)
     val connectionState: StateFlow<ConnectionState> = _connectionState
@@ -203,6 +205,8 @@ class HomeViewModel @Inject constructor(
 
     fun duplicateTileClicked() {
         findSingleSelectedItemPosition()?.let { position ->
+            toast(R.string.toast_tile_duplicated)
+
             showEditMode(false)
 
             container.launch(Dispatchers.Default) {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +12,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.container.UIContainer
+import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
@@ -24,17 +24,17 @@ import com.github.burachevsky.mqtthub.feature.home.item.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ViewController<HomeViewModel> {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val container = UIContainer(this, ::HomeNavigator)
+    override val container = ViewContainer(this, ::HomeNavigator)
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<HomeViewModel>
 
-    private lateinit var viewModel: HomeViewModel
+    override lateinit var viewModel: HomeViewModel
 
     private val tileItemListener = object : TileItem.Listener {
 
@@ -75,8 +75,6 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        container.onViewCreated(viewModel.container, this)
-
         requireActivity().onBackPressedDispatcher
             .addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {

@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.navigation.fragment.findNavController
-import com.github.burachevsky.mqtthub.common.container.UIContainer
+import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -18,14 +19,15 @@ import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
 
-class SelectTileTypeDialogFragment : BottomSheetDialogFragment() {
+class SelectTileTypeDialogFragment : BottomSheetDialogFragment(),
+    ViewController<SelectTileTypeViewModel> {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<SelectTileTypeViewModel>
 
-    lateinit var viewModel: SelectTileTypeViewModel
+    override lateinit var viewModel: SelectTileTypeViewModel
 
-    private val container = UIContainer(this, ::Navigator)
+    override val container = ViewContainer(this, ::Navigator)
 
     private var _binding: FragmentSelectTileTypeBinding? = null
     private val binding get() = _binding!!
@@ -61,8 +63,6 @@ class SelectTileTypeDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        container.onViewCreated(viewModel.container, this)
-
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter.also {
