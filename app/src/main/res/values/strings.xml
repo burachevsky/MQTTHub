@@ -62,4 +62,7 @@
     <string name="qos_1">1</string>
     <string name="qos_2">2</string>
 
+    <string name="toast_tile_duplicated">Tile duplicated</string>
+    <string name="toast_tile_edited">Tile edited</string>
+
 </resources>

@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.github.burachevsky.mqtthub.common.container.UIContainer
+import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
@@ -19,17 +20,17 @@ import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItemAdapter
 import javax.inject.Inject
 
-class BrokersFragment : Fragment() {
+class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
 
     private var _binding: FragmentBrokersBinding? = null
     private val binding get() = _binding!!
 
-    private val container = UIContainer(this, ::BrokersNavigator)
+    override val container = ViewContainer(this, ::BrokersNavigator)
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<BrokersViewModel>
 
-    lateinit var viewModel: BrokersViewModel
+    override lateinit var viewModel: BrokersViewModel
 
     private val listAdapter = CompositeAdapter(
         BrokerItemAdapter(
@@ -70,8 +71,6 @@ class BrokersFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        container.onViewCreated(viewModel.container, this)
-
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter

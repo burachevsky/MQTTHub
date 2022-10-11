@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.github.burachevsky.mqtthub.common.container.UIContainer
+import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -21,13 +22,13 @@ import kotlin.reflect.KClass
 
 abstract class AddTileFragment<VM : AddTileViewModel>(
     private val viewModelClass: KClass<VM>,
-) : Fragment() {
+) : Fragment(), ViewController<VM> {
 
-    lateinit var viewModel: VM
+    override lateinit var viewModel: VM
 
     abstract var viewModelFactory: ViewModelFactory<VM>
 
-    private val container = UIContainer(this, ::Navigator)
+    override val container = ViewContainer(this, ::Navigator)
 
     private var _binding: FragmentAddTileBinding? = null
     private val binding get() = _binding!!
@@ -67,8 +68,6 @@ abstract class AddTileFragment<VM : AddTileViewModel>(
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        container.onViewCreated(viewModel.container, this)
-
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter
