@@ -38,6 +38,7 @@
     <string name="publish_topic">Publish topic</string>
     <string name="publish_payload">Payload</string>
     <string name="retain">Retain</string>
+    <string name="enable_publishing">Enable publishing</string>
     <string name="on_state">On state</string>
     <string name="off_state">Off state</string>
 
@@ -63,6 +64,8 @@
     <string name="qos_2">2</string>
 
     <string name="toast_tile_duplicated">Tile duplicated</string>
-    <string name="toast_tile_edited">Tile edited</string>
+    <string name="toast_changes_saved">Changes saved</string>
+
+    <string name="publish_title">Test</string>
 
 </resources>

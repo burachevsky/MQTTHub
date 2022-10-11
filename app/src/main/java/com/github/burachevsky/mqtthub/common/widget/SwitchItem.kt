@@ -12,6 +12,7 @@ import com.github.burachevsky.mqtthub.databinding.ListItemSwitchBinding
 data class SwitchItem(
     val text: Txt,
     var isChecked: Boolean = false,
+    val onCheckChanged: ((Boolean) -> Unit)? = null
 ) : ListItem {
     override fun layout() = LAYOUT
 
@@ -35,6 +36,7 @@ class SwitchItemViewHolder(
     init {
         binding.switchItem.setOnCheckedChangeListener { _, isChecked ->
             item?.isChecked = isChecked
+            item?.onCheckChanged?.invoke(isChecked)
         }
     }
 

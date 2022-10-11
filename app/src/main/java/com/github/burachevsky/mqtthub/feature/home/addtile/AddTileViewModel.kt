@@ -11,10 +11,7 @@ import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
-import com.github.burachevsky.mqtthub.common.widget.FieldType
-import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
-import com.github.burachevsky.mqtthub.common.widget.QosSelectorItem
-import com.github.burachevsky.mqtthub.common.widget.SwitchItem
+import com.github.burachevsky.mqtthub.common.widget.*
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -46,6 +43,10 @@ abstract class AddTileViewModel (
 
     protected var oldTile: Tile? = null
 
+    protected val name = InputFieldItem(
+        label = Txt.of(R.string.tile_name)
+    )
+
     protected val subscribeTopic = InputFieldItem(
         label = Txt.of(R.string.subscribe_topic),
         type = FieldType.URI,
@@ -61,6 +62,8 @@ abstract class AddTileViewModel (
     )
 
     protected val qos = QosSelectorItem()
+
+    protected val save = ButtonItem(Txt.of(R.string.save))
 
     fun init() {
         if (isEditMode()) {
@@ -89,7 +92,7 @@ abstract class AddTileViewModel (
 
             if (isEditMode()) {
                 updateTile(tile)
-                toast(R.string.toast_tile_edited)
+                toast(R.string.toast_changes_saved)
                 eventBus.send(TileEdited(tile))
             } else {
                 eventBus.send(TileAdded(addTile(tile)))

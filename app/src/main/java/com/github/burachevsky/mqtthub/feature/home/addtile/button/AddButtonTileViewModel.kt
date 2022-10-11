@@ -30,10 +30,6 @@ class AddButtonTileViewModel @Inject constructor(
 
     override val title: Int = if (isEditMode()) R.string.edit_button_tile else R.string.new_button_tile
 
-    private val name = InputFieldItem(
-        label = Txt.of(R.string.tile_name)
-    )
-
     private val payload = InputFieldItem(
         label = Txt.of(R.string.publish_payload)
     )
@@ -82,7 +78,7 @@ class AddButtonTileViewModel @Inject constructor(
             payload,
             qos,
             retain,
-            ButtonItem(Txt.of(R.string.save)),
+            save,
         )
     }
 }

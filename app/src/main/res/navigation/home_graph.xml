@@ -31,6 +31,10 @@
             android:id="@+id/navigateAddSwitch"
             app:destination="@id/addSwitchFragment" />
 
+        <action
+            android:id="@+id/navigatePublishText"
+            app:destination="@id/publishTextDialogFragment" />
+
     </fragment>
 
     <fragment
@@ -98,5 +102,21 @@
             app:argType="integer" />
 
     </fragment>
+
+    <dialog
+        android:id="@+id/publishTextDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragment"
+        android:label="PublishTextDialogFragment"
+        tools:layout="@layout/dialog_publish_text">
+
+        <argument
+            android:name="tileId"
+            app:argType="long" />
+
+        <argument
+            android:name="tileName"
+            app:argType="string"/>
+
+    </dialog>
 
 </navigation>

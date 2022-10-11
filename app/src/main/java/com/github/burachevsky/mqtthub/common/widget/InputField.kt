@@ -73,7 +73,9 @@ class InputFieldItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
 
         if (!item.initialized) {
             item.initialized = true
-            binding.inputFieldEditText.setText(item.initText.get(itemView.context))
+            binding.inputFieldEditText.setText(
+                item.initText.get(itemView.context).ifEmpty { item.text }
+            )
         } else {
             binding.inputFieldEditText.setText(item.text)
         }
