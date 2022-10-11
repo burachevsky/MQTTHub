@@ -24,6 +24,7 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.*
+import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextEntered
 import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -98,6 +99,10 @@ class HomeViewModel @Inject constructor(
             subscribe<TileTypeSelected>(viewModelScope) {
                 navigateAddTile(it.type)
             }
+
+            subscribe<PublishTextEntered>(viewModelScope) {
+                publish(it.tileId, it.text)
+            }
         }
     }
 
@@ -158,7 +163,11 @@ class HomeViewModel @Inject constructor(
                     publish(tile, newPayload)
                 }
 
-                Tile.Type.TEXT -> {}
+                Tile.Type.TEXT -> if (tile.publishTopic.isNotEmpty()) {
+                    container.navigator {
+                        navigatePublishTextDialog(tile.id, tile.name)
+                    }
+                }
             }
         }
     }
@@ -542,6 +551,14 @@ class HomeViewModel @Inject constructor(
                 } else it
             }
         }
+    }
+
+    private fun publish(tileId: Long, payload: String) {
+        items.value
+            .find { it is TileItem && it.tile.id == tileId }
+            .let {
+                publish((it as TileItem).tile, payload)
+            }
     }
 
     private fun publish(tile: Tile, payload: String) {

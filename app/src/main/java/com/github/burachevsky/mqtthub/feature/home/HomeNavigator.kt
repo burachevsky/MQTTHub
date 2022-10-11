@@ -6,6 +6,7 @@ import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.feature.home.addtile.button.AddButtonTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.home.addtile.switchh.AddSwitchFragmentArgs
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragmentArgs
+import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragmentArgs
 
 class HomeNavigator(navController: NavController) : Navigator(navController) {
 
@@ -28,4 +29,9 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
         )
 
     fun navigateSelectTileType() = navController.navigate(R.id.navigateSelectTileType)
+
+    fun navigatePublishTextDialog(tileId: Long, tileName: String) = navController.navigate(
+        R.id.navigatePublishText,
+        PublishTextDialogFragmentArgs(tileId, tileName).toBundle()
+    )
 }

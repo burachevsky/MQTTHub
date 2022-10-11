@@ -11,6 +11,9 @@ import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileModule
+import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextComponent
+import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragment
+import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextModule
 import com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment
 import dagger.BindsInstance
 import dagger.Component
@@ -38,4 +41,5 @@ interface AppComponent {
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
     fun homeComponent(module: HomeModule): HomeComponent
     fun addTileComponent(module: AddTileModule): AddTileComponent
+    fun publishTextComponent(module: PublishTextModule): PublishTextComponent
 }

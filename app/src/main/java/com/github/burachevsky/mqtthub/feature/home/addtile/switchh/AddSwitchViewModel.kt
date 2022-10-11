@@ -34,10 +34,6 @@ class AddSwitchViewModel @Inject constructor(
 
     override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
-    private val name = InputFieldItem(
-        label = Txt.of(R.string.tile_name)
-    )
-
     private val onState = InputFieldItem(
         label = Txt.of(R.string.on_state),
         placeholder = Txt.of("1")
@@ -71,7 +67,7 @@ class AddSwitchViewModel @Inject constructor(
             offState,
             qos,
             retain,
-            ButtonItem(Txt.of(R.string.save)),
+            save,
         )
     }
 
