@@ -5,8 +5,6 @@ import com.github.burachevsky.mqtthub.common.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
-import com.github.burachevsky.mqtthub.common.widget.ButtonItem
-import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
 import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
@@ -16,7 +14,6 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
 import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
 import com.github.burachevsky.mqtthub.feature.home.addtile.DASHBOARD_POSITION
 import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -42,7 +39,7 @@ class AddTextTileViewModel @Inject constructor(
     }
 
     private fun update() {
-        _items.update { list() }
+        _items.value = list()
     }
 
     private fun showPublishingField() {
@@ -60,10 +57,6 @@ class AddTextTileViewModel @Inject constructor(
         publishTopic.text = tile.publishTopic
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
-
-        if (enablePublishing.isChecked) {
-            update()
-        }
     }
 
     override fun collectTile(): Tile {

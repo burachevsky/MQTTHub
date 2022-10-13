@@ -69,6 +69,8 @@ class HomeViewModel @Inject constructor(
     private val _editMode = MutableStateFlow(EditModeState())
     val editMode: StateFlow<EditModeState> = _editMode
 
+    private var itemReleased = true
+
     init {
         container.launch(Dispatchers.Main) {
             val brokerWithTiles = getBrokerWithTiles(args.brokerId)
@@ -117,6 +119,8 @@ class HomeViewModel @Inject constructor(
             tileClicked(position)
             return true
         }
+
+        itemReleased = false
 
         showEditMode(true, position)
 
@@ -173,7 +177,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun canMoveItem(): Boolean {
-        return editMode.value.canMoveItem
+        return editMode.value.canMoveItem && itemReleased
     }
 
     fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
@@ -332,6 +336,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun commitReorder(position: Int) {
+        itemReleased = true
+
         val dashboardPosition = items.get<TileItem>(position).tile.dashboardPosition
 
         if (dashboardPosition == position && !editMode.value.isMovingMode) {

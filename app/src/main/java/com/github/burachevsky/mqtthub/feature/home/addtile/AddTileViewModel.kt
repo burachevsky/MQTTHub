@@ -66,16 +66,14 @@ abstract class AddTileViewModel (
     protected val save = ButtonItem(Txt.of(R.string.save))
 
     fun init() {
-        if (isEditMode()) {
-            container.launch(Dispatchers.Main) {
+        container.launch(Dispatchers.Main) {
+            if (isEditMode()) {
                 oldTile = getTile(tileId)
                     .also(::initFields)
-
-                _itemsChanged.emit(Unit)
             }
-        }
 
-        _items.value = list()
+            _items.value = list()
+        }
     }
 
     abstract fun initFields(tile: Tile)
