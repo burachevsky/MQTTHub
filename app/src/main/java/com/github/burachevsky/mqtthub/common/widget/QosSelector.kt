@@ -15,7 +15,7 @@ data class QosSelectorItem(
     override fun layout() = LAYOUT
 
     companion object {
-        const val LAYOUT = R.layout.list_item_qos_selector
+        val LAYOUT get() = R.layout.list_item_qos_selector
     }
 }
 

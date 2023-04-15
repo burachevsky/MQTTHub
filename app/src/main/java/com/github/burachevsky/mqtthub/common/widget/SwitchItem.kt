@@ -21,7 +21,7 @@ data class SwitchItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_switch
+        val LAYOUT get() = R.layout.list_item_switch
     }
 }
 
@@ -43,7 +43,7 @@ class SwitchItemViewHolder(
     override fun bind(item: ListItem) {
         item as SwitchItem
         this.item = item
-        binding.switchItem.text = item.text.get(itemView.context)
+        binding.switchItem.text = item.text.get(context)
         binding.switchItem.isChecked = item.isChecked
     }
 }

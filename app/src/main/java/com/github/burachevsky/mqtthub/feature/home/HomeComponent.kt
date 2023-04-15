@@ -1,4 +1,5 @@
 package com.github.burachevsky.mqtthub.feature.home
+/*
 
 import com.github.burachevsky.mqtthub.di.FragmentScope
 import dagger.Subcomponent
@@ -8,4 +9,4 @@ import dagger.Subcomponent
 interface HomeComponent {
 
     fun inject(fragment: HomeFragment)
-}
+}*/

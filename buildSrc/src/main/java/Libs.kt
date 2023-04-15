@@ -9,6 +9,7 @@ object Libs {
     const val COROUTINES_TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
     const val DAGGER = "com.google.dagger:dagger"
     const val DAGGER_COMPIER = "com.google.dagger:dagger-compiler"
+    const val DRAWER_LAYOUT = "androidx.drawerlayout:drawerlayout"
     const val ESPRESSO_CONTRIB = "androidx.test.espresso:espresso-contrib"
     const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core"
     const val EXT_JUNIT = "androidx.test.ext:junit"

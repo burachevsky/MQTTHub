@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MQTT Hub</string>
 
-    <string name="brokers_title">Brokers</string>
+    <string name="home_brokers">Brokers</string>
     <string name="brokers_empty">There are no brokers yet :(</string>
 
     <string name="tiles_empty">There are no tiles yet :(</string>
@@ -67,5 +67,12 @@
     <string name="toast_changes_saved">Changes saved</string>
 
     <string name="publish_title">Test</string>
+
+    <string name="home_dashboards">Dashboards</string>
+    <string name="home_create_new_dashboard">Create new dashboard</string>
+    <string name="home_add_new_broker">Add new broker</string>
+    <string name="home_settings">Settings</string>
+    <string name="home_help_and_feedback">Help and feedback</string>
+    <string name="home_version">MQTT Hub v%s</string>
 
 </resources>

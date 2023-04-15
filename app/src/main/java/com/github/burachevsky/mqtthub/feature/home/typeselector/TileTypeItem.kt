@@ -18,7 +18,7 @@ data class TileTypeItem(
     override fun layout() = LAYOUT
 
     companion object {
-        const val LAYOUT = R.layout.list_item_tile_type
+        val LAYOUT get() = R.layout.list_item_tile_type
     }
 
     interface Listener {

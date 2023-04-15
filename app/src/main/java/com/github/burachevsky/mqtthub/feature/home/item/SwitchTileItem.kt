@@ -37,7 +37,7 @@ data class SwitchTileItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_switch_tile
+        val LAYOUT get() = R.layout.list_item_switch_tile
     }
 }
 
@@ -46,7 +46,7 @@ class SwitchTileItemViewHolder(
     listener: TileItem.Listener
 ) : ItemViewHolder(itemView) {
 
-    val binding = ListItemSwitchTileBinding.bind(itemView)
+    private val binding = ListItemSwitchTileBinding.bind(itemView)
 
     init {
         binding.tileSwitch.setOnClickListener {

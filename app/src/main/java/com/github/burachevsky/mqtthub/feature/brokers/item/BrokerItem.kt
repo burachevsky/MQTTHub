@@ -22,7 +22,7 @@ data class BrokerItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_broker
+        val LAYOUT get() = R.layout.list_item_broker
     }
 
     interface Listener {

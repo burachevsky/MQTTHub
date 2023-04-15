@@ -25,7 +25,7 @@ data class ButtonTileItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_button_tile
+        val LAYOUT get() = R.layout.list_item_button_tile
     }
 }
 

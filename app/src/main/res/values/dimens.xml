@@ -8,4 +8,6 @@
 
     <dimen name="tile_default_height">108dp</dimen>
 
+    <dimen name="drawer_horizontal_margin">28dp</dimen>
+
 </resources>

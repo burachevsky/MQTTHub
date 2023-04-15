@@ -35,7 +35,7 @@ data class TextTileItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_text_tile
+        val LAYOUT get() = R.layout.list_item_text_tile
     }
 }
 
@@ -44,7 +44,7 @@ class TextTileItemViewHolder(
     listener: TileItem.Listener,
 ) : ItemViewHolder(itemView) {
 
-    val binding = ListItemTextTileBinding.bind(itemView)
+    private val binding = ListItemTextTileBinding.bind(itemView)
 
     init {
         binding.tile.setOnClickListener {

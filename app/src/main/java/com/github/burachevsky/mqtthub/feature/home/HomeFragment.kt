@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
@@ -53,6 +55,11 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
         SwitchTileItemAdapter(tileItemListener),
     )
 
+    private val drawerListAdapter = CompositeAdapter(
+        DrawerLabelItemAdapter(),
+        DrawerMenuItemAdapter(),
+    )
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appComponent.homeComponent(HomeModule(this))
@@ -89,14 +96,36 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
     }
 
     private fun bind() {
+        setupRecyclerView()
+        setupDrawerRecyclerView()
+        setupListeners()
+    }
+
+    private fun setupRecyclerView() {
         binding.recyclerView.apply {
             addItemDecoration(TileLayoutDecoration(requireContext()))
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
 
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             adapter = listAdapter
         }
 
+        val moveCallback = makeItemMoveCallback()
+        val touchHelper = ItemTouchHelper(moveCallback)
+        touchHelper.attachToRecyclerView(binding.recyclerView)
+    }
+
+    private fun setupDrawerRecyclerView() {
+        binding.drawerRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), VERTICAL, false)
+            adapter = drawerListAdapter
+        }
+    }
+
+    private fun setupListeners() {
         binding.addTileButton.setOnClickListener {
             viewModel.addTileClicked()
         }
@@ -110,13 +139,34 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
         }
 
         binding.toolbar.setNavigationOnClickListener {
-            viewModel.navigateUp()
+            binding.drawerLayout.open()
         }
 
-        val moveCallback = ItemMoveCallback(
+        binding.editModeToolbar.setOnMenuItemClickListener {
+            handleContextMenuAction(it.itemId)
+        }
+    }
+
+    private fun observeViewModel() {
+        collectOnStarted(viewModel.connectionState, binding.connection::applyState)
+        collectOnStarted(viewModel.items, listAdapter::submitList)
+        collectOnStarted(viewModel.drawerItems, drawerListAdapter::submitList)
+        collectOnStarted(viewModel.editMode, ::bindEditMode)
+        collectOnStarted(viewModel.title, binding.toolbar::setTitle)
+
+        collectOnStarted(viewModel.noTilesYet) {
+            binding.noTilesText.isVisible = it
+            binding.recyclerView.isVisible = !it
+        }
+    }
+
+    private fun makeItemMoveCallback(): ItemMoveCallback {
+        return ItemMoveCallback(
             object  : ItemMoveCallback.ItemTouchHelperContract {
                 override fun onItemMoved(fromPosition: Int, toPosition: Int) {
-                    Timber.d("onItemMoved(fromPosition = $fromPosition, toPosition = $toPosition)")
+                    Timber.d(
+                        "onItemMoved(fromPosition = $fromPosition, toPosition = $toPosition)"
+                    )
                     viewModel.moveItem(positionFrom = fromPosition, positionTo = toPosition)
                 }
 
@@ -135,30 +185,6 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
                 }
             }
         )
-
-        val touchHelper = ItemTouchHelper(moveCallback)
-        touchHelper.attachToRecyclerView(binding.recyclerView)
-    }
-
-    private fun observeViewModel() {
-        collectOnStarted(viewModel.connectionState, binding.connection::applyState)
-
-        collectOnStarted(viewModel.title) {
-            binding.toolbar.title = it
-        }
-
-        collectOnStarted(viewModel.noTilesYet) {
-            binding.noTilesText.isVisible = it
-            binding.recyclerView.isVisible = !it
-        }
-
-        collectOnStarted(viewModel.items, listAdapter::submitList)
-
-        collectOnStarted(viewModel.editMode, ::bindEditMode)
-
-        binding.editModeToolbar.setOnMenuItemClickListener {
-            handleContextMenuAction(it.itemId)
-        }
     }
 
     private fun handleContextMenuAction(id: Int?): Boolean {

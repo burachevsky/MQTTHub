@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.burachevsky.mqtthub.BuildConfig
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
@@ -59,6 +60,9 @@ class HomeViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
+    private val _drawerItems = MutableStateFlow<List<ListItem>>(emptyList())
+    val drawerItems: StateFlow<List<ListItem>> = _drawerItems
+
     val noTilesYet: Flow<Boolean> = items.map { it.isEmpty() }
 
     private val topicHandler = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
@@ -78,6 +82,8 @@ class HomeViewModel @Inject constructor(
             _title.value = broker?.name.orEmpty()
 
             _items.value = brokerWithTiles.tiles.map(::makeTileItem)
+
+            fillDrawer()
 
             broker?.let { brokerInfo ->
                 initMqttClient(brokerInfo)
@@ -366,6 +372,70 @@ class HomeViewModel @Inject constructor(
 
             result
         }
+    }
+
+    private fun fillDrawer() {
+        _drawerItems.value = listOf(
+            DrawerHeaderItem,
+            DividerItem,
+            DrawerLabelItem(
+                Txt.of(R.string.home_dashboards),
+                buttonText = Txt.of(R.string.edit),
+            ),
+            DrawerMenuItem(
+                Txt.of("Dashboard 1"),
+                R.drawable.ic_dashboard,
+                isSelected = true,
+            ),
+            DrawerMenuItem(
+                Txt.of("Dashboard 2"),
+                R.drawable.ic_dashboard,
+            ),
+            DrawerMenuItem(
+                Txt.of("Dashboard 3"),
+                R.drawable.ic_dashboard,
+            ),
+            DrawerMenuItem(
+                Txt.of("Dashboard 4"),
+                R.drawable.ic_dashboard,
+            ),
+            DrawerMenuItem(
+                Txt.of(R.string.home_create_new_dashboard),
+                R.drawable.ic_add,
+            ),
+            DividerItem,
+            DrawerLabelItem(
+                Txt.of(R.string.home_brokers),
+                buttonText = Txt.of(R.string.edit),
+            ),
+            DrawerMenuItem(
+                Txt.of("Mosquitto"),
+                R.drawable.ic_broker,
+                isSelected = true,
+            ),
+            DrawerMenuItem(
+                Txt.of("HiveMQ"),
+                R.drawable.ic_broker,
+                isSelected = false,
+            ),
+            DrawerMenuItem(
+                Txt.of(R.string.home_add_new_broker),
+                R.drawable.ic_add,
+            ),
+            DividerItem,
+            DrawerMenuItem(
+                Txt.of(R.string.home_settings),
+                R.drawable.ic_settings,
+            ),
+            DrawerMenuItem(
+                Txt.of(R.string.home_help_and_feedback),
+                R.drawable.ic_help,
+            ),
+            /*DividerItem,
+            DrawerLabelItem(
+                Txt.of(R.string.home_version).withArgs(BuildConfig.VERSION_NAME)
+            )*/
+        )
     }
 
     private fun makeTileItem(tile: Tile): ListItem {
