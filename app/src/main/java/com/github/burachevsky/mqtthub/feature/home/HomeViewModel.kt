@@ -26,10 +26,9 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextEntered
 import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
@@ -578,8 +577,13 @@ class HomeViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        try {
-            mqtt?.disconnect()
-        } catch (_: Exception) {}
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                mqtt?.disconnect()
+            } catch (_: Exception) {
+            } finally {
+                cancel()
+            }
+        }
     }
 }

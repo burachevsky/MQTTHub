@@ -17,3 +17,5 @@ local.properties
 
 # Project exclude paths
 /buildSrc/build/
+/app/release/MQTTHub.apk
+/app/release/output-metadata.json
