@@ -10,42 +10,49 @@ import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.databinding.ListItemDrawerLabelBinding
 
 data class DrawerLabelItem(
+    val id: Int,
     val text: Txt,
     val buttonText: Txt? = null,
-    val onClick: (() -> Unit)? = null,
 ) : ListItem {
     override fun layout() = LAYOUT
     
     companion object {
         val LAYOUT get() = R.layout.list_item_drawer_label
     }
+
+    interface Listener {
+
+        fun onClick(position: Int)
+    }
 }
 
-class DrawerLabelItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
+class DrawerLabelItemViewHolder(
+    itemView: View,
+    private val listener: DrawerLabelItem.Listener,
+) : ItemViewHolder(itemView) {
     
     private val binding = ListItemDrawerLabelBinding.bind(itemView)
 
-    private var item: DrawerLabelItem? = null
-
     init {
         binding.labelButton.setOnClickListener {
-            item?.onClick?.invoke()
+            listener.onClick(adapterPosition)
         }
     }
     
     override fun bind(item: ListItem) {
         item as DrawerLabelItem
-        this.item = item
         
         binding.label.text = item.text.get(context)
         binding.labelButton.text = item.buttonText?.get(context)
     }
 }
 
-class DrawerLabelItemAdapter : ItemAdapter {
+class DrawerLabelItemAdapter(
+    private val listener: DrawerLabelItem.Listener
+) : ItemAdapter {
     override fun viewType() = DrawerLabelItem.LAYOUT
 
     override fun onCreateViewHolder(parent: ViewGroup): ItemViewHolder {
-        return DrawerLabelItemViewHolder(inflateItemView(parent))
+        return DrawerLabelItemViewHolder(inflateItemView(parent), listener)
     }
 }

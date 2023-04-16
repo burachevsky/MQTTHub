@@ -3,7 +3,6 @@ package com.github.burachevsky.mqtthub.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
@@ -13,7 +12,7 @@ import com.google.gson.annotations.SerializedName
         ForeignKey(
             entity = Broker::class,
             parentColumns = ["id"],
-            childColumns = ["broker_id"],
+            childColumns = ["dashboard_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
@@ -47,8 +46,8 @@ data class Tile(
     @ColumnInfo(name = "state_list")
     val stateList: List<State>,
 
-    @ColumnInfo(name = "broker_id")
-    val brokerId: Long,
+    @ColumnInfo(name = "dashboard_id")
+    val dashboardId: Long,
 
     @ColumnInfo(name = "dashboard_position")
     val dashboardPosition: Int = 0,

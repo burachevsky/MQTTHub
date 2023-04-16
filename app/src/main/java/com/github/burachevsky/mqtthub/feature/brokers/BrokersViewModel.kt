@@ -36,7 +36,7 @@ class BrokersViewModel @Inject constructor(
     val noBrokersYet: Flow<Boolean> = items.map { it.isEmpty() }
 
     init {
-        eventBus.apply{
+        eventBus.apply {
             subscribe<BrokerAdded>(viewModelScope) {
                 addBrokerToList(it.broker)
             }
@@ -92,8 +92,8 @@ class BrokersViewModel @Inject constructor(
     }
 
     private fun addBrokerToList(broker: Broker) {
-        _items.update {
-            it + BrokerItem(broker)
+        _items.value = _items.value.toMutableList().apply {
+            add(NEW_ITEM_POSITION, BrokerItem(broker))
         }
     }
 
@@ -107,5 +107,9 @@ class BrokersViewModel @Inject constructor(
                 this[pos] = (this[pos] as BrokerItem).copy(broker = broker)
             }
         }
+    }
+
+    companion object {
+        const val NEW_ITEM_POSITION = 0
     }
 }

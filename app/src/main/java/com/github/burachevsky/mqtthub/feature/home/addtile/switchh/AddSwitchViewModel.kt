@@ -8,29 +8,27 @@ import com.github.burachevsky.mqtthub.common.ext.getPayload
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
-import com.github.burachevsky.mqtthub.common.widget.ButtonItem
-import com.github.burachevsky.mqtthub.common.widget.FieldType
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileViewModel
-import com.github.burachevsky.mqtthub.feature.home.addtile.BROKER_ID
+import com.github.burachevsky.mqtthub.feature.home.addtile.DASHBOARD_ID
 import com.github.burachevsky.mqtthub.feature.home.addtile.DASHBOARD_POSITION
 import com.github.burachevsky.mqtthub.feature.home.addtile.TILE_ID
 import javax.inject.Inject
 import javax.inject.Named
 
 class AddSwitchViewModel @Inject constructor(
-    @Named(BROKER_ID) brokerId: Long,
+    @Named(DASHBOARD_ID) dashboardId: Long,
     @Named(TILE_ID) tileId: Long,
     @Named(DASHBOARD_POSITION) dashboardPosition: Int,
     eventBus: EventBus,
     getTile: GetTile,
     updateTile: UpdateTile,
     addTile: AddTile,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, brokerId, tileId, dashboardPosition) {
+) : AddTileViewModel(eventBus, getTile, updateTile, addTile, dashboardId, tileId, dashboardPosition) {
 
     override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
@@ -78,7 +76,7 @@ class AddSwitchViewModel @Inject constructor(
             publishTopic = publishTopic.text,
             qos = qos.selectedValue,
             retained = retain.isChecked,
-            brokerId = brokerId,
+            dashboardId = dashboardId,
             type = Tile.Type.SWITCH,
             stateList = listOf(
                 Tile.State(SWITCH_ON, onState.text),
@@ -90,7 +88,7 @@ class AddSwitchViewModel @Inject constructor(
             publishTopic = publishTopic.text,
             qos = qos.selectedValue,
             retained = retain.isChecked,
-            brokerId = brokerId,
+            dashboardId = dashboardId,
             type = Tile.Type.SWITCH,
             stateList = listOf(
                 Tile.State(SWITCH_ON, onState.text),

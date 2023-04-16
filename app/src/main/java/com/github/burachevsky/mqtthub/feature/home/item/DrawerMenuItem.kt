@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.data.entity.Dashboard as DashboardEntity
 import com.github.burachevsky.mqtthub.data.entity.Broker as BrokerEntity
 import com.github.burachevsky.mqtthub.databinding.ListItemDrawerMenuItemBinding
 
@@ -39,7 +40,7 @@ data class DrawerMenuItem(
 
         data class Button(val buttonId: Int) : Type(buttonId.toLong())
 
-        class Dashboard() : Type(0)
+        class Dashboard(val dashboard: DashboardEntity) : Type(dashboard.id)
 
         data class Broker(val broker: BrokerEntity) : Type(broker.id)
     }

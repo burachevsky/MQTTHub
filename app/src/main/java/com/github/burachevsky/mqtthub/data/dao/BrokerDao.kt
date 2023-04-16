@@ -4,11 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.github.burachevsky.mqtthub.data.entity.Broker
-import com.github.burachevsky.mqtthub.data.entity.BrokerWithTiles
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BrokerDao {
@@ -16,8 +13,14 @@ interface BrokerDao {
     @Query("SELECT * FROM brokers")
     suspend fun getAll(): List<Broker>
 
+    @Query("SELECT * FROM brokers ORDER BY id DESC LIMIT 1")
+    suspend fun getFirst(): List<Broker>
+
     @Query("SELECT * FROM brokers WHERE id = :id")
     suspend fun getById(id: Long): Broker
+
+    @Query("SELECT COUNT(*) FROM brokers")
+    suspend fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(broker: Broker): Long
@@ -27,8 +30,4 @@ interface BrokerDao {
 
     @Query("DELETE FROM brokers WHERE id = :id")
     suspend fun delete(id: Long)
-
-    @Transaction
-    @Query("SELECT * FROM brokers WHERE id = :id")
-    suspend fun getBrokerWithTiles(id: Long): BrokerWithTiles
 }

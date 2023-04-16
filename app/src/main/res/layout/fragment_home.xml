@@ -76,6 +76,18 @@
             android:textAlignment="center"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/addFirstBrokerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAllCaps="false"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            app:icon="@drawable/ic_add"
+            android:text="@string/add_first_broker"
+            android:visibility="gone" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/addTileButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

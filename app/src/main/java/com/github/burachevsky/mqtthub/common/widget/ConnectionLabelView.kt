@@ -49,6 +49,11 @@ class ConnectionLabelView @JvmOverloads constructor(
         if (currentState == state && state is ConnectionState.Connected)
             return
 
+        if (state is ConnectionState.Empty) {
+            isVisible = false
+            return
+        }
+
         currentState = state
 
         label.setText(state.text)
@@ -125,6 +130,15 @@ sealed class ConnectionState(
     ) {
         override fun getLabelColor(context: Context): Int {
             return context.getValueFromAttribute(com.google.android.material.R.attr.colorSecondary)
+        }
+    }
+
+    @Parcelize
+    object Empty : ConnectionState(
+        0, 0, false
+    ) {
+        override fun getLabelColor(context: Context): Int {
+            return 0
         }
     }
 }

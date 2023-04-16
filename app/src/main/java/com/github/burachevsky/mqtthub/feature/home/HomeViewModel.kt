@@ -18,11 +18,16 @@ import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.text.withArgs
 import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
+import com.github.burachevsky.mqtthub.domain.usecase.broker.GetCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentDashboardWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboardWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
 import com.github.burachevsky.mqtthub.domain.usecase.tile.*
+import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.*
@@ -38,13 +43,16 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
-    private val getBrokerWithTiles: GetBrokerWithTiles,
     private val saveUpdatedPayload: SaveUpdatedPayload,
     private val deleteTile: DeleteTile,
     private val updateTiles: UpdateTiles,
     private val deleteTiles: DeleteTiles,
     private val getBroker: GetBroker,
+    private val getCurrentDashboardWithTiles: GetCurrentDashboardWithTiles,
+    private val getDashboardWithTiles: GetDashboardWithTiles,
     private val addTile: AddTile,
+    private val getCurrentBroker: GetCurrentBroker,
+    internal val getDashboards: GetDashboards,
     internal val getBrokers: GetBrokers,
     internal val eventBus: EventBus,
 ) : ViewModel(), VM<HomeNavigator> {
@@ -53,7 +61,7 @@ class HomeViewModel @Inject constructor(
 
     val drawerManager = HomeDrawerManager(this)
 
-    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Connecting)
+    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Empty)
     val connectionState: StateFlow<ConnectionState> = _connectionState
 
     private var mqtt: MqttClient? = null
@@ -64,7 +72,12 @@ class HomeViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
-    val noTilesYet: Flow<Boolean> = items.map { it.isEmpty() }
+    private val _noBrokersYet = MutableStateFlow(false)
+    val noBrokersYet: StateFlow<Boolean> = _noBrokersYet
+
+    val noTilesYet: Flow<Boolean> = items.combine(noBrokersYet) { items, noBrokers ->
+        items.isEmpty() && !noBrokers
+    }
 
     private val topicHandler = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
 
@@ -75,24 +88,31 @@ class HomeViewModel @Inject constructor(
 
     private var itemReleased = true
 
-    var brokerId = 18L // todo
+    var brokerId = 0L
     private set
+
+    private var dashboard: Dashboard? = null
 
     init {
         container.launch(Dispatchers.Main) {
-            val brokerWithTiles = getBrokerWithTiles(brokerId)
+            val dashboardWithTiles = getCurrentDashboardWithTiles()
+            val currentDashboard = dashboardWithTiles.dashboard
+            dashboard = currentDashboard
+            _title.value = currentDashboard.name
 
-            broker = brokerWithTiles.broker
-            _title.value = broker?.name.orEmpty()
+            broker = getCurrentBroker()
+            brokerId = broker?.id ?: 0
 
-            _items.value = brokerWithTiles.tiles.map(::makeTileItem)
+            _noBrokersYet.value = broker == null
+
+            _items.value = dashboardWithTiles.tiles.map(::makeTileItem)
 
             drawerManager.fillDrawer()
 
             broker?.let { brokerInfo ->
                 initMqttClient(brokerInfo)
 
-                brokerWithTiles.tiles.forEach {
+                dashboardWithTiles.tiles.forEach {
                     subscribeIfNotSubscribed(it.subscribeTopic)
                 }
             }
@@ -114,6 +134,13 @@ class HomeViewModel @Inject constructor(
             subscribe<PublishTextEntered>(viewModelScope) {
                 publish(it.tileId, it.text)
             }
+
+            subscribe<DashboardEdited>(viewModelScope) {
+                if (dashboard?.id == it.dashboard.id) {
+                    _title.value = it.dashboard.name
+                    dashboard = it.dashboard
+                }
+            }
         }
     }
 
@@ -134,6 +161,10 @@ class HomeViewModel @Inject constructor(
         showEditMode(true, position)
 
         return true
+    }
+
+    fun addFirstBroker() {
+        container.navigator { navigateAddBroker() }
     }
 
     fun tileClicked(position: Int) {
@@ -245,12 +276,12 @@ class HomeViewModel @Inject constructor(
 
     fun editTileClicked(position: Int) {
         val tile = items.get<TileItem>(position).tile
-        val brokerId = broker?.id ?: return
+        val dashboardId = dashboard?.id ?: return
         container.navigator {
             when (tile.type) {
-                Tile.Type.BUTTON -> navigateAddButtonTile(brokerId, tile.id, position)
-                Tile.Type.TEXT -> navigateAddTextTile(brokerId, tile.id, position)
-                Tile.Type.SWITCH -> navigateAddSwitch(brokerId, tile.id, position)
+                Tile.Type.BUTTON -> navigateAddButtonTile(dashboardId, tile.id, position)
+                Tile.Type.TEXT -> navigateAddTextTile(dashboardId, tile.id, position)
+                Tile.Type.SWITCH -> navigateAddSwitch(dashboardId, tile.id, position)
             }
         }
     }
@@ -327,14 +358,53 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun changeBroker(brokerId: Long) {
-        if (this.brokerId == brokerId) return
+    fun changeBroker(broker: Broker?) {
+        container.launch(Dispatchers.Main) {
+            _noBrokersYet.value = broker == null
+            disconnect().join()
+            broker?.let {
+                this@HomeViewModel.brokerId = broker.id
+                this@HomeViewModel.broker = broker
+                reconnect(force = true)
+            }
+        }
+    }
+
+    fun brokerDeleted(brokerId: Long) {
+        if (this.brokerId == brokerId) {
+            container.launch(Dispatchers.Main) {
+                changeBroker(getCurrentBroker())
+            }
+        }
+    }
+
+    fun changeDashboard(newDashboard: Dashboard) {
+        if (dashboard?.id == newDashboard.id) return
 
         container.launch(Dispatchers.Main) {
-            disconnect().join()
-            this@HomeViewModel.brokerId = brokerId
-            broker = getBroker(brokerId)
-            reconnect(force = true)
+            _title.value = newDashboard.name
+
+            val tiles = _items.value.map { (it as TileItem).tile }
+            _items.value = listOf()
+
+            container.withContext(Dispatchers.IO) {
+                tiles.forEach {
+                    unsubscribeIfNoReceivers(it.subscribeTopic)
+                }
+            }
+
+            val dashboardWithTiles = getDashboardWithTiles(newDashboard.id)
+            val currentDashboard = dashboardWithTiles.dashboard
+            dashboard = currentDashboard
+            _title.value = currentDashboard.name
+
+            _items.value = dashboardWithTiles.tiles.map(::makeTileItem)
+
+            container.withContext(Dispatchers.IO) {
+                dashboardWithTiles.tiles.forEach {
+                    subscribeIfNotSubscribed(it.subscribeTopic)
+                }
+            }
         }
     }
 
@@ -450,19 +520,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun navigateAddTile(type: Tile.Type) {
-        val brokerId = broker?.id ?: return
+        val dashboardId = dashboard?.id ?: return
 
         when (type) {
             Tile.Type.BUTTON -> container.navigator {
-                navigateAddButtonTile(brokerId, dashboardPosition = items.value.size)
+                navigateAddButtonTile(dashboardId, dashboardPosition = items.value.size)
             }
 
             Tile.Type.TEXT -> container.navigator {
-                navigateAddTextTile(brokerId, dashboardPosition = items.value.size)
+                navigateAddTextTile(dashboardId, dashboardPosition = items.value.size)
             }
 
             Tile.Type.SWITCH -> container.navigator {
-                navigateAddSwitch(brokerId, dashboardPosition = items.value.size)
+                navigateAddSwitch(dashboardId, dashboardPosition = items.value.size)
             }
         }
     }

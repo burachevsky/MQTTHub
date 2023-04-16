@@ -31,7 +31,7 @@ interface TileDao {
     @Query("""
         UPDATE tiles 
         SET last_payload = :payload
-        WHERE broker_id = :brokerId AND subscribe_topic = :subscribeTopic"""
+        WHERE dashboard_id = :brokerId AND subscribe_topic = :subscribeTopic"""
     )
     suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String)
 

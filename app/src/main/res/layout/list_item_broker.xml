@@ -15,14 +15,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_broker"
-        android:layout_marginStart="20dp" />
+        android:layout_marginStart="16dp" />
 
     <TextView
         android:id="@+id/brokerName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginEnd="12dp"
         android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"

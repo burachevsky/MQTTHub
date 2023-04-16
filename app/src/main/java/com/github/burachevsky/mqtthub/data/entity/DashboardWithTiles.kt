@@ -3,13 +3,13 @@ package com.github.burachevsky.mqtthub.data.entity
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class BrokerWithTiles(
+data class DashboardWithTiles(
     @Embedded
-    val broker: Broker,
+    val dashboard: Dashboard,
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "broker_id"
+        entityColumn = "dashboard_id"
     )
     val tiles: List<Tile> = emptyList()
 )

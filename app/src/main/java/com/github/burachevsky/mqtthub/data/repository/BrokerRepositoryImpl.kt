@@ -1,9 +1,8 @@
 package com.github.burachevsky.mqtthub.data.repository
 
+import androidx.room.Transaction
 import com.github.burachevsky.mqtthub.data.dao.BrokerDao
 import com.github.burachevsky.mqtthub.data.entity.Broker
-import com.github.burachevsky.mqtthub.data.entity.BrokerWithTiles
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class BrokerRepositoryImpl @Inject constructor(
@@ -18,6 +17,11 @@ class BrokerRepositoryImpl @Inject constructor(
         return brokerDao.getById(id)
     }
 
+    @Transaction
+    override suspend fun getCurrentBroker(): Broker? {
+        return brokerDao.getFirst().firstOrNull()
+    }
+
     override suspend fun insertBroker(broker: Broker): Broker {
         val id = brokerDao.insert(broker)
         return broker.copy(id = id)
@@ -29,9 +33,5 @@ class BrokerRepositoryImpl @Inject constructor(
 
     override suspend fun deleteBroker(id: Long) {
         return brokerDao.delete(id)
-    }
-
-    override suspend fun getBrokerWithTiles(id: Long): BrokerWithTiles {
-        return brokerDao.getBrokerWithTiles(id)
     }
 }

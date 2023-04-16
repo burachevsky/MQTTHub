@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
@@ -20,6 +18,7 @@ import com.github.burachevsky.mqtthub.common.effect.EffectHandler
 import com.github.burachevsky.mqtthub.common.effect.UIEffect
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
+import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
@@ -58,7 +57,13 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
     )
 
     private val drawerListAdapter = CompositeAdapter(
-        DrawerLabelItemAdapter(),
+        DrawerLabelItemAdapter(
+            object : DrawerLabelItem.Listener {
+                override fun onClick(position: Int) {
+                    viewModel.drawerManager.onLabelButtonClick(position)
+                }
+            }
+        ),
         DrawerMenuItemAdapter(
             object : DrawerMenuItem.Listener {
                 override fun onClick(position: Int) {
@@ -125,7 +130,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
 
     private fun setupDrawerRecyclerView() {
         binding.drawerRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext(), VERTICAL, false)
+            layoutManager = verticalLinearLayoutManager()
             adapter = drawerListAdapter
         }
     }
@@ -151,6 +156,10 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
             handleContextMenuAction(it.itemId)
         }
 
+        binding.addFirstBrokerButton.setOnClickListener {
+            viewModel.addFirstBroker()
+        }
+
         requireActivity().onBackPressedDispatcher
             .addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
@@ -170,6 +179,17 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
 
         collectOnStarted(viewModel.noTilesYet) {
             binding.noTilesText.isVisible = it
+            binding.recyclerView.isVisible = !it
+        }
+
+        collectOnStarted(viewModel.noBrokersYet) {
+            binding.addFirstBrokerButton.isVisible = it
+            if (it) {
+                binding.noTilesText.isVisible = false
+            }
+            binding.addTileButton.apply {
+                if (it) hide() else show()
+            }
             binding.recyclerView.isVisible = !it
         }
     }

@@ -7,11 +7,12 @@ import com.github.burachevsky.mqtthub.data.di.RemoteDataModule
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerComponent
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment
+import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsModule
 import com.github.burachevsky.mqtthub.feature.home.HomeFragment
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileModule
+import com.github.burachevsky.mqtthub.feature.home.addtile.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextComponent
-import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragment
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextModule
 import com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment
 import dagger.BindsInstance
@@ -39,7 +40,7 @@ interface AppComponent {
     fun inject(dialog: SelectTileTypeDialogFragment)
 
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
-
     fun addTileComponent(module: AddTileModule): AddTileComponent
     fun publishTextComponent(module: PublishTextModule): PublishTextComponent
+    fun dashboardsComponent(module: DashboardsModule): DashboardsComponent
 }

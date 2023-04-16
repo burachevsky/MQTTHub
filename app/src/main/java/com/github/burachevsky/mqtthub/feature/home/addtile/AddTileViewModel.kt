@@ -27,7 +27,7 @@ abstract class AddTileViewModel (
     protected val getTile: GetTile,
     protected val updateTile: UpdateTile,
     protected val addTile: AddTile,
-    protected val brokerId: Long,
+    protected val dashboardId: Long,
     protected val tileId: Long,
     protected val dashboardPosition: Int,
 ) : ViewModel(), VM<Navigator> {

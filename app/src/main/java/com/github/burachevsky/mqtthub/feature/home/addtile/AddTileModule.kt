@@ -10,9 +10,9 @@ class AddTileModule(fragment: AddTileFragment<*>) {
     private val args = fragment.requireArguments()
 
     @Provides
-    @Named(BROKER_ID)
+    @Named(DASHBOARD_ID)
     fun provideBrokerId(): Long {
-        return args.getLong(BROKER_ID)
+        return args.getLong(DASHBOARD_ID)
     }
 
     @Provides
@@ -28,6 +28,6 @@ class AddTileModule(fragment: AddTileFragment<*>) {
     }
 }
 
-const val BROKER_ID = "brokerId"
+const val DASHBOARD_ID = "dashboardId"
 const val TILE_ID = "tileId"
 const val DASHBOARD_POSITION = "dashboardPosition"
