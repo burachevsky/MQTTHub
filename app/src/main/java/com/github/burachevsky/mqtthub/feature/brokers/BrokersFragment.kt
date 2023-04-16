@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.appComponent
@@ -80,6 +81,10 @@ class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
 
         binding.addBrokersButton.setOnClickListener {
             viewModel.addBrokerClicked()
+        }
+
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
 
         collectOnStarted(viewModel.noBrokersYet) {

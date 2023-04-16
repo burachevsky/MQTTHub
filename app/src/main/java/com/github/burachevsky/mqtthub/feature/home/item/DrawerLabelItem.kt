@@ -35,6 +35,7 @@ class DrawerLabelItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
     
     override fun bind(item: ListItem) {
         item as DrawerLabelItem
+        this.item = item
         
         binding.label.text = item.text.get(context)
         binding.labelButton.text = item.buttonText?.get(context)

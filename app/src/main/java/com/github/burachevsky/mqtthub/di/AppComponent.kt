@@ -7,8 +7,7 @@ import com.github.burachevsky.mqtthub.data.di.RemoteDataModule
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerComponent
 import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment
-import com.github.burachevsky.mqtthub.feature.home.HomeComponent
-import com.github.burachevsky.mqtthub.feature.home.HomeModule
+import com.github.burachevsky.mqtthub.feature.home.HomeFragment
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileModule
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextComponent
@@ -35,11 +34,12 @@ interface AppComponent {
     }
 
     fun inject(activity: AppActivity)
+    fun inject(fragment: HomeFragment)
     fun inject(fragment: BrokersFragment)
     fun inject(dialog: SelectTileTypeDialogFragment)
 
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
-    fun homeComponent(module: HomeModule): HomeComponent
+
     fun addTileComponent(module: AddTileModule): AddTileComponent
     fun publishTextComponent(module: PublishTextModule): PublishTextComponent
 }

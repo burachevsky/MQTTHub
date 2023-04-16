@@ -67,6 +67,10 @@ class BrokerItemViewHolder(
         binding.editButton.setOnClickListener {
             listener.onEditClick(adapterPosition)
         }
+
+        binding.deleteButton.setOnClickListener {
+            listener.onDeleteClick(adapterPosition)
+        }
     }
 
     override fun bind(item: ListItem) {

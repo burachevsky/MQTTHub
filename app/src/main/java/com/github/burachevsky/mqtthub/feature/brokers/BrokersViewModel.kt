@@ -25,7 +25,7 @@ import javax.inject.Inject
 class BrokersViewModel @Inject constructor(
     private val getBrokers: GetBrokers,
     private val deleteBroker: DeleteBroker,
-    eventBus: EventBus,
+    private val eventBus: EventBus,
 ) : ViewModel(), VM<BrokersNavigator> {
 
     override val container = ViewModelContainer<BrokersNavigator>(viewModelScope)
@@ -52,11 +52,6 @@ class BrokersViewModel @Inject constructor(
     }
 
     fun brokerClicked(position: Int) {
-        container.navigator {
-            navigateHome(
-                _items.get<BrokerItem>(position).broker.id
-            )
-        }
     }
 
     fun addBrokerClicked() {
@@ -92,6 +87,7 @@ class BrokersViewModel @Inject constructor(
             val id = items.get<BrokerItem>(position).broker.id
             deleteBroker(id)
             _items.value = _items.value.filterIndexed { i, _ -> i != position }
+            eventBus.send(BrokerDeleted(id))
         }
     }
 

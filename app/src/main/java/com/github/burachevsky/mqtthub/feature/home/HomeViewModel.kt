@@ -2,7 +2,6 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.burachevsky.mqtthub.BuildConfig
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
@@ -20,7 +19,9 @@ import com.github.burachevsky.mqtthub.common.text.withArgs
 import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokerWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
 import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
@@ -42,12 +43,15 @@ class HomeViewModel @Inject constructor(
     private val deleteTile: DeleteTile,
     private val updateTiles: UpdateTiles,
     private val deleteTiles: DeleteTiles,
+    private val getBroker: GetBroker,
     private val addTile: AddTile,
-    eventBus: EventBus,
-    args: HomeFragmentArgs,
+    internal val getBrokers: GetBrokers,
+    internal val eventBus: EventBus,
 ) : ViewModel(), VM<HomeNavigator> {
 
     override val container = ViewModelContainer<HomeNavigator>(viewModelScope)
+
+    val drawerManager = HomeDrawerManager(this)
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Connecting)
     val connectionState: StateFlow<ConnectionState> = _connectionState
@@ -60,9 +64,6 @@ class HomeViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
-    private val _drawerItems = MutableStateFlow<List<ListItem>>(emptyList())
-    val drawerItems: StateFlow<List<ListItem>> = _drawerItems
-
     val noTilesYet: Flow<Boolean> = items.map { it.isEmpty() }
 
     private val topicHandler = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
@@ -74,16 +75,19 @@ class HomeViewModel @Inject constructor(
 
     private var itemReleased = true
 
+    var brokerId = 18L // todo
+    private set
+
     init {
         container.launch(Dispatchers.Main) {
-            val brokerWithTiles = getBrokerWithTiles(args.brokerId)
+            val brokerWithTiles = getBrokerWithTiles(brokerId)
 
             broker = brokerWithTiles.broker
             _title.value = broker?.name.orEmpty()
 
             _items.value = brokerWithTiles.tiles.map(::makeTileItem)
 
-            fillDrawer()
+            drawerManager.fillDrawer()
 
             broker?.let { brokerInfo ->
                 initMqttClient(brokerInfo)
@@ -94,7 +98,7 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        eventBus.apply{
+        eventBus.apply {
             subscribe<TileAdded>(viewModelScope) {
                 tileAdded(it.tile)
             }
@@ -304,7 +308,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun connectionClicked() {
-        if (connectionState.value == ConnectionState.Disconnected) {
+        reconnect()
+    }
+
+    private fun reconnect(force: Boolean = false) {
+        if (force || connectionState.value == ConnectionState.Disconnected) {
             container.launch(Dispatchers.IO) {
                 broker?.let { broker ->
                     initMqttClient(broker)
@@ -316,6 +324,17 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun changeBroker(brokerId: Long) {
+        if (this.brokerId == brokerId) return
+
+        container.launch(Dispatchers.Main) {
+            disconnect().join()
+            this@HomeViewModel.brokerId = brokerId
+            broker = getBroker(brokerId)
+            reconnect(force = true)
         }
     }
 
@@ -374,70 +393,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun fillDrawer() {
-        _drawerItems.value = listOf(
-            DrawerHeaderItem,
-            DividerItem,
-            DrawerLabelItem(
-                Txt.of(R.string.home_dashboards),
-                buttonText = Txt.of(R.string.edit),
-            ),
-            DrawerMenuItem(
-                Txt.of("Dashboard 1"),
-                R.drawable.ic_dashboard,
-                isSelected = true,
-            ),
-            DrawerMenuItem(
-                Txt.of("Dashboard 2"),
-                R.drawable.ic_dashboard,
-            ),
-            DrawerMenuItem(
-                Txt.of("Dashboard 3"),
-                R.drawable.ic_dashboard,
-            ),
-            DrawerMenuItem(
-                Txt.of("Dashboard 4"),
-                R.drawable.ic_dashboard,
-            ),
-            DrawerMenuItem(
-                Txt.of(R.string.home_create_new_dashboard),
-                R.drawable.ic_add,
-            ),
-            DividerItem,
-            DrawerLabelItem(
-                Txt.of(R.string.home_brokers),
-                buttonText = Txt.of(R.string.edit),
-            ),
-            DrawerMenuItem(
-                Txt.of("Mosquitto"),
-                R.drawable.ic_broker,
-                isSelected = true,
-            ),
-            DrawerMenuItem(
-                Txt.of("HiveMQ"),
-                R.drawable.ic_broker,
-                isSelected = false,
-            ),
-            DrawerMenuItem(
-                Txt.of(R.string.home_add_new_broker),
-                R.drawable.ic_add,
-            ),
-            DividerItem,
-            DrawerMenuItem(
-                Txt.of(R.string.home_settings),
-                R.drawable.ic_settings,
-            ),
-            DrawerMenuItem(
-                Txt.of(R.string.home_help_and_feedback),
-                R.drawable.ic_help,
-            ),
-            /*DividerItem,
-            DrawerLabelItem(
-                Txt.of(R.string.home_version).withArgs(BuildConfig.VERSION_NAME)
-            )*/
-        )
-    }
-
     private fun makeTileItem(tile: Tile): ListItem {
         return when (tile.type) {
             Tile.Type.BUTTON -> ButtonTileItem(tile)
@@ -463,8 +418,6 @@ class HomeViewModel @Inject constructor(
                                         ?: Txt.of(R.string.error_failed_to_connect)
                                 )
                             }
-
-                            Timber.e(cause)
                         }
 
                         override fun messageArrived(topic: String?, message: MqttMessage?) {}
@@ -645,9 +598,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun disconnect(): Job {
+        return CoroutineScope(Dispatchers.IO).launch {
             try {
                 mqtt?.disconnect()
             } catch (_: Exception) {
@@ -655,5 +607,10 @@ class HomeViewModel @Inject constructor(
                 cancel()
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disconnect()
     }
 }

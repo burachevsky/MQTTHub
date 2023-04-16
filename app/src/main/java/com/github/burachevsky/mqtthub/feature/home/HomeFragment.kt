@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.effect.EffectHandler
+import com.github.burachevsky.mqtthub.common.effect.UIEffect
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
@@ -26,7 +28,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class HomeFragment : Fragment(), ViewController<HomeViewModel> {
+class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -57,13 +59,18 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
 
     private val drawerListAdapter = CompositeAdapter(
         DrawerLabelItemAdapter(),
-        DrawerMenuItemAdapter(),
+        DrawerMenuItemAdapter(
+            object : DrawerMenuItem.Listener {
+                override fun onClick(position: Int) {
+                    viewModel.drawerManager.onMenuItemClick(position)
+                }
+            }
+        ),
     )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.homeComponent(HomeModule(this))
-            .inject(this)
+        appComponent.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,23 +89,21 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().onBackPressedDispatcher
-            .addCallback(viewLifecycleOwner,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        viewModel.navigateUp()
-                    }
-                }
-            )
-
-        bind()
+        setupListeners()
         observeViewModel()
-    }
-
-    private fun bind() {
         setupRecyclerView()
         setupDrawerRecyclerView()
-        setupListeners()
+    }
+
+    override fun handleEffect(effect: UIEffect): Boolean {
+        when (effect) {
+            is CloseHomeDrawer -> {
+                binding.drawerLayout.close()
+                return true
+            }
+        }
+
+        return false
     }
 
     private fun setupRecyclerView() {
@@ -145,12 +150,21 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel> {
         binding.editModeToolbar.setOnMenuItemClickListener {
             handleContextMenuAction(it.itemId)
         }
+
+        requireActivity().onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        viewModel.navigateUp()
+                    }
+                }
+            )
     }
 
     private fun observeViewModel() {
         collectOnStarted(viewModel.connectionState, binding.connection::applyState)
         collectOnStarted(viewModel.items, listAdapter::submitList)
-        collectOnStarted(viewModel.drawerItems, drawerListAdapter::submitList)
+        collectOnStarted(viewModel.drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
         collectOnStarted(viewModel.title, binding.toolbar::setTitle)
 

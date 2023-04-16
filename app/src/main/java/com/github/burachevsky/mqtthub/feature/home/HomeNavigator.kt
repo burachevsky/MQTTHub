@@ -34,4 +34,8 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
         R.id.navigatePublishText,
         PublishTextDialogFragmentArgs(tileId, tileName).toBundle()
     )
+
+    fun navigateAddBroker() = navController.navigate(R.id.navigateAddBroker)
+
+    fun navigateEditBrokers() = navController.navigate(R.id.navigateBrokers)
 }

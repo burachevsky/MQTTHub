@@ -8,13 +8,14 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.data.entity.Broker as BrokerEntity
 import com.github.burachevsky.mqtthub.databinding.ListItemDrawerMenuItemBinding
 
 data class DrawerMenuItem(
     val text: Txt,
     val icon: Int,
+    val type: Type,
     val isSelected: Boolean = false,
-    val onClick: (() -> Unit)? = null,
 ) : ListItem {
 
     val textColorAttribute: Int
@@ -26,26 +27,44 @@ data class DrawerMenuItem(
 
     override fun layout() = LAYOUT
 
+    override fun areItemsTheSame(that: ListItem): Boolean {
+        return that is DrawerMenuItem && this.type.id == that.type.id
+    }
+
     companion object {
         val LAYOUT get() = R.layout.list_item_drawer_menu_item
     }
+
+    sealed class Type(val id: Long) {
+
+        data class Button(val buttonId: Int) : Type(buttonId.toLong())
+
+        class Dashboard() : Type(0)
+
+        data class Broker(val broker: BrokerEntity) : Type(broker.id)
+    }
+
+    interface Listener {
+
+        fun onClick(position: Int)
+    }
 }
 
-class DrawerMenuItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
+class DrawerMenuItemViewHolder(
+    itemView: View,
+    private val listener: DrawerMenuItem.Listener,
+) : ItemViewHolder(itemView) {
 
     private val binding = ListItemDrawerMenuItemBinding.bind(itemView)
 
-    private var item: DrawerMenuItem? = null
-
     init {
         binding.item.setOnClickListener {
-            item?.onClick?.invoke()
+            listener.onClick(adapterPosition)
         }
     }
 
     override fun bind(item: ListItem) {
         item as DrawerMenuItem
-        this.item = item
 
         binding.label.text = item.text.get(context)
         binding.icon.setImageResource(item.icon)
@@ -54,10 +73,12 @@ class DrawerMenuItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
     }
 }
 
-class DrawerMenuItemAdapter : ItemAdapter {
+class DrawerMenuItemAdapter(
+    private val listener: DrawerMenuItem.Listener
+) : ItemAdapter {
     override fun viewType() = DrawerMenuItem.LAYOUT
 
     override fun onCreateViewHolder(parent: ViewGroup): ItemViewHolder {
-        return DrawerMenuItemViewHolder(inflateItemView(parent))
+        return DrawerMenuItemViewHolder(inflateItemView(parent), listener)
     }
 }

@@ -2,6 +2,7 @@
     <string name="app_name">MQTT Hub</string>
 
     <string name="home_brokers">Brokers</string>
+    <string name="home_edit_brokers">Edit brokers</string>
     <string name="brokers_empty">There are no brokers yet :(</string>
 
     <string name="tiles_empty">There are no tiles yet :(</string>
