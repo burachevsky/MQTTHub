@@ -118,7 +118,7 @@ class HomeDrawerManager(
                             R.drawable.ic_add,
                             type = DrawerMenuItem.Type.Button(BUTTON_ADD_NEW_BROKER),
                         ),
-                        DividerItem,
+                        /*DividerItem,
                         DrawerMenuItem(
                             Txt.of(R.string.home_settings),
                             R.drawable.ic_settings,
@@ -128,7 +128,7 @@ class HomeDrawerManager(
                             Txt.of(R.string.home_help_and_feedback),
                             R.drawable.ic_help,
                             type = DrawerMenuItem.Type.Button(BUTTON_HELP_AND_FEEDBACK),
-                        ),
+                        ),*/
                     )
                 )
             }

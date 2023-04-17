@@ -3,7 +3,7 @@
 
     <dimen name="swipe_to_delete_icon_offset">32dp</dimen>
 
-    <dimen name="dashboard_tile_spacing">8dp</dimen>
+    <dimen name="dashboard_tile_spacing">4dp</dimen>
     <dimen name="dashboard_margin">16dp</dimen>
 
     <dimen name="tile_default_height">108dp</dimen>

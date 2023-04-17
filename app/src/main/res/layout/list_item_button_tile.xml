@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/tile_default_height"
-    android:background="@drawable/bg_tile_list_item">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_tile_list_item"
+    android:minHeight="@dimen/tile_default_height">
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonTile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonTile"
-        tools:text="Button"
-        android:layout_gravity="center"/>
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:maxLines="2"
+        android:maxWidth="150dp"
+        android:ellipsize="end"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Button a a a a a a a a a a aa a a a a a a aa a a a" />
 
     <View
         android:id="@+id/editModeOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@drawable/bg_tile_edit_mode_selected"
-        android:visibility="gone"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

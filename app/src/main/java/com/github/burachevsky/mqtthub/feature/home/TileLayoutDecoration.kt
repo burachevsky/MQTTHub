@@ -10,7 +10,6 @@ class TileLayoutDecoration(
     context: Context
 ) : RecyclerView.ItemDecoration() {
 
-    private val margin = context.resources.getDimensionPixelSize(R.dimen.dashboard_margin)
     private val spacing = context.resources.getDimensionPixelSize(R.dimen.dashboard_tile_spacing)
 
     override fun getItemOffsets(
@@ -20,16 +19,10 @@ class TileLayoutDecoration(
         state: RecyclerView.State
     ) {
         with(outRect) {
-            val pos = parent.getChildAdapterPosition(view)
-
-            if (pos % 2 == 0) {
-                left = margin
-                right = spacing
-            } else {
-                right = margin
-            }
-
+            left = spacing
+            right = spacing
             top = spacing
+            bottom = spacing
         }
     }
 }
