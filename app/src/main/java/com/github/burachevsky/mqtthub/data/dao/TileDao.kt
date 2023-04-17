@@ -10,9 +10,6 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 @Dao
 interface TileDao {
 
-    @Query("SELECT * FROM tiles WHERE id = :brokerId ORDER BY dashboard_position")
-    suspend fun getAllBrokerTiles(brokerId: Long): List<Tile>
-
     @Insert
     suspend fun insert(tile: Tile): Long
 
@@ -31,9 +28,9 @@ interface TileDao {
     @Query("""
         UPDATE tiles 
         SET last_payload = :payload
-        WHERE dashboard_id = :brokerId AND subscribe_topic = :subscribeTopic"""
+        WHERE dashboard_id = :dashboardId AND subscribe_topic = :subscribeTopic"""
     )
-    suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String)
+    suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String)
 
     @Query("SELECT * FROM tiles WHERE id = :id")
     suspend fun getById(id: Long): Tile

@@ -11,6 +11,7 @@ import javax.inject.Inject
 class DashboardRepositoryImpl @Inject constructor(
     private val dashboardDao: DashboardDao,
     private val applicationContext: Context,
+    private val currentIdsRepository: CurrentIdsRepository,
 ): DashboardRepository {
 
     override suspend fun insertDashboard(dashboard: Dashboard): Dashboard {
@@ -39,28 +40,42 @@ class DashboardRepositoryImpl @Inject constructor(
 
     override suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
         return dashboardDao.getDashboardWithTiles(id).run {
-            copy(
-                tiles = tiles.sortedBy { it.dashboardPosition }
-            )
+            copy(tiles = tiles.sortedBy { it.dashboardPosition })
         }
     }
 
     @Transaction
     override suspend fun getCurrentDashboardWithTiles(): DashboardWithTiles {
-        if (dashboardDao.count() == 0) {
-            val dashboard = Dashboard(
-                name = applicationContext.getString(R.string.default_dashboard_name),
-                position = 0
-            )
-            insertDashboard(dashboard)
+        var currentDashboardId = currentIdsRepository.getCurrentDashboardId()
 
-            return DashboardWithTiles(dashboard)
+        if (currentDashboardId == null) {
+            val dashboard = insertDashboard(
+                Dashboard(
+                    name = applicationContext.getString(R.string.default_dashboard_name),
+                    position = 0
+                )
+            )
+
+            currentDashboardId = dashboard.id
+            currentIdsRepository.updateCurrentDashboard(currentDashboardId)
         }
 
-        return dashboardDao.getFirstDashboardWithTiles().run {
-            copy(
-                tiles = tiles.sortedBy { it.dashboardPosition }
+        return getDashboardWithTiles(currentDashboardId)
+    }
+
+    @Transaction
+    override suspend fun getCurrentDashboard(): Dashboard {
+        val dashboard = if (dashboardDao.count() == 0) {
+            insertDashboard(
+                Dashboard(
+                    name = applicationContext.getString(R.string.default_dashboard_name),
+                    position = 0
+                )
             )
+        } else {
+            dashboardDao.getFirstDashboard()
         }
+
+        return dashboard
     }
 }

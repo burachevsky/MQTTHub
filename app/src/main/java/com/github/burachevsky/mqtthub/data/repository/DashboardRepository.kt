@@ -18,4 +18,6 @@ interface DashboardRepository {
     suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles
 
     suspend fun getCurrentDashboardWithTiles(): DashboardWithTiles
+
+    suspend fun getCurrentDashboard(): Dashboard
 }

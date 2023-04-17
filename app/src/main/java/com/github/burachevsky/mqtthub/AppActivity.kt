@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -26,5 +28,11 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
         viewModel = ViewModelProvider(this, viewModelFactory)[AppViewModel::class.java]
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         container.onCreate()
+        findNavController().setGraph(R.navigation.app_graph)
+    }
+
+    fun findNavController(): NavController {
+        return (supportFragmentManager.findFragmentById(R.id.appContainer) as NavHostFragment)
+            .navController
     }
 }

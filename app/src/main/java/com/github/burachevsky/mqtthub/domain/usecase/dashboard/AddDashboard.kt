@@ -9,6 +9,6 @@ class AddDashboard @Inject constructor(
 ) {
 
     suspend operator fun invoke(dashboard: Dashboard): Dashboard {
-        return dashboardRepository.insertDashboardLast(dashboard)
+        return dashboardRepository.insertDashboard(dashboard)
     }
 }

@@ -4,8 +4,6 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 
 interface TileRepository {
 
-    suspend fun getAllBrokerTiles(brokerId: Long): List<Tile>
-
     suspend fun insertTile(tile: Tile): Tile
 
     suspend fun updateTile(tile: Tile)
@@ -16,7 +14,7 @@ interface TileRepository {
 
     suspend fun deleteTiles(tiles: List<Tile>)
 
-    suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String)
+    suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String)
 
     suspend fun getTile(id: Long): Tile
 }

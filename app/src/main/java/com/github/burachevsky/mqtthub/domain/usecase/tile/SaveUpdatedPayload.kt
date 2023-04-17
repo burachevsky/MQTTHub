@@ -31,7 +31,7 @@ class SaveUpdatedPayload @Inject constructor(
     private suspend fun update(payloadUpdate: PayloadUpdate) {
         payloadUpdate.let {
             Timber.d("saving payload: ${it.payload}, ${it.subscribeTopic}")
-            tileRepository.updatePayload(it.brokerId, it.subscribeTopic, it.payload)
+            tileRepository.updatePayload(it.dashboardId, it.subscribeTopic, it.payload)
         }
     }
 
@@ -54,7 +54,7 @@ class SaveUpdatedPayload @Inject constructor(
 }
 
 data class PayloadUpdate(
-    val brokerId: Long,
+    val dashboardId: Long,
     val subscribeTopic: String,
     val payload: String
 )

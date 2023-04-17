@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
     tableName = "tiles",
     foreignKeys = [
         ForeignKey(
-            entity = Broker::class,
+            entity = Dashboard::class,
             parentColumns = ["id"],
             childColumns = ["dashboard_id"],
             onDelete = ForeignKey.CASCADE

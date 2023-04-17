@@ -7,6 +7,6 @@ open class Navigator(
 ) {
 
     fun back() {
-        navController.navigateUp()
+        navController.popBackStack()
     }
 }

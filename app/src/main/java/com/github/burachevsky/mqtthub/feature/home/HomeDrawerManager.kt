@@ -59,6 +59,7 @@ class HomeDrawerManager(
     suspend fun fillDrawer() {
         val brokers = vm.getBrokers()
         val dashboards = vm.getDashboards()
+        val currentIds = vm.getCurrentIds()
 
         vm.container.withContext(Dispatchers.Default) {
 
@@ -73,12 +74,12 @@ class HomeDrawerManager(
             ).apply {
 
                 addAll(
-                    dashboards.mapIndexed { i, it ->
+                    dashboards.map {
                         DrawerMenuItem(
                             Txt.of(it.name),
                             R.drawable.ic_dashboard,
                             type = DrawerMenuItem.Type.Dashboard(it),
-                            isSelected = i == 0
+                            isSelected = it.id == currentIds.currentDashboardId,
                         )
                     }
                 )
@@ -100,12 +101,12 @@ class HomeDrawerManager(
                 )
 
                 addAll(
-                    brokers.mapIndexed { i, it ->
+                    brokers.map {
                         DrawerMenuItem(
                             Txt.of(it.name),
                             R.drawable.ic_broker,
                             type = DrawerMenuItem.Type.Broker(it),
-                            isSelected = i == 0, // todo
+                            isSelected = it.id == currentIds.currentBrokerId,
                         )
                     }
                 )
@@ -220,32 +221,63 @@ class HomeDrawerManager(
     }
 
     private fun deleteDashboardFromList(dashboardId: Long) {
-        _items.value = _items.value.filter {
-            !(it is DrawerMenuItem
+        val position = _items.value.indexOfFirst {
+            it is DrawerMenuItem
                     && it.type is DrawerMenuItem.Type.Dashboard
-                    && it.type.dashboard.id == dashboardId)
+                    && it.type.dashboard.id == dashboardId
+        }
+
+        val item = items.get<DrawerMenuItem>(position)
+
+        _items.value = _items.value.toMutableList().apply {
+            removeAt(position)
+        }
+
+        if (item.isSelected) {
+            val newDashboardPosition = items.value.indexOfFirst {
+                it is DrawerMenuItem
+                        && it.type is DrawerMenuItem.Type.Dashboard
+            }
+
+            if (newDashboardPosition >= 0) {
+                dashboardClicked(
+                    newDashboardPosition,
+                    (items.get<DrawerMenuItem>(position).type as DrawerMenuItem.Type.Dashboard)
+                        .dashboard
+                )
+            }
         }
     }
 
     private fun dashboardClicked(position: Int, dashboard: Dashboard) {
-        _items.value = _items.value.mapIndexed { i, it ->
-            if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard) {
-                it.copy(isSelected = i == position)
-            } else it
+        val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
+
+        if (!alreadySelected) {
+            _items.value = _items.value.mapIndexed { i, it ->
+                if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard) {
+                    it.copy(isSelected = i == position)
+                } else it
+            }
+
+            vm.changeDashboard(dashboard)
         }
 
-        vm.changeDashboard(dashboard)
         vm.container.raiseEffect(CloseHomeDrawer)
     }
 
     private fun brokerClicked(position: Int, broker: Broker) {
-        _items.value = _items.value.mapIndexed { i, it ->
-            if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Broker) {
-                it.copy(isSelected = i == position)
-            } else it
+        val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
+
+        if (!alreadySelected) {
+            _items.value = _items.value.mapIndexed { i, it ->
+                if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Broker) {
+                    it.copy(isSelected = i == position)
+                } else it
+            }
+
+            vm.changeBroker(broker)
         }
 
-        vm.changeBroker(broker)
         vm.container.raiseEffect(CloseHomeDrawer)
     }
 
@@ -299,8 +331,6 @@ class HomeDrawerManager(
                     && it.type is DrawerMenuItem.Type.Broker
                     && it.type.broker.id == brokerId)
         }
-
-        vm.brokerDeleted(brokerId)
     }
 
     companion object {

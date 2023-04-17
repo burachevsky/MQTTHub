@@ -10,17 +10,11 @@ import com.github.burachevsky.mqtthub.data.entity.Broker
 @Dao
 interface BrokerDao {
 
-    @Query("SELECT * FROM brokers")
+    @Query("SELECT * FROM brokers ORDER BY id DESC")
     suspend fun getAll(): List<Broker>
 
-    @Query("SELECT * FROM brokers ORDER BY id DESC LIMIT 1")
-    suspend fun getFirst(): List<Broker>
-
     @Query("SELECT * FROM brokers WHERE id = :id")
-    suspend fun getById(id: Long): Broker
-
-    @Query("SELECT COUNT(*) FROM brokers")
-    suspend fun count(): Int
+    suspend fun getById(id: Long): Broker?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(broker: Broker): Long

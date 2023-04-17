@@ -20,13 +20,17 @@ import com.github.burachevsky.mqtthub.common.widget.ConnectionState
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.Tile
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentDashboard
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentDashboardWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentIds
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboardWithTiles
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
 import com.github.burachevsky.mqtthub.domain.usecase.tile.*
+import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
+import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
@@ -47,7 +51,6 @@ class HomeViewModel @Inject constructor(
     private val deleteTile: DeleteTile,
     private val updateTiles: UpdateTiles,
     private val deleteTiles: DeleteTiles,
-    private val getBroker: GetBroker,
     private val getCurrentDashboardWithTiles: GetCurrentDashboardWithTiles,
     private val getDashboardWithTiles: GetDashboardWithTiles,
     private val addTile: AddTile,
@@ -55,6 +58,9 @@ class HomeViewModel @Inject constructor(
     internal val getDashboards: GetDashboards,
     internal val getBrokers: GetBrokers,
     internal val eventBus: EventBus,
+    internal val updateCurrentBroker: UpdateCurrentBroker,
+    internal val updateCurrentDashboard: UpdateCurrentDashboard,
+    internal val getCurrentIds: GetCurrentIds,
 ) : ViewModel(), VM<HomeNavigator> {
 
     override val container = ViewModelContainer<HomeNavigator>(viewModelScope)
@@ -75,9 +81,8 @@ class HomeViewModel @Inject constructor(
     private val _noBrokersYet = MutableStateFlow(false)
     val noBrokersYet: StateFlow<Boolean> = _noBrokersYet
 
-    val noTilesYet: Flow<Boolean> = items.combine(noBrokersYet) { items, noBrokers ->
-        items.isEmpty() && !noBrokers
-    }
+    private val _noTilesYet = MutableStateFlow(false)
+    val noTilesYet: StateFlow<Boolean> = _noTilesYet
 
     private val topicHandler = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
 
@@ -87,9 +92,6 @@ class HomeViewModel @Inject constructor(
     val editMode: StateFlow<EditModeState> = _editMode
 
     private var itemReleased = true
-
-    var brokerId = 0L
-    private set
 
     private var dashboard: Dashboard? = null
 
@@ -101,9 +103,9 @@ class HomeViewModel @Inject constructor(
             _title.value = currentDashboard.name
 
             broker = getCurrentBroker()
-            brokerId = broker?.id ?: 0
 
             _noBrokersYet.value = broker == null
+            _noTilesYet.value = !_noBrokersYet.value && dashboardWithTiles.tiles.isEmpty()
 
             _items.value = dashboardWithTiles.tiles.map(::makeTileItem)
 
@@ -140,6 +142,16 @@ class HomeViewModel @Inject constructor(
                     _title.value = it.dashboard.name
                     dashboard = it.dashboard
                 }
+            }
+
+            subscribe<BrokerEdited>(viewModelScope) {
+                if (broker?.id == it.broker.id) {
+                    changeBroker(it.broker)
+                }
+            }
+
+            subscribe<BrokerDeleted>(viewModelScope) {
+                brokerDeleted(it.brokerId)
             }
         }
     }
@@ -361,17 +373,20 @@ class HomeViewModel @Inject constructor(
     fun changeBroker(broker: Broker?) {
         container.launch(Dispatchers.Main) {
             _noBrokersYet.value = broker == null
+
             disconnect().join()
+
             broker?.let {
-                this@HomeViewModel.brokerId = broker.id
                 this@HomeViewModel.broker = broker
                 reconnect(force = true)
             }
+
+            updateCurrentBroker(broker?.id)
         }
     }
 
-    fun brokerDeleted(brokerId: Long) {
-        if (this.brokerId == brokerId) {
+    private fun brokerDeleted(brokerId: Long) {
+        if (broker?.id == brokerId) {
             container.launch(Dispatchers.Main) {
                 changeBroker(getCurrentBroker())
             }
@@ -385,7 +400,6 @@ class HomeViewModel @Inject constructor(
             _title.value = newDashboard.name
 
             val tiles = _items.value.map { (it as TileItem).tile }
-            _items.value = listOf()
 
             container.withContext(Dispatchers.IO) {
                 tiles.forEach {
@@ -393,10 +407,12 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            updateCurrentDashboard(newDashboard.id)
             val dashboardWithTiles = getDashboardWithTiles(newDashboard.id)
             val currentDashboard = dashboardWithTiles.dashboard
             dashboard = currentDashboard
             _title.value = currentDashboard.name
+            _noTilesYet.value = dashboardWithTiles.tiles.isEmpty()
 
             _items.value = dashboardWithTiles.tiles.map(::makeTileItem)
 
@@ -411,9 +427,8 @@ class HomeViewModel @Inject constructor(
     fun navigateUp() {
         if (editMode.value.isEditMode) {
             showEditMode(false)
-
-        } else container.navigator {
-            back()
+        } else {
+            container.raiseEffect(CloseHomeDrawerOrNavigateUp)
         }
     }
 
@@ -624,8 +639,8 @@ class HomeViewModel @Inject constructor(
 
         updatePayload(subscribeTopic, payload = payload)
 
-        broker?.id?.let { brokerId ->
-            saveUpdatedPayload(PayloadUpdate(brokerId, subscribeTopic, payload))
+        dashboard?.id?.let { dashboardId ->
+            saveUpdatedPayload(PayloadUpdate(dashboardId, subscribeTopic, payload))
         }
     }
 

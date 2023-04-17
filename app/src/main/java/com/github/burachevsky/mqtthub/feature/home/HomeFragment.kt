@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
@@ -73,6 +75,12 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
         ),
     )
 
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            viewModel.navigateUp()
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appComponent.inject(this)
@@ -100,10 +108,30 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
         setupDrawerRecyclerView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        backPressedCallback.isEnabled = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        backPressedCallback.isEnabled = false
+    }
+
     override fun handleEffect(effect: UIEffect): Boolean {
         when (effect) {
             is CloseHomeDrawer -> {
                 binding.drawerLayout.close()
+                return true
+            }
+
+            is CloseHomeDrawerOrNavigateUp -> {
+                if (binding.drawerLayout.isOpen) {
+                    binding.drawerLayout.close()
+                } else {
+                    backPressedCallback.isEnabled = false
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
                 return true
             }
         }
@@ -161,13 +189,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
         }
 
         requireActivity().onBackPressedDispatcher
-            .addCallback(viewLifecycleOwner,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        viewModel.navigateUp()
-                    }
-                }
-            )
+            .addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     private fun observeViewModel() {
@@ -243,6 +265,10 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
         binding.addTileButton.run {
             if (showEditToolbar) hide() else show()
         }
+
+        binding.drawerLayout.setDrawerLockMode(
+            if (showEditToolbar) LOCK_MODE_LOCKED_CLOSED else LOCK_MODE_UNLOCKED
+        )
 
         if (editMode.isEditMode) {
             val menuRes = if (viewModel.editMode.value.selectedCount == 1) {

@@ -7,9 +7,6 @@ import javax.inject.Inject
 class TileRepositoryImpl @Inject constructor(
     private val tileDao: TileDao,
 ) : TileRepository {
-    override suspend fun getAllBrokerTiles(brokerId: Long): List<Tile> {
-        return tileDao.getAllBrokerTiles(brokerId)
-    }
 
     override suspend fun insertTile(tile: Tile): Tile {
         val id = tileDao.insert(tile)
@@ -32,8 +29,8 @@ class TileRepositoryImpl @Inject constructor(
         tileDao.delete(tiles)
     }
 
-    override suspend fun updatePayload(brokerId: Long, subscribeTopic: String, payload: String) {
-        return tileDao.updatePayload(brokerId, subscribeTopic, payload)
+    override suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String) {
+        return tileDao.updatePayload(dashboardId, subscribeTopic, payload)
     }
 
     override suspend fun getTile(id: Long): Tile {

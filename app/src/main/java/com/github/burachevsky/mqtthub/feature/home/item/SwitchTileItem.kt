@@ -2,9 +2,9 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.CompoundButton.OnCheckedChangeListener
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
-import com.github.burachevsky.mqtthub.common.ext.isState
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
@@ -43,16 +43,19 @@ data class SwitchTileItem(
 
 class SwitchTileItemViewHolder(
     itemView: View,
-    listener: TileItem.Listener
-) : ItemViewHolder(itemView) {
+    private val listener: TileItem.Listener
+) : ItemViewHolder(itemView), OnCheckedChangeListener {
 
     private val binding = ListItemSwitchTileBinding.bind(itemView)
 
+    private var item: SwitchTileItem? = null
+
     init {
         binding.tileSwitch.setOnClickListener {
-            binding.tileSwitch.isChecked = !binding.tileSwitch.isChecked
             listener.onClick(adapterPosition)
         }
+
+        binding.tileSwitch.setOnCheckedChangeListener(this)
 
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
@@ -63,8 +66,13 @@ class SwitchTileItemViewHolder(
         }
     }
 
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        listener.onClick(adapterPosition)
+    }
+
     override fun bind(item: ListItem) {
         item as SwitchTileItem
+        this.item = item
 
         bindName(item)
         bindSwitchState(item)
@@ -82,12 +90,26 @@ class SwitchTileItemViewHolder(
         }
     }
 
+    private fun changeCheckedWithoutTriggering(value: Boolean) {
+        binding.tileSwitch.apply {
+            setOnCheckedChangeListener(null)
+            isChecked = value
+            setOnCheckedChangeListener(this@SwitchTileItemViewHolder)
+        }
+    }
+
     private fun bindName(item: SwitchTileItem) {
         binding.tileSwitch.text = item.tile.name
     }
 
     private fun bindSwitchState(item: SwitchTileItem) {
-        binding.tileSwitch.isChecked = item.tile.isState(SWITCH_ON)
+        val newState = item.isChecked()
+
+        binding.tileSwitch.apply {
+            if (isChecked != newState) {
+                changeCheckedWithoutTriggering(newState)
+            }
+        }
     }
 }
 

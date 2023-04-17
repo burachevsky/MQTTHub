@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.data.di
 
 import com.github.burachevsky.mqtthub.data.AppDatabase
 import com.github.burachevsky.mqtthub.data.dao.BrokerDao
+import com.github.burachevsky.mqtthub.data.dao.CurrentIdsDao
 import com.github.burachevsky.mqtthub.data.dao.DashboardDao
 import com.github.burachevsky.mqtthub.data.dao.TileDao
 import dagger.Module
@@ -18,4 +19,7 @@ class DaoModule {
 
     @Provides
     fun provideDashboardDao(db: AppDatabase): DashboardDao = db.dashboardDao()
+
+    @Provides
+    fun provideCurrentIdsDao(db: AppDatabase): CurrentIdsDao = db.currentIdsDao()
 }

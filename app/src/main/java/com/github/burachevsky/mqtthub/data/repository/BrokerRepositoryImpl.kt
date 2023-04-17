@@ -6,7 +6,8 @@ import com.github.burachevsky.mqtthub.data.entity.Broker
 import javax.inject.Inject
 
 class BrokerRepositoryImpl @Inject constructor(
-    private val brokerDao: BrokerDao
+    private val brokerDao: BrokerDao,
+    private val currentIdsRepository: CurrentIdsRepository,
 ) : BrokerRepository {
 
     override suspend fun getBrokers(): List<Broker> {
@@ -14,12 +15,16 @@ class BrokerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBroker(id: Long): Broker {
-        return brokerDao.getById(id)
+        return brokerDao.getById(id)!!
     }
 
     @Transaction
     override suspend fun getCurrentBroker(): Broker? {
-        return brokerDao.getFirst().firstOrNull()
+        val currentBrokerId = currentIdsRepository.getCurrentBrokerId()
+
+        return currentBrokerId?.let {
+            brokerDao.getById(it)
+        }
     }
 
     override suspend fun insertBroker(broker: Broker): Broker {
