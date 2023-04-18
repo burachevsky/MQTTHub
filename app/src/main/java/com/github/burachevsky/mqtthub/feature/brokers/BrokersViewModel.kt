@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
-import com.github.burachevsky.mqtthub.common.effect.AlertDialog
-import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.common.event.AlertDialog
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
 import com.github.burachevsky.mqtthub.common.ext.get

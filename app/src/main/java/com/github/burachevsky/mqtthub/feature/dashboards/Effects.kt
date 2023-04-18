@@ -1,16 +1,16 @@
 package com.github.burachevsky.mqtthub.feature.dashboards
 
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
 
 data class DashboardCreated(
     val dashboard: Dashboard
-) : UIEffect
+) : AppEvent
 
 data class DashboardEdited(
     val dashboard: Dashboard
-) : UIEffect
+) : AppEvent
 
 data class DashboardDeleted(
     val dashboardId: Long,
-) : UIEffect
+) : AppEvent

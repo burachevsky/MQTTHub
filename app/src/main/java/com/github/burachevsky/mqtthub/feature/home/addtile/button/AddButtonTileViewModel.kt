@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.feature.home.addtile.button
 
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
-import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.EmptyTxt

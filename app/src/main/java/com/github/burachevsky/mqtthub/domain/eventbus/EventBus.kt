@@ -1,6 +1,5 @@
-package com.github.burachevsky.mqtthub.common.eventbus
+package com.github.burachevsky.mqtthub.domain.eventbus
 
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -8,13 +7,13 @@ import kotlin.reflect.KClass
 
 class EventBus() {
 
-    private val events = MutableSharedFlow<UIEffect>()
+    private val events = MutableSharedFlow<AppEvent>()
 
-    suspend fun send(event: UIEffect) {
+    suspend fun send(event: AppEvent) {
         events.emit(event)
     }
 
-    fun <T : UIEffect> subscribe(
+    fun <T : AppEvent> subscribe(
         scope: CoroutineScope,
         eventType: KClass<T>,
         handler: suspend (T) -> Unit
@@ -29,7 +28,7 @@ class EventBus() {
         }
     }
 
-    inline fun <reified T : UIEffect> subscribe(
+    inline fun <reified T : AppEvent> subscribe(
         scope: CoroutineScope,
         noinline handler: suspend (T) -> Unit
     ) {

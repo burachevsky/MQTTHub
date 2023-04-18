@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
-import com.github.burachevsky.mqtthub.common.effect.EffectHandler
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
@@ -29,7 +29,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
+class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -118,7 +118,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
         backPressedCallback.isEnabled = false
     }
 
-    override fun handleEffect(effect: UIEffect): Boolean {
+    override fun handleEffect(effect: AppEvent): Boolean {
         when (effect) {
             is CloseHomeDrawer -> {
                 binding.drawerLayout.close()
@@ -148,6 +148,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
             )
 
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+            setHasFixedSize(true)
             adapter = listAdapter
         }
 
@@ -159,6 +160,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, EffectHandler {
     private fun setupDrawerRecyclerView() {
         binding.drawerRecyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
+            setHasFixedSize(true)
             adapter = drawerListAdapter
         }
     }

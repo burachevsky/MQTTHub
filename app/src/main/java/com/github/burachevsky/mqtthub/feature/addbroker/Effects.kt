@@ -1,12 +1,12 @@
 package com.github.burachevsky.mqtthub.feature.addbroker
 
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.data.entity.Broker
 
 data class BrokerAdded(
     val broker: Broker
-) : UIEffect
+) : AppEvent
 
 data class BrokerEdited(
     val broker: Broker
-) : UIEffect
+) : AppEvent

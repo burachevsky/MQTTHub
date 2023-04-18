@@ -35,11 +35,6 @@
             android:id="@+id/navigateDashboards"
             app:destination="@+id/dashboardsFragment" />
 
-        <action
-            android:id="@+id/exit"
-            app:popUpTo="@id/app_graph"
-            app:popUpToInclusive="true" />
-
     </fragment>
 
     <action

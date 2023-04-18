@@ -9,8 +9,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.effect.*
+import com.github.burachevsky.mqtthub.common.event.*
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -25,7 +27,7 @@ class ViewContainer(
     var activity: Activity? = if (viewController is Activity) viewController else null
         private set
 
-    private var viewEffectHandler: EffectHandler? = null
+    private var viewAppEventHandler: AppEventHandler? = null
 
     private var navigator: Navigator? = null
 
@@ -49,8 +51,8 @@ class ViewContainer(
             }
         }
 
-        if (viewController is EffectHandler) {
-            viewEffectHandler = viewController
+        if (viewController is AppEventHandler) {
+            viewAppEventHandler = viewController
         }
     }
 
@@ -77,8 +79,8 @@ class ViewContainer(
         }
     }
 
-    private fun handleEffect(effect: UIEffect) {
-        if (viewEffectHandler?.handleEffect(effect) == true)
+    private fun handleEffect(effect: AppEvent) {
+        if (viewAppEventHandler?.handleEffect(effect) == true)
             return
 
         when (effect) {
@@ -133,7 +135,7 @@ class ViewContainer(
     private fun clear() {
         cancelEffectCollection()
         activity = null
-        viewEffectHandler = null
+        viewAppEventHandler = null
         vmContainer = null
     }
 }

@@ -48,6 +48,7 @@
     <string name="off_state">Off state</string>
 
     <string name="error_failed_to_connect">Failed to connect</string>
+    <string name="error_lost_connection_with_broker">Lost connection with %s [%s]</string>
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
 
     <string name="delete">Delete</string>

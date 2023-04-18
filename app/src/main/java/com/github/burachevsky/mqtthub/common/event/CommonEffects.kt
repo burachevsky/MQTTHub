@@ -1,15 +1,16 @@
-package com.github.burachevsky.mqtthub.common.effect
+package com.github.burachevsky.mqtthub.common.event
 
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 
 data class ToastMessage(
     val text: Txt
-) : UIEffect
+) : AppEvent
 
 data class Navigate(
     val navigateAction: (Navigator) -> Unit
-) : UIEffect
+) : AppEvent
 
 data class AlertDialog(
     val title: Txt? = null,
@@ -18,7 +19,7 @@ data class AlertDialog(
     val no: Button? = null,
     val cancel: Button? = null,
     val cancelable: Boolean = true
-) : UIEffect {
+) : AppEvent {
 
     data class Button(
         val text: Txt,

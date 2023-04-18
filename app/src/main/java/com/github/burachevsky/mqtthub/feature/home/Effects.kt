@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.feature.home
 
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 
-object CloseHomeDrawer : UIEffect
+object CloseHomeDrawer : AppEvent
 
-object CloseHomeDrawerOrNavigateUp : UIEffect
+object CloseHomeDrawerOrNavigateUp : AppEvent

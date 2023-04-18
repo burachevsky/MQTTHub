@@ -3,7 +3,7 @@ package com.github.burachevsky.mqtthub.feature.home.addtile.switchh
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.SWITCH_OFF
 import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
-import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.getPayload
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
