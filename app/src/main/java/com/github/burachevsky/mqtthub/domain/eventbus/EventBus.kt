@@ -35,3 +35,4 @@ class EventBus() {
         subscribe(scope, T::class, handler)
     }
 }
+

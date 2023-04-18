@@ -26,8 +26,10 @@ internal class SubscriptionManager(
             launchMessageCollecting(topic)
         }
 
-        connection.execSafely {
-            mqttClient.subscribe(newTopics.toTypedArray())
+        if (newTopics.isNotEmpty()) {
+            connection.execSafely {
+                mqttClient.subscribe(newTopics.toTypedArray())
+            }
         }
     }
 
@@ -36,14 +38,18 @@ internal class SubscriptionManager(
     }
 
     suspend fun unsubscribe(topics: List<String>) {
-        val distinctTopics = topics.distinct()
+        val distinctTopics = topics.filter { it.isNotEmpty() }
+            .distinct()
 
         val topicsString = distinctTopics.joinToString(", ")
         Timber.i("BrokerConnection: unsubscribing from topics [$topicsString]")
 
         distinctTopics.forEach(subscriptions::remove)
-        connection.execSafely {
-            mqttClient.unsubscribe(distinctTopics.toTypedArray())
+
+        if (distinctTopics.isNotEmpty()) {
+            connection.execSafely {
+                mqttClient.unsubscribe(distinctTopics.toTypedArray())
+            }
         }
     }
 

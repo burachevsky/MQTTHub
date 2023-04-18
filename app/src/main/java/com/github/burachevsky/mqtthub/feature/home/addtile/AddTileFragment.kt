@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -23,8 +22,6 @@ import kotlin.reflect.KClass
 abstract class AddTileFragment<VM : AddTileViewModel>(
     private val viewModelClass: KClass<VM>,
 ) : Fragment(), ViewController<VM> {
-
-    override lateinit var viewModel: VM
 
     abstract var viewModelFactory: ViewModelFactory<VM>
 
@@ -53,7 +50,6 @@ abstract class AddTileFragment<VM : AddTileViewModel>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory)[viewModelClass.java]
         container.onCreate()
     }
 

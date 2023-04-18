@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -31,7 +30,7 @@ class DashboardsFragment : Fragment(), ViewController<DashboardsViewModel> {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<DashboardsViewModel>
 
-    override lateinit var viewModel: DashboardsViewModel
+    override val viewModel: DashboardsViewModel by viewModels { viewModelFactory }
 
     private val listAdapter = CompositeAdapter(
         DashboardItemAdapter(
@@ -55,7 +54,6 @@ class DashboardsFragment : Fragment(), ViewController<DashboardsViewModel> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
         container.onCreate()
     }
 

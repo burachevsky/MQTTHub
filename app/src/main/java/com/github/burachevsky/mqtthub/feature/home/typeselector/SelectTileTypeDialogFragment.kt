@@ -5,8 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -25,7 +24,7 @@ class SelectTileTypeDialogFragment : BottomSheetDialogFragment(),
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<SelectTileTypeViewModel>
 
-    override lateinit var viewModel: SelectTileTypeViewModel
+    override val viewModel: SelectTileTypeViewModel by viewModels { viewModelFactory }
 
     override val container = ViewContainer(this, ::Navigator)
 
@@ -49,7 +48,6 @@ class SelectTileTypeDialogFragment : BottomSheetDialogFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
         container.onCreate()
     }
 

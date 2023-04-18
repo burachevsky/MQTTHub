@@ -4,5 +4,5 @@ import androidx.lifecycle.LifecycleOwner
 
 interface ViewController<VM : com.github.burachevsky.mqtthub.common.container.VM<*>> : LifecycleOwner {
     val container: ViewContainer
-    var viewModel: VM
+    val viewModel: VM
 }

@@ -1,13 +1,19 @@
 package com.github.burachevsky.mqtthub.feature.home
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
+import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentIds
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerAdded
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
 import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
@@ -21,47 +27,53 @@ import com.github.burachevsky.mqtthub.feature.home.item.DrawerMenuItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class HomeDrawerManager(
-    private val vm: HomeViewModel
-) {
+class HomeDrawerManager @Inject constructor(
+    val container: ViewModelContainer<HomeNavigator>,
+    private val eventBus: EventBus,
+    private val getBrokers: GetBrokers,
+    private val getDashboards: GetDashboards,
+    private val getCurrentIds: GetCurrentIds,
+) : ViewModel() {
+
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
     init {
-        vm.eventBus.apply {
-            subscribe<BrokerAdded>(vm.viewModelScope) {
+        eventBus.apply {
+            subscribe<BrokerAdded>(viewModelScope) {
                 addBrokerToList(it.broker)
             }
 
-            subscribe<BrokerEdited>(vm.viewModelScope) {
+            subscribe<BrokerEdited>(viewModelScope) {
                 editBrokerInList(it.broker)
             }
 
-            subscribe<BrokerDeleted>(vm.viewModelScope) {
+            subscribe<BrokerDeleted>(viewModelScope) {
                 deleteBrokerFromList(it.brokerId)
             }
 
-            subscribe<DashboardCreated>(vm.viewModelScope) {
+            subscribe<DashboardCreated>(viewModelScope) {
                 addDashboardToList(it.dashboard)
             }
 
-            subscribe<DashboardEdited>(vm.viewModelScope) {
+            subscribe<DashboardEdited>(viewModelScope) {
                 editDashboardInList(it.dashboard)
             }
 
-            subscribe<DashboardDeleted>(vm.viewModelScope) {
+            subscribe<DashboardDeleted>(viewModelScope) {
                 deleteDashboardFromList(it.dashboardId)
             }
         }
     }
 
-    suspend fun fillDrawer() {
-        val brokers = vm.getBrokers()
-        val dashboards = vm.getDashboards()
-        val currentIds = vm.getCurrentIds()
+    fun fillDrawer() = container.launch(Dispatchers.Main) {
+        val brokers = getBrokers()
+        val dashboards = getDashboards()
+        val currentIds = getCurrentIds()
 
-        vm.container.withContext(Dispatchers.Default) {
+        container.withContext(Dispatchers.Default) {
 
             val list = mutableListOf(
                 DrawerHeaderItem,
@@ -163,11 +175,11 @@ class HomeDrawerManager(
     private fun buttonClicked(buttonId: Int) {
         when (buttonId) {
             BUTTON_CREATE_NEW_DASHBOARD -> {
-                vm.container.navigator { navigateEditDashboards(addNew = true) }
+                container.navigator { navigateEditDashboards(addNew = true) }
             }
 
             BUTTON_ADD_NEW_BROKER -> {
-                vm.container.navigator { navigateAddBroker() }
+                container.navigator { navigateAddBroker() }
             }
 
             BUTTON_SETTINGS -> {}
@@ -175,11 +187,11 @@ class HomeDrawerManager(
             BUTTON_HELP_AND_FEEDBACK -> {}
 
             BUTTON_EDIT_BROKERS -> {
-                vm.container.navigator { navigateEditBrokers() }
+                container.navigator { navigateEditBrokers() }
             }
 
             BUTTON_EDIT_DASHBOARDS -> {
-                vm.container.navigator { navigateEditDashboards() }
+                container.navigator { navigateEditDashboards() }
             }
         }
     }
@@ -250,19 +262,23 @@ class HomeDrawerManager(
     }
 
     private fun dashboardClicked(position: Int, dashboard: Dashboard) {
-        val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
+        container.raiseEffect(CloseHomeDrawer)
 
-        if (!alreadySelected) {
-            _items.value = _items.value.mapIndexed { i, it ->
-                if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard) {
-                    it.copy(isSelected = i == position)
-                } else it
+        container.launch(Dispatchers.Default) {
+            val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
+
+            if (!alreadySelected) {
+                _items.emit(
+                    _items.value.mapIndexed { i, it ->
+                        if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard) {
+                            it.copy(isSelected = i == position)
+                        } else it
+                    }
+                )
+
+                eventBus.send(DashboardChanged(dashboard))
             }
-
-            vm.changeDashboard(dashboard)
         }
-
-        vm.container.raiseEffect(CloseHomeDrawer)
     }
 
     private fun brokerClicked(position: Int, broker: Broker) {
@@ -275,10 +291,12 @@ class HomeDrawerManager(
                 } else it
             }
 
-            vm.changeBroker(broker)
+            container.launch(Dispatchers.Main) {
+                eventBus.send(BrokerChanged(broker))
+            }
         }
 
-        vm.container.raiseEffect(CloseHomeDrawer)
+        container.raiseEffect(CloseHomeDrawer)
     }
 
     private fun addBrokerToList(broker: Broker) {
@@ -302,7 +320,9 @@ class HomeDrawerManager(
         }
 
         if (brokersCount == 1) {
-            vm.changeBroker(broker)
+            container.launch(Dispatchers.Main) {
+                eventBus.send(BrokerChanged(broker))
+            }
         }
     }
 

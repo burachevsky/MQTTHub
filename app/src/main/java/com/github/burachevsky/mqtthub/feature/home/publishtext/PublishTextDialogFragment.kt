@@ -7,12 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.ext.appComponent
-import com.github.burachevsky.mqtthub.common.ext.get
-import com.github.burachevsky.mqtthub.common.ext.setOnEnterListener
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.databinding.DialogPublishTextBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
@@ -27,7 +25,7 @@ class PublishTextDialogFragment : BottomSheetDialogFragment(), ViewController<Pu
 
     override val container = ViewContainer(this, ::Navigator)
 
-    override lateinit var viewModel: PublishTextViewModel
+    override val viewModel: PublishTextViewModel by viewModels { viewModelFactory }
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<PublishTextViewModel>
@@ -40,7 +38,6 @@ class PublishTextDialogFragment : BottomSheetDialogFragment(), ViewController<Pu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
         container.onCreate()
     }
 

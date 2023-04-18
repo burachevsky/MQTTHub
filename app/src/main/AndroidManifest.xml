@@ -17,6 +17,8 @@
         android:theme="@style/Theme.MQTTHub"
         tools:targetApi="33">
 
+        <profileable android:shell="true"/>
+
         <activity android:name=".AppActivity"
             android:exported="true">
 

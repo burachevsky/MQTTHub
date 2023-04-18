@@ -8,10 +8,9 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
@@ -39,7 +38,10 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<HomeViewModel>
 
-    override lateinit var viewModel: HomeViewModel
+    override val viewModel: HomeViewModel by viewModels { viewModelFactory }
+
+    @Inject
+    lateinit var drawerManager: HomeDrawerManager
 
     private val tileItemListener = object : TileItem.Listener {
 
@@ -62,14 +64,14 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
         DrawerLabelItemAdapter(
             object : DrawerLabelItem.Listener {
                 override fun onClick(position: Int) {
-                    viewModel.drawerManager.onLabelButtonClick(position)
+                    drawerManager.onLabelButtonClick(position)
                 }
             }
         ),
         DrawerMenuItemAdapter(
             object : DrawerMenuItem.Listener {
                 override fun onClick(position: Int) {
-                    viewModel.drawerManager.onMenuItemClick(position)
+                    drawerManager.onMenuItemClick(position)
                 }
             }
         ),
@@ -83,12 +85,12 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.inject(this)
+        appComponent.homeComponent(HomeModule(this))
+            .inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
         container.onCreate()
     }
 
@@ -102,6 +104,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        drawerManager.fillDrawer()
         setupListeners()
         observeViewModel()
         setupRecyclerView()
@@ -147,7 +150,11 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
                 StaggeredGridLayoutManager.VERTICAL
             )
 
-            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+            itemAnimator =
+                DefaultItemAnimator().apply {
+                supportsChangeAnimations = false
+                addDuration = 0
+            }
             setHasFixedSize(true)
             adapter = listAdapter
         }
@@ -197,7 +204,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
     private fun observeViewModel() {
         collectOnStarted(viewModel.connectionState, binding.connection::applyState)
         collectOnStarted(viewModel.items, listAdapter::submitList)
-        collectOnStarted(viewModel.drawerManager.items, drawerListAdapter::submitList)
+        collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
         collectOnStarted(viewModel.title, binding.toolbar::setTitle)
 

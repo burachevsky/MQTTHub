@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -31,7 +31,7 @@ class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<BrokersViewModel>
 
-    override lateinit var viewModel: BrokersViewModel
+    override val viewModel: BrokersViewModel by viewModels { viewModelFactory }
 
     private val listAdapter = CompositeAdapter(
         BrokerItemAdapter(
@@ -58,7 +58,6 @@ class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory)[BrokersViewModel::class.java]
         container.onCreate()
     }
 

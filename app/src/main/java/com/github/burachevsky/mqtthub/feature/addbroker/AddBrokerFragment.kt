@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -30,7 +29,7 @@ class AddBrokerFragment : Fragment(), ViewController<AddBrokerViewModel> {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AddBrokerViewModel>
 
-    override lateinit var viewModel: AddBrokerViewModel
+    override val viewModel: AddBrokerViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentAddBrokerBinding? = null
     private val binding get() = _binding!!
@@ -52,7 +51,6 @@ class AddBrokerFragment : Fragment(), ViewController<AddBrokerViewModel> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
         container.onCreate()
     }
 

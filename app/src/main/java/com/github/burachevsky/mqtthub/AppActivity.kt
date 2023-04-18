@@ -1,9 +1,9 @@
 package com.github.burachevsky.mqtthub
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.github.burachevsky.mqtthub.common.container.ViewContainer
@@ -17,7 +17,7 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AppViewModel>
 
-    override lateinit var viewModel: AppViewModel
+    override val viewModel: AppViewModel by viewModels { viewModelFactory }
 
     override val container = ViewContainer(this, ::Navigator)
 
@@ -25,7 +25,6 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_app)
         (application as App).appComponent.inject(this)
-        viewModel = ViewModelProvider(this, viewModelFactory)[AppViewModel::class.java]
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         container.onCreate()
         findNavController().setGraph(R.navigation.app_graph)

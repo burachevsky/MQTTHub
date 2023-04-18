@@ -15,7 +15,11 @@ data class DrawerLabelItem(
     val buttonText: Txt? = null,
 ) : ListItem {
     override fun layout() = LAYOUT
-    
+
+    override fun areItemsTheSame(that: ListItem): Boolean {
+        return that is DrawerLabelItem && this.id == that.id
+    }
+
     companion object {
         val LAYOUT get() = R.layout.list_item_drawer_label
     }
