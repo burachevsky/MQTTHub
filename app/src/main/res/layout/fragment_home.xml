@@ -65,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingHorizontal="12dp"
+            android:paddingBottom="96dp"
             android:clipToPadding="false"
             android:clipChildren="false"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
