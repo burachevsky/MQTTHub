@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.dao.TileDao
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class TileRepositoryImpl @Inject constructor(
@@ -35,5 +36,9 @@ class TileRepositoryImpl @Inject constructor(
 
     override suspend fun getTile(id: Long): Tile {
         return tileDao.getById(id)
+    }
+
+    override fun observeTile(id: Long): Flow<Tile> {
+        return tileDao.observeTile(id)
     }
 }

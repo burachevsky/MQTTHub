@@ -11,3 +11,7 @@ object CloseHomeDrawerOrNavigateUp : AppEvent
 data class BrokerChanged(val broker: Broker?) : AppEvent
 
 data class DashboardChanged(val dashboard: Dashboard) : AppEvent
+
+data class OpenTextTileDetails(
+    val position: Int, val tileId: Long
+) : AppEvent

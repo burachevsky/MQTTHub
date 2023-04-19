@@ -44,7 +44,7 @@ class TextTileItemViewHolder(
     listener: TileItem.Listener,
 ) : ItemViewHolder(itemView) {
 
-    private val binding = ListItemTextTileBinding.bind(itemView)
+    val binding = ListItemTextTileBinding.bind(itemView)
 
     init {
         binding.tile.setOnClickListener {

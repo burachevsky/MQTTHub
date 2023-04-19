@@ -9,6 +9,8 @@ import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -25,6 +27,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.feature.home.item.*
+import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -136,6 +139,24 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
                 return true
+            }
+
+            is OpenTextTileDetails -> {
+                 val viewHolder = binding.recyclerView
+                     .findViewHolderForAdapterPosition(effect.position)
+                    as TextTileItemViewHolder
+
+                viewHolder.binding
+
+                findNavController().navigate(
+                    R.id.navigateTextTileDetails,
+                    TextTileDetailsFragmentArgs(effect.tileId).toBundle(),
+                    null,
+                    FragmentNavigatorExtras(
+                        viewHolder.binding.tile to "detailsTile",
+                        //viewHolder.binding.tileName to "detailsTileName",
+                    )
+                )
             }
         }
 

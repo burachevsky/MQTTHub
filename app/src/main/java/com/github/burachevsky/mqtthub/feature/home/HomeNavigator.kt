@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.button.AddButtonTileF
 import com.github.burachevsky.mqtthub.feature.home.addtile.switchh.AddSwitchFragmentArgs
 import com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragmentArgs
+import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
 
 class HomeNavigator(navController: NavController) : Navigator(navController) {
 
@@ -43,5 +44,10 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
     fun navigateEditDashboards(addNew: Boolean = false) = navController.navigate(
         R.id.navigateDashboards,
         DashboardsFragmentArgs(addNew).toBundle()
+    )
+
+    fun navigateTextTileDetails(tileId: Long) = navController.navigate(
+        R.id.navigateTextTileDetails,
+        TextTileDetailsFragmentArgs(tileId).toBundle()
     )
 }

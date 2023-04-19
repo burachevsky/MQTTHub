@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.dashboards.item
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.ext.clearFocusAndHideKeyboard
@@ -152,6 +153,9 @@ class DashboardItemViewHolder(
         }
 
         val isFocused = binding.editText.isFocused
+
+        binding.dividerTop.isVisible = isFocused
+        binding.dividerBottom.isVisible = isFocused
 
         binding.editText.hint = when {
             isFocused || item.config.showPlaceholderWhenUnfocused -> {

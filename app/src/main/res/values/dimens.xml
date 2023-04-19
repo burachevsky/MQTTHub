@@ -10,4 +10,6 @@
 
     <dimen name="drawer_horizontal_margin">28dp</dimen>
 
+    <dimen name="dialog_size">300dp</dimen>
+
 </resources>

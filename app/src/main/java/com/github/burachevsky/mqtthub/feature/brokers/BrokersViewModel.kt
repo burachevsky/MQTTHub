@@ -33,7 +33,8 @@ class BrokersViewModel @Inject constructor(
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
-    val noBrokersYet: Flow<Boolean> = items.map { it.isEmpty() }
+    private val _noBrokersYet = MutableStateFlow(false)
+    val noBrokersYet: StateFlow<Boolean> = _noBrokersYet
 
     init {
         eventBus.apply {
@@ -47,7 +48,9 @@ class BrokersViewModel @Inject constructor(
         }
 
         container.launch(Dispatchers.Main) {
-            _items.value = getBrokers().map(::BrokerItem)
+            val brokerItems = getBrokers().map(::BrokerItem)
+            _noBrokersYet.value = brokerItems.isEmpty()
+            _items.value = brokerItems
         }
     }
 

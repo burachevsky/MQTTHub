@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TileDao {
@@ -34,4 +35,7 @@ interface TileDao {
 
     @Query("SELECT * FROM tiles WHERE id = :id")
     suspend fun getById(id: Long): Tile
+
+    @Query("SELECT * FROM tiles WHERE id = :id")
+    fun observeTile(id: Long): Flow<Tile>
 }

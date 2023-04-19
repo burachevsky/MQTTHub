@@ -219,10 +219,8 @@ class HomeViewModel @Inject constructor(
                     publish(tile, newPayload)
                 }
 
-                Tile.Type.TEXT -> if (tile.publishTopic.isNotEmpty()) {
-                    container.navigator {
-                        navigatePublishTextDialog(tile.id, tile.name)
-                    }
+                Tile.Type.TEXT -> container.raiseEffect {
+                    OpenTextTileDetails(position, tile.id)
                 }
             }
         }

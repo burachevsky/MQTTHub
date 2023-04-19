@@ -87,4 +87,5 @@
     <string name="dashboards_delete_dialog_title">Delete %s?</string>
     <string name="dashboards_delete_dialog_message">This action cannot be undone</string>
 
+    <string name="tile_details_publish">Publish</string>
 </resources>

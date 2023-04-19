@@ -16,6 +16,8 @@ import com.github.burachevsky.mqtthub.feature.home.addtile.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextComponent
 import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextModule
 import com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment
+import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsComponent
+import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -44,4 +46,5 @@ interface AppComponent {
     fun addTileComponent(module: AddTileModule): AddTileComponent
     fun publishTextComponent(module: PublishTextModule): PublishTextComponent
     fun dashboardsComponent(module: DashboardsModule): DashboardsComponent
+    fun textTileDetailsComponent(module: TextTileDetailsModule): TextTileDetailsComponent
 }

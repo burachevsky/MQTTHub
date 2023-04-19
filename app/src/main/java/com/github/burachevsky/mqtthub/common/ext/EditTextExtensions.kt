@@ -27,6 +27,8 @@ fun EditText.setFocus(isFocus: Boolean) {
         if (isFocus) {
             requestFocus()
             showKeyboard()
+        } else {
+            clearFocusAndHideKeyboard()
         }
     }
 }

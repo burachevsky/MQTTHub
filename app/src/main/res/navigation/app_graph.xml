@@ -33,7 +33,11 @@
 
         <action
             android:id="@+id/navigateDashboards"
-            app:destination="@+id/dashboardsFragment" />
+            app:destination="@id/dashboardsFragment" />
+
+        <action
+            android:id="@+id/navigateTextTileDetails"
+            app:destination="@id/textTileDetailsFragment" />
 
     </fragment>
 
@@ -156,6 +160,18 @@
             android:name="addNew"
             app:argType="boolean"
             android:defaultValue="false" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/textTileDetailsFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragment"
+        android:label="TextTileDetailsFragment"
+        tools:layout="@layout/fragment_text_tile_details">
+
+        <argument
+            android:name="tileId"
+            app:argType="long" />
 
     </fragment>
 

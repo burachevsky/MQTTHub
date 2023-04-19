@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import kotlinx.coroutines.flow.Flow
 
 interface TileRepository {
 
@@ -17,4 +18,6 @@ interface TileRepository {
     suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String)
 
     suspend fun getTile(id: Long): Tile
+
+    fun observeTile(id: Long): Flow<Tile>
 }
