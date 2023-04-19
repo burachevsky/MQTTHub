@@ -101,11 +101,11 @@ class HomeViewModel @Inject constructor(
             _noBrokersYet.emit(broker == null)
             _noTilesYet.emit(!_noBrokersYet.value && dashboardWithTiles.tiles.isEmpty())
 
-            _items.emit(dashboardWithTiles.tiles.map(::makeTileItem))
+            _items.emit(dashboardWithTiles.tiles.mapToItems())
 
             _connectionState.emit(ConnectionState.Connecting)
             brokerConnection = broker?.toBrokerConnection()
-            brokerConnection?.start()
+            brokerConnection { start() }
         }
 
         eventBus.apply {
@@ -133,8 +133,10 @@ class HomeViewModel @Inject constructor(
             }
 
             subscribe<BrokerEdited>(viewModelScope) {
-                if (brokerConnection?.broker?.id == it.broker.id) {
-                    changeBroker(it.broker)
+                brokerConnection {
+                    if (broker.id == it.broker.id) {
+                        changeBroker(it.broker)
+                    }
                 }
             }
 
@@ -158,9 +160,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun addTileClicked() {
-        container.navigator {
-            navigateSelectTileType()
-        }
+        container.navigator { navigateSelectTileType() }
+    }
+
+    fun addFirstBroker() {
+        container.navigator { navigateAddBroker() }
     }
 
     fun tileLongClicked(position: Int): Boolean {
@@ -174,10 +178,6 @@ class HomeViewModel @Inject constructor(
         showEditMode(true, position)
 
         return true
-    }
-
-    fun addFirstBroker() {
-        container.navigator { navigateAddBroker() }
     }
 
     fun tileClicked(position: Int) {
@@ -210,13 +210,13 @@ class HomeViewModel @Inject constructor(
 
         } else {
             when (tile.type) {
-                Tile.Type.BUTTON -> {
-                    brokerConnection?.publish(tile, tile.payload)
+                Tile.Type.BUTTON -> brokerConnection {
+                    publish(tile, tile.payload)
                 }
 
-                Tile.Type.SWITCH -> {
+                Tile.Type.SWITCH -> brokerConnection {
                     val newPayload = tile.getSwitchOppositeStatePayload()
-                    brokerConnection?.publish(tile, newPayload)
+                    publish(tile, newPayload)
                 }
 
                 Tile.Type.TEXT -> if (tile.publishTopic.isNotEmpty()) {
@@ -230,37 +230,6 @@ class HomeViewModel @Inject constructor(
 
     fun canMoveItem(): Boolean {
         return editMode.value.canMoveItem && itemReleased
-    }
-
-    fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
-        if (!value) {
-            _editMode.tryEmit(EditModeState(false))
-        } else {
-            val selected = selectedPosition >= 0
-            _editMode.tryEmit(
-                EditModeState(
-                    isEditMode = true,
-                    selectedTiles = if (selected) {
-                        hashSetOf(items.get<TileItem>(selectedPosition).tile)
-                    } else {
-                        hashSetOf()
-                    },
-                    selectedCount = if (selected) 1 else 0,
-                    canMoveItem = selected
-                )
-            )
-
-        }
-
-        _items.update { list ->
-            list.mapIndexed { i, it ->
-                if (it is TileItem)
-                    it.withEditMode(
-                        if (value) EditMode(isSelected = i == selectedPosition) else null
-                    )
-                else it
-            }
-        }
     }
 
     fun editTileClicked() {
@@ -286,18 +255,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun editTileClicked(position: Int) {
-        val tile = items.get<TileItem>(position).tile
-        val dashboardId = dashboard?.id ?: return
-        container.navigator {
-            when (tile.type) {
-                Tile.Type.BUTTON -> navigateAddButtonTile(dashboardId, tile.id, position)
-                Tile.Type.TEXT -> navigateAddTextTile(dashboardId, tile.id, position)
-                Tile.Type.SWITCH -> navigateAddSwitch(dashboardId, tile.id, position)
-            }
-        }
-    }
-
     fun deleteTilesClicked() {
         container.raiseEffect {
             AlertDialog(
@@ -316,133 +273,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun brokerConnectionEventReceived(event: BrokerConnectionEvent) {
-        when (event) {
-            is BrokerConnectionEvent.Connected -> {
-                _connectionState.tryEmit(ConnectionState.Connected)
-
-                subscribeToAllTiles()
-            }
-
-            is BrokerConnectionEvent.FailedToConnect -> {
-                _connectionState.tryEmit(ConnectionState.Disconnected)
-
-                val broker = event.connection.broker
-
-                container.raiseEffect {
-                    ToastMessage(
-                        text = Txt.of(R.string.error_failed_to_connect_to_broker)
-                            .withArgs(broker.name, broker.getServerAddress())
-                    )
-                }
-            }
-
-            is BrokerConnectionEvent.LostConnection -> {
-                _connectionState.tryEmit(ConnectionState.Disconnected)
-
-                val broker = event.connection.broker
-
-                container.raiseEffect {
-                    ToastMessage(
-                        text = Txt.of(R.string.error_lost_connection_with_broker)
-                            .withArgs(broker.name, broker.getServerAddress())
-                    )
-                }
-            }
-        }
-    }
-
-    private fun subscribeToAllTiles() {
-        container.launch(Dispatchers.Default) {
-            brokerConnection?.run {
-                items.value
-                    .mapNotNull {
-                        if (it is TileItem) it.tile.subscribeTopic
-                        else null
-                    }
-                    .let(::subscribe)
-            }
-        }
-    }
-
-    private fun findSingleSelectedItemPosition(): Int? {
-        editMode.value.run {
-            if (!isEditMode) return null
-            if (selectedTiles.size != 1) return null
-            val tile = selectedTiles.first()
-
-            val position = items.value.indexOfFirst { it is TileItem && it.tile == tile }
-
-            if (position >= 0) {
-                return position
-            }
-
-            return null
-        }
-    }
-
     fun connectionClicked() {
         reconnect()
-    }
-
-    private fun reconnect(force: Boolean = false) {
-        brokerConnection?.run {
-            if (force || isDisconnected) {
-                _connectionState.tryEmit(ConnectionState.Connecting)
-                restart()
-            }
-        }
-    }
-
-    private fun changeBroker(broker: Broker?) {
-        container.launch(Dispatchers.Default) {
-            _noBrokersYet.emit(broker == null)
-
-            _connectionState.emit(ConnectionState.Connecting)
-            brokerConnection = broker?.toBrokerConnection()
-            brokerConnection?.start()
-
-            updateCurrentBroker(broker?.id)
-        }
-    }
-
-    private fun brokerDeleted(brokerId: Long) {
-        if (brokerConnection?.broker?.id == brokerId) {
-            container.launch(Dispatchers.Main) {
-                changeBroker(getCurrentBroker())
-            }
-        }
-    }
-
-    private fun changeDashboard(newDashboard: Dashboard) {
-        if (dashboard?.id == newDashboard.id) return
-
-        container.launch(Dispatchers.Default) {
-            delay(Anim.DEFAULT_DURATION)
-
-            _title.emit(newDashboard.name)
-
-            brokerConnection?.run {
-                _items.value
-                    .mapNotNull {
-                        if (it is TileItem) it.tile.subscribeTopic
-                        else null
-                    }
-                    .let(::unsubscribe)
-            }
-
-            _items.emit(emptyList())
-
-            updateCurrentDashboard(newDashboard.id)
-            val dashboardWithTiles = getDashboardWithTiles(newDashboard.id)
-            val currentDashboard = dashboardWithTiles.dashboard
-            dashboard = currentDashboard
-            _noTilesYet.emit(dashboardWithTiles.tiles.isEmpty())
-
-            _items.emit(dashboardWithTiles.tiles.map(::makeTileItem))
-
-            subscribeToAllTiles()
-        }
     }
 
     fun navigateUp() {
@@ -499,11 +331,182 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun makeTileItem(tile: Tile): ListItem {
-        return when (tile.type) {
-            Tile.Type.BUTTON -> ButtonTileItem(tile)
-            Tile.Type.TEXT -> TextTileItem(tile)
-            Tile.Type.SWITCH -> SwitchTileItem(tile)
+    private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
+        if (!value) {
+            _editMode.tryEmit(EditModeState(false))
+        } else {
+            val selected = selectedPosition >= 0
+            _editMode.tryEmit(
+                EditModeState(
+                    isEditMode = true,
+                    selectedTiles = if (selected) {
+                        hashSetOf(items.get<TileItem>(selectedPosition).tile)
+                    } else {
+                        hashSetOf()
+                    },
+                    selectedCount = if (selected) 1 else 0,
+                    canMoveItem = selected
+                )
+            )
+
+        }
+
+        _items.update { list ->
+            list.mapIndexed { i, it ->
+                if (it is TileItem)
+                    it.withEditMode(
+                        if (value) EditMode(isSelected = i == selectedPosition) else null
+                    )
+                else it
+            }
+        }
+    }
+
+    private fun editTileClicked(position: Int) {
+        val tile = items.get<TileItem>(position).tile
+        val dashboardId = dashboard?.id ?: return
+        container.navigator {
+            when (tile.type) {
+                Tile.Type.BUTTON -> navigateAddButtonTile(dashboardId, tile.id, position)
+                Tile.Type.TEXT -> navigateAddTextTile(dashboardId, tile.id, position)
+                Tile.Type.SWITCH -> navigateAddSwitch(dashboardId, tile.id, position)
+            }
+        }
+    }
+
+    private fun brokerConnectionEventReceived(event: BrokerConnectionEvent) {
+        when (event) {
+            is BrokerConnectionEvent.Connected -> {
+                _connectionState.tryEmit(ConnectionState.Connected)
+
+                container.launch(Dispatchers.Default) {
+                    subscribeToAllTiles()
+                }
+            }
+
+            is BrokerConnectionEvent.FailedToConnect -> {
+                _connectionState.tryEmit(ConnectionState.Disconnected)
+
+                val broker = event.connection.broker
+
+                container.raiseEffect {
+                    ToastMessage(
+                        text = Txt.of(R.string.error_failed_to_connect_to_broker)
+                            .withArgs(broker.name, broker.getServerAddress())
+                    )
+                }
+            }
+
+            is BrokerConnectionEvent.LostConnection -> {
+                _connectionState.tryEmit(ConnectionState.Disconnected)
+
+                val broker = event.connection.broker
+
+                container.raiseEffect {
+                    ToastMessage(
+                        text = Txt.of(R.string.error_lost_connection_with_broker)
+                            .withArgs(broker.name, broker.getServerAddress())
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun subscribeToAllTiles() {
+        container.withContext(Dispatchers.Default) {
+            brokerConnection {
+                items.value
+                    .mapNotNull {
+                        if (it is TileItem) it.tile.subscribeTopic
+                        else null
+                    }
+                    .let(::subscribe)
+            }
+        }
+    }
+
+    private suspend fun unsubscribeFromAllTiles() {
+        container.withContext(Dispatchers.Default) {
+            brokerConnection {
+                _items.value
+                    .mapNotNull {
+                        if (it is TileItem) it.tile.subscribeTopic
+                        else null
+                    }
+                    .let(::unsubscribe)
+            }
+
+        }
+    }
+
+    private fun findSingleSelectedItemPosition(): Int? {
+        editMode.value.run {
+            if (!isEditMode) return null
+            if (selectedTiles.size != 1) return null
+            val tile = selectedTiles.first()
+
+            val position = items.value.indexOfFirst { it is TileItem && it.tile == tile }
+
+            if (position >= 0) {
+                return position
+            }
+
+            return null
+        }
+    }
+
+    private fun reconnect(force: Boolean = false) {
+        brokerConnection {
+            if (force || isDisconnected) {
+                _connectionState.tryEmit(ConnectionState.Connecting)
+                restart()
+            }
+        }
+    }
+
+    private fun changeBroker(broker: Broker?) {
+        container.launch(Dispatchers.Default) {
+            _noBrokersYet.emit(broker == null)
+
+            _connectionState.emit(ConnectionState.Connecting)
+            brokerConnection = broker?.toBrokerConnection()
+            brokerConnection { start() }
+
+            updateCurrentBroker(broker?.id)
+        }
+    }
+
+    private fun brokerDeleted(brokerId: Long) {
+        brokerConnection {
+            if (broker.id == brokerId) {
+                container.launch(Dispatchers.Default) {
+                    changeBroker(getCurrentBroker())
+                }
+            }
+        }
+    }
+
+    private fun changeDashboard(newDashboard: Dashboard) {
+        if (dashboard?.id == newDashboard.id) return
+
+        container.launch(Dispatchers.Default) {
+            delay(Anim.DEFAULT_DURATION)
+
+            _title.emit(newDashboard.name)
+
+            unsubscribeFromAllTiles()
+
+            _items.emit(emptyList())
+
+            updateCurrentDashboard(newDashboard.id)
+            val dashboardWithTiles = getDashboardWithTiles(newDashboard.id)
+            val currentDashboard = dashboardWithTiles.dashboard
+            dashboard = currentDashboard
+            _noTilesYet.emit(dashboardWithTiles.tiles.isEmpty())
+
+            _items.emit(dashboardWithTiles.tiles.mapToItems())
+
+            subscribeToAllTiles()
         }
     }
 
@@ -531,26 +534,18 @@ class HomeViewModel @Inject constructor(
         showEditMode(false)
 
         _items.update {
-            it.filter {
-                it is TileItem && !tiles.contains(it.tile)
-            }
+            it.filter { it is TileItem && !tiles.contains(it.tile) }
         }
 
         container.launch(Dispatchers.Default) {
             deleteTiles(tiles.toList())
-
-            tiles.forEach {
-                unsubscribeIfNoReceivers(it.subscribeTopic)
-            }
+            unsubscribeIfNoReceivers(tiles.map { it.subscribeTopic })
         }
     }
 
     private fun tileAdded(tile: Tile) {
-        _items.update {
-            it + makeTileItem(tile)
-        }
-
-        brokerConnection?.subscribe(tile.subscribeTopic)
+        _items.update { it + tile.toListItem() }
+        brokerConnection { subscribe(tile.subscribeTopic) }
     }
 
     private fun tileEdited(tile: Tile) {
@@ -566,8 +561,8 @@ class HomeViewModel @Inject constructor(
         val oldTopic = oldItem.tile.subscribeTopic
 
         if (oldTopic != tile.subscribeTopic) {
-            unsubscribeIfNoReceivers(oldTopic)
-            brokerConnection?.subscribe(tile.subscribeTopic)
+            unsubscribeIfNoReceivers(listOf(oldTopic))
+            brokerConnection { subscribe(tile.subscribeTopic) }
         }
     }
 
@@ -582,13 +577,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun unsubscribeIfNoReceivers(topic: String) {
-        val hasReceiver = items.value.any {
-            it is TileItem && it.tile.subscribeTopic == topic
-        }
+    private fun unsubscribeIfNoReceivers(topics: List<String>) {
+        val topicsSet = topics.toHashSet()
 
-        if (!hasReceiver && topic.isNotEmpty()) {
-            brokerConnection?.unsubscribe(topic)
+        items.value.asSequence()
+            .filterIsInstance<TileItem>()
+            .map { it.tile.subscribeTopic }
+            .forEach(topicsSet::remove)
+
+        brokerConnection {
+            unsubscribe(topicsSet.toList())
         }
     }
 
@@ -603,15 +601,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun publish(tileId: Long, payload: String) {
-        items.value
-            .find { it is TileItem && it.tile.id == tileId }
-            .let {
-                brokerConnection?.publish((it as TileItem).tile, payload)
-            }
+        brokerConnection {
+            items.value
+                .find { it is TileItem && it.tile.id == tileId }
+                .let { publish((it as TileItem).tile, payload) }
+        }
     }
 
     private fun Broker.toBrokerConnection(): BrokerConnection {
         return BrokerConnection(this, mqttEventBus)
+    }
+
+    private inline fun brokerConnection(block: BrokerConnection.() -> Unit) {
+        brokerConnection?.block()
     }
 
     override fun onCleared() {
