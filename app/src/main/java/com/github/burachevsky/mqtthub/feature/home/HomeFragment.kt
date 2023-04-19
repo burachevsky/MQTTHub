@@ -150,6 +150,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
                 StaggeredGridLayoutManager.VERTICAL
             )
 
+            setItemViewCacheSize(10)
             itemAnimator =
                 DefaultItemAnimator().apply {
                 supportsChangeAnimations = false

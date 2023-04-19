@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/tile_default_height"
     android:background="@drawable/bg_tile_list_item"
-    android:minHeight="@dimen/tile_default_height"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -15,13 +14,14 @@
     <TextView
         android:id="@+id/tileName"
         style="@style/TextAppearance.MQTTHub.Label"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
         android:ellipsize="end"
-        android:maxLines="2"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
+        android:maxLines="1"
         android:textColor="?attr/colorOnSecondaryContainer"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Tile name" />
@@ -29,16 +29,17 @@
     <TextView
         android:id="@+id/tilePayload"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:ellipsize="end"
-        android:maxLines="10"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="16dp"
+        android:gravity="center_vertical"
+        android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tileName"
-        tools:text="Hello world\n" />
+        tools:text="Hello world" />
 
     <View
         android:id="@+id/editModeOverlay"
