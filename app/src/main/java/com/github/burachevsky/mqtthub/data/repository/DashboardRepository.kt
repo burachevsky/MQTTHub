@@ -7,8 +7,6 @@ interface DashboardRepository {
 
     suspend fun insertDashboard(dashboard: Dashboard): Dashboard
 
-    suspend fun insertDashboardLast(dashboard: Dashboard): Dashboard
-
     suspend fun deleteDashboard(id: Long)
 
     suspend fun updateDashboard(dashboard: Dashboard)
@@ -18,6 +16,4 @@ interface DashboardRepository {
     suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles
 
     suspend fun getCurrentDashboardWithTiles(): DashboardWithTiles
-
-    suspend fun getCurrentDashboard(): Dashboard
 }

@@ -33,11 +33,4 @@ interface DashboardDao {
     @Transaction
     @Query("SELECT * FROM dashboards WHERE id = :id")
     suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles
-
-    @Query("SELECT * FROM dashboards ORDER BY id DESC LIMIT 1")
-    suspend fun getFirstDashboard(): Dashboard
-
-    @Transaction
-    @Query("SELECT * FROM dashboards ORDER BY id DESC LIMIT 1")
-    suspend fun getFirstDashboardWithTiles(): DashboardWithTiles
 }

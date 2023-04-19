@@ -51,6 +51,9 @@ data class Tile(
 
     @ColumnInfo(name = "dashboard_position")
     val dashboardPosition: Int = 0,
+
+    @ColumnInfo(name = "design")
+    val design: Design = Design()
 ) {
 
     enum class Type {
@@ -63,5 +66,10 @@ data class Tile(
 
         @SerializedName("payload")
         val payload: String
+    )
+
+    data class Design(
+        @SerializedName("styleId")
+        val styleId: Int = 0,
     )
 }

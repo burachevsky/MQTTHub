@@ -103,9 +103,11 @@ class HomeViewModel @Inject constructor(
 
             _items.emit(dashboardWithTiles.tiles.mapToItems())
 
-            _connectionState.emit(ConnectionState.Connecting)
             brokerConnection = broker?.toBrokerConnection()
-            brokerConnection { start() }
+            brokerConnection {
+                _connectionState.emit(ConnectionState.Connecting)
+                start()
+            }
         }
 
         eventBus.apply {
@@ -418,6 +420,7 @@ class HomeViewModel @Inject constructor(
                         if (it is TileItem) it.tile.subscribeTopic
                         else null
                     }
+                    .also { _noTilesYet.emit(it.isEmpty()) }
                     .let(::subscribe)
             }
         }

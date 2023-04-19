@@ -9,7 +9,6 @@ import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -142,20 +141,19 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
             }
 
             is OpenTextTileDetails -> {
-                 val viewHolder = binding.recyclerView
+                 /*val viewHolder = binding.recyclerView
                      .findViewHolderForAdapterPosition(effect.position)
-                    as TextTileItemViewHolder
-
-                viewHolder.binding
+                    as TextTileItemViewHolder*/
 
                 findNavController().navigate(
                     R.id.navigateTextTileDetails,
                     TextTileDetailsFragmentArgs(effect.tileId).toBundle(),
                     null,
-                    FragmentNavigatorExtras(
+                    /*FragmentNavigatorExtras(
                         viewHolder.binding.tile to "detailsTile",
-                        //viewHolder.binding.tileName to "detailsTileName",
-                    )
+                        viewHolder.binding.tileName to "detailsTileName",
+                        viewHolder.binding.tilePayload to "detailsPayloadName",
+                    )*/
                 )
             }
         }
@@ -172,8 +170,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
             )
 
             setItemViewCacheSize(10)
-            itemAnimator =
-                DefaultItemAnimator().apply {
+            itemAnimator = DefaultItemAnimator().apply {
                 supportsChangeAnimations = false
                 addDuration = 0
             }

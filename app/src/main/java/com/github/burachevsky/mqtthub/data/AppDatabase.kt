@@ -12,7 +12,7 @@ import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.Tile
 
 @Database(
-    version = 10,
+    version = 11,
     entities = [
         Broker::class,
         Tile::class,

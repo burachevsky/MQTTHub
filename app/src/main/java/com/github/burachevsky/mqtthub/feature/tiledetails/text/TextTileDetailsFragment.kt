@@ -2,7 +2,6 @@ package com.github.burachevsky.mqtthub.feature.tiledetails.text
 
 import android.content.Context
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,15 +41,12 @@ class TextTileDetailsFragment : Fragment(), ViewController<TextTileDetailsViewMo
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         container.onCreate()
-        val animation = TransitionInflater.from(requireContext())
-            .inflateTransition(android.R.transition.move)
-            .apply {
-                duration = 750
-            }
+        /*val animation = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.slide_left)
 
         postponeEnterTransition()
         sharedElementEnterTransition = animation
-        sharedElementReturnTransition = animation
+        sharedElementReturnTransition = animation*/
     }
 
     override fun onCreateView(
@@ -80,7 +76,7 @@ class TextTileDetailsFragment : Fragment(), ViewController<TextTileDetailsViewMo
 
         collectOnStarted(viewModel.tileName) {
             binding.tileName.text = it
-            startPostponedEnterTransition()
+            //startPostponedEnterTransition()
         }
         collectOnStarted(viewModel.tilePayload, binding.tilePayload::setText)
 

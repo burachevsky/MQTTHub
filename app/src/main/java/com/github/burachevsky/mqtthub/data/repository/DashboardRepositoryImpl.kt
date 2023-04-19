@@ -19,13 +19,6 @@ class DashboardRepositoryImpl @Inject constructor(
         return dashboard.copy(id = id)
     }
 
-    @Transaction
-    override suspend fun insertDashboardLast(dashboard: Dashboard): Dashboard {
-        val position = dashboardDao.count()
-        val id = dashboardDao.insert(dashboard.copy(position = position))
-        return dashboard.copy(id = id, position = position)
-    }
-
     override suspend fun deleteDashboard(id: Long) {
         return dashboardDao.delete(id)
     }
@@ -49,6 +42,8 @@ class DashboardRepositoryImpl @Inject constructor(
         var currentDashboardId = currentIdsRepository.getCurrentDashboardId()
 
         if (currentDashboardId == null) {
+            currentIdsRepository.init()
+
             val dashboard = insertDashboard(
                 Dashboard(
                     name = applicationContext.getString(R.string.default_dashboard_name),
@@ -61,21 +56,5 @@ class DashboardRepositoryImpl @Inject constructor(
         }
 
         return getDashboardWithTiles(currentDashboardId)
-    }
-
-    @Transaction
-    override suspend fun getCurrentDashboard(): Dashboard {
-        val dashboard = if (dashboardDao.count() == 0) {
-            insertDashboard(
-                Dashboard(
-                    name = applicationContext.getString(R.string.default_dashboard_name),
-                    position = 0
-                )
-            )
-        } else {
-            dashboardDao.getFirstDashboard()
-        }
-
-        return dashboard
     }
 }
