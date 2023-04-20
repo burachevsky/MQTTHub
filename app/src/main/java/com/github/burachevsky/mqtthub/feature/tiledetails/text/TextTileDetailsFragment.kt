@@ -88,5 +88,11 @@ class TextTileDetailsFragment : Fragment(), ViewController<TextTileDetailsViewMo
 
     private fun publishText() {
         viewModel.enterPublishText(binding.editText.text.toString())
+        binding.editText.setText("")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

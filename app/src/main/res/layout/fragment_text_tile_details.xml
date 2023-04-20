@@ -49,7 +49,7 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-<!---->
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
         android:layout_width="match_parent"

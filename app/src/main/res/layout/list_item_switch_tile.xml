@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_tile_list_item"
-    android:minHeight="@dimen/tile_default_height">
+    android:layout_height="@dimen/tile_small_height"
+    android:background="@drawable/bg_tile_list_item">
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/tileSwitch"
@@ -16,7 +15,7 @@
         android:ellipsize="end"
         android:focusable="false"
         android:gravity="center"
-        android:maxLines="4"
+        tools:lines="2"
         android:padding="20dp"
         android:textAppearance="@style/TextAppearance.MQTTHub.Body"
         app:layout_constraintBottom_toBottomOf="parent"

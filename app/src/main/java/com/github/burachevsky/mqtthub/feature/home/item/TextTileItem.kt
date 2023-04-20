@@ -2,10 +2,12 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updateLayoutParams
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
 
@@ -22,7 +24,8 @@ data class TextTileItem(
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
             if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null,
-            if (editMode != that.editMode) EDIT_MODE_CHANGED else null
+            if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
+            if (tile.design != that.tile.design) DESIGN_CHANGED else null,
         )
     }
 
@@ -68,22 +71,51 @@ class TextTileItemViewHolder(
                 NAME_CHANGED -> bindTileName(item)
                 PAYLOAD_CHANGED -> bindTilePayload(item)
                 EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
+                DESIGN_CHANGED -> bindDesign(item)
             }
         }
     }
 
     override fun bind(item: ListItem) {
         item as TextTileItem
+        bindDesign(item)
         bindTileName(item)
         bindTilePayload(item)
         bindEditMode(item.editMode)
     }
 
-    fun bindTileName(item: TextTileItem) {
+    private fun bindDesign(item: TextTileItem) {
+        val heightRes: Int
+        val lines: Int
+
+        when (item.tile.design.styleId) {
+            TextTileStyleId.MEDIUM -> {
+                heightRes = R.dimen.tile_medium_height
+                lines = 4
+            }
+
+            TextTileStyleId.LARGE -> {
+                heightRes = R.dimen.tile_large_height
+                lines = 7
+            }
+
+            else -> {
+                heightRes = R.dimen.tile_small_height
+                lines = 1
+            }
+        }
+
+        binding.tile.updateLayoutParams {
+            height = context.resources.getDimensionPixelSize(heightRes)
+        }
+        binding.tilePayload.setLines(lines)
+    }
+
+    private fun bindTileName(item: TextTileItem) {
         binding.tileName.text = item.tile.name
     }
 
-    fun bindTilePayload(item: TextTileItem) {
+    private fun bindTilePayload(item: TextTileItem) {
         binding.tilePayload.text = item.tile.payload
     }
 }

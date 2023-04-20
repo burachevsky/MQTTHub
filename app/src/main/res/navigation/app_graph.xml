@@ -12,22 +12,6 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/navigateAddTextTile"
-            app:destination="@id/addTextTileFragment" />
-
-        <action
-            android:id="@+id/navigateSelectTileType"
-            app:destination="@id/selectTileTypeDialogFragment" />
-
-        <action
-            android:id="@+id/navigateAddButtonTile"
-            app:destination="@id/addButtonTileFragment" />
-
-        <action
-            android:id="@+id/navigateAddSwitch"
-            app:destination="@id/addSwitchFragment" />
-
-        <action
             android:id="@+id/navigatePublishText"
             app:destination="@id/publishTextDialogFragment" />
 
@@ -49,9 +33,25 @@
         android:id="@+id/navigateBrokers"
         app:destination="@id/brokersFragment"/>
 
+    <action
+        android:id="@+id/navigateAddTextTile"
+        app:destination="@id/addTextTileFragment" />
+
+    <action
+        android:id="@+id/navigateAddButtonTile"
+        app:destination="@id/addButtonTileFragment" />
+
+    <action
+        android:id="@+id/navigateAddSwitch"
+        app:destination="@id/addSwitchFragment" />
+
+    <action
+        android:id="@+id/navigateSelector"
+        app:destination="@id/selectorDialogFragment" />
+
     <fragment
         android:id="@+id/addTextTileFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.text.AddTextTileFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addtile.text.AddTextTileFragment"
         android:label="AddTextTileFragment"
         tools:layout="@layout/fragment_add_tile">
 
@@ -70,14 +70,20 @@
     </fragment>
 
     <dialog
-        android:id="@+id/selectTileTypeDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment"
-        android:label="SelectTileTypeDialogFragment"
-        tools:layout="@layout/fragment_select_tile_type" />
+        android:id="@+id/selectorDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragment"
+        android:label="SlectorDialogFragment"
+        tools:layout="@layout/fragment_selector">
+
+        <argument
+            android:name="config"
+            app:argType="com.github.burachevsky.mqtthub.feature.selector.SelectorConfig" />
+
+    </dialog>
 
     <fragment
         android:id="@+id/addButtonTileFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.button.AddButtonTileFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addtile.button.AddButtonTileFragment"
         android:label="AddButtonTileFragment"
         tools:layout="@layout/fragment_add_tile">
 
@@ -97,7 +103,7 @@
 
     <fragment
         android:id="@+id/addSwitchFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.addtile.switchh.AddSwitchFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addtile.switchh.AddSwitchFragment"
         android:label="AddSwitchFragment"
         tools:layout="@layout/fragment_add_tile">
 
@@ -117,7 +123,7 @@
 
     <dialog
         android:id="@+id/publishTextDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragment"
         android:label="PublishTextDialogFragment"
         tools:layout="@layout/dialog_publish_text">
 

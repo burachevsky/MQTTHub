@@ -7,6 +7,9 @@
     <dimen name="dashboard_margin">16dp</dimen>
 
     <dimen name="tile_default_height">108dp</dimen>
+    <dimen name="tile_small_height">76dp</dimen>
+    <dimen name="tile_medium_height">152dp</dimen>
+    <dimen name="tile_large_height">228dp</dimen>
 
     <dimen name="drawer_horizontal_margin">28dp</dimen>
 

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/tile_default_height"
+    android:layout_height="wrap_content"
+    tools:layout_height="220dp"
     android:background="@drawable/bg_tile_list_item"
     android:transitionName="itemTile"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -17,8 +18,8 @@
         style="@style/TextAppearance.MQTTHub.Label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="?attr/colorOnSecondaryContainer"
@@ -30,19 +31,19 @@
 
     <TextView
         android:id="@+id/tilePayload"
+        style="@style/TextAppearance.MQTTHub.Body"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:maxLines="2"
+        tools:lines="8"
         android:transitionName="itemTilePayload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tileName"
-        tools:text="Hello world" />
+        tools:text="Hello world\nhello world\nhelloworld\nhelloworld\nhelloworld\nhelloworld\nhelloworld" />
 
     <View
         android:id="@+id/editModeOverlay"

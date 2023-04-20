@@ -10,12 +10,13 @@ import com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsModule
 import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
-import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileComponent
-import com.github.burachevsky.mqtthub.feature.home.addtile.AddTileModule
-import com.github.burachevsky.mqtthub.feature.home.addtile.DashboardsComponent
-import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextComponent
-import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextModule
-import com.github.burachevsky.mqtthub.feature.home.typeselector.SelectTileTypeDialogFragment
+import com.github.burachevsky.mqtthub.feature.addtile.AddTileComponent
+import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
+import com.github.burachevsky.mqtthub.feature.addtile.DashboardsComponent
+import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextComponent
+import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextModule
+import com.github.burachevsky.mqtthub.feature.selector.SelectorComponent
+import com.github.burachevsky.mqtthub.feature.selector.SelectorModule
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsComponent
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsModule
 import dagger.BindsInstance
@@ -39,7 +40,6 @@ interface AppComponent {
 
     fun inject(activity: AppActivity)
     fun inject(fragment: BrokersFragment)
-    fun inject(dialog: SelectTileTypeDialogFragment)
 
     fun homeComponent(module: HomeModule): HomeComponent
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
@@ -47,4 +47,5 @@ interface AppComponent {
     fun publishTextComponent(module: PublishTextModule): PublishTextComponent
     fun dashboardsComponent(module: DashboardsModule): DashboardsComponent
     fun textTileDetailsComponent(module: TextTileDetailsModule): TextTileDetailsComponent
+    fun selectorComponent(module: SelectorModule): SelectorComponent
 }

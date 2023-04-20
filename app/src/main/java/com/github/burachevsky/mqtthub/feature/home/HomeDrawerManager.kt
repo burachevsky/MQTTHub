@@ -20,10 +20,10 @@ import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardCreated
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
-import com.github.burachevsky.mqtthub.feature.home.item.DividerItem
-import com.github.burachevsky.mqtthub.feature.home.item.DrawerHeaderItem
-import com.github.burachevsky.mqtthub.feature.home.item.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.common.widget.DividerItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerHeaderItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -17,3 +17,9 @@ fun Tile.toListItem(): ListItem {
 fun List<Tile>.mapToItems(): List<ListItem> {
     return map { it.toListItem() }
 }
+
+object TileTypeId {
+    const val TEXT = 0
+    const val BUTTON = 1
+    const val SWITCH = 2
+}

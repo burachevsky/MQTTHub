@@ -37,7 +37,7 @@ class ButtonTileItemViewHolder(
     private val binding = ListItemButtonTileBinding.bind(itemView)
 
     init {
-        binding.buttonTile.setOnClickListener {
+        binding.tile.setOnClickListener {
             listener.onClick(adapterPosition)
         }
 

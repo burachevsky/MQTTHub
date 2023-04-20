@@ -8,7 +8,7 @@ import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTile
-import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextEntered
+import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextEntered
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

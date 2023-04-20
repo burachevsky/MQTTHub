@@ -73,3 +73,9 @@ data class Tile(
         val styleId: Int = 0,
     )
 }
+
+object TextTileStyleId {
+    const val SMALL = 0
+    const val MEDIUM = 1
+    const val LARGE = 2
+}

@@ -34,11 +34,11 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
 import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
-import com.github.burachevsky.mqtthub.feature.home.addtile.TileAdded
-import com.github.burachevsky.mqtthub.feature.home.addtile.TileEdited
+import com.github.burachevsky.mqtthub.feature.addtile.TileAdded
+import com.github.burachevsky.mqtthub.feature.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.*
-import com.github.burachevsky.mqtthub.feature.home.publishtext.PublishTextEntered
-import com.github.burachevsky.mqtthub.feature.home.typeselector.TileTypeSelected
+import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextEntered
+import com.github.burachevsky.mqtthub.feature.selector.ItemSelected
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.eclipse.paho.client.mqttv3.*
@@ -119,8 +119,8 @@ class HomeViewModel @Inject constructor(
                 tileEdited(it.tile)
             }
 
-            subscribe<TileTypeSelected>(viewModelScope) {
-                navigateAddTile(it.type)
+            subscribe<ItemSelected>(viewModelScope) {
+                navigateAddTile(it.id)
             }
 
             subscribe<PublishTextEntered>(viewModelScope) {
@@ -511,20 +511,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun navigateAddTile(type: Tile.Type) {
+    private fun navigateAddTile(tileTypeId: Int) {
         val dashboardId = dashboard?.id ?: return
 
-        when (type) {
-            Tile.Type.BUTTON -> container.navigator {
-                navigateAddButtonTile(dashboardId, dashboardPosition = items.value.size)
-            }
+        container.launch(Dispatchers.Main) {
+            when (tileTypeId) {
+                TileTypeId.BUTTON -> container.navigator {
+                    navigateAddButtonTile(dashboardId, dashboardPosition = items.value.size)
+                }
 
-            Tile.Type.TEXT -> container.navigator {
-                navigateAddTextTile(dashboardId, dashboardPosition = items.value.size)
-            }
+                TileTypeId.TEXT -> container.navigator {
+                    navigateAddTextTile(dashboardId, dashboardPosition = items.value.size)
+                }
 
-            Tile.Type.SWITCH -> container.navigator {
-                navigateAddSwitch(dashboardId, dashboardPosition = items.value.size)
+                TileTypeId.SWITCH -> container.navigator {
+                    navigateAddSwitch(dashboardId, dashboardPosition = items.value.size)
+                }
             }
         }
     }
@@ -537,6 +539,7 @@ class HomeViewModel @Inject constructor(
         _items.update {
             it.filter { it is TileItem && !tiles.contains(it.tile) }
         }
+        _noTilesYet.value = items.value.isEmpty()
 
         container.launch(Dispatchers.Default) {
             deleteTiles(tiles.toList())
@@ -546,6 +549,7 @@ class HomeViewModel @Inject constructor(
 
     private fun tileAdded(tile: Tile) {
         _items.update { it + tile.toListItem() }
+        _noTilesYet.value = items.value.isEmpty()
         brokerConnection { subscribe(tile.subscribeTopic) }
     }
 
@@ -571,11 +575,12 @@ class HomeViewModel @Inject constructor(
         val topic = messageEvent.topic
         val payload = messageEvent.message
 
-        updatePayload(topic, payload = payload)
-
         dashboard?.id?.let { dashboardId ->
             saveUpdatedPayload(PayloadUpdate(dashboardId, topic, payload))
         }
+
+        updatePayload(topic, payload = payload)
+
     }
 
     private fun unsubscribeIfNoReceivers(topics: List<String>) {

@@ -17,7 +17,6 @@
     </style>
 
     <style name="TextAppearance.MQTTHub.H">
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextAppearance.MQTTHub.H.1">

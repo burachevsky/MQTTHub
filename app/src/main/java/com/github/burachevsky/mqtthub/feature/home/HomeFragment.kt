@@ -26,6 +26,10 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.feature.home.item.*
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
 import timber.log.Timber
 import javax.inject.Inject
