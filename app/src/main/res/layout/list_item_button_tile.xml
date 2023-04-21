@@ -5,10 +5,11 @@
     android:id="@+id/tile"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tile_small_height"
-    android:background="@drawable/bg_tile_list_item">
+    android:background="@drawable/bg_tile_list_item_outlined">
 
     <TextView
         android:id="@+id/buttonTile"
+        style="@style/TextAppearance.MQTTHub.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingHorizontal="12dp"

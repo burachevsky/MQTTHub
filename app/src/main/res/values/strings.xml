@@ -60,11 +60,17 @@
     <string name="tile_type_button">Button</string>
     <string name="tile_type_switch">Switch</string>
 
-    <string name="style">Style</string>
+    <string name="tile_size">Tile size</string>
+    <string name="tile_background_style">Tile background style</string>
+    <string name="button_tile_style">Button style</string>
 
-    <string name="text_tile_style_small">Small</string>
-    <string name="text_tile_style_medium">Medium</string>
-    <string name="text_tile_style_large">Large</string>
+    <string name="text_tile_size_small">Small</string>
+    <string name="text_tile_size_medium">Medium</string>
+    <string name="text_tile_size_large">Large</string>
+
+    <string name="tile_style_filled">Filled</string>
+    <string name="tile_style_outlined">Outlined</string>
+    <string name="tile_style_empty">Empty</string>
 
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>

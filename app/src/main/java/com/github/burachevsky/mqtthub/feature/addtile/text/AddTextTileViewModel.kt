@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
+import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
 import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
@@ -37,23 +38,42 @@ class AddTextTileViewModel @Inject constructor(
         onCheckChanged = { showPublishingField() }
     )
 
-    private val style = ToggleGroupItem(
-        title = Txt.of(R.string.style),
+    private val size = ToggleGroupItem(
+        title = Txt.of(R.string.tile_size),
         options = listOf(
             ToggleOption(
-                id = TextTileStyleId.SMALL,
-                text = Txt.of(R.string.text_tile_style_small)
+                id = TextTileSizeId.SMALL,
+                text = Txt.of(R.string.text_tile_size_small)
             ),
             ToggleOption(
-                id = TextTileStyleId.MEDIUM,
-                text = Txt.of(R.string.text_tile_style_medium)
+                id = TextTileSizeId.MEDIUM,
+                text = Txt.of(R.string.text_tile_size_medium)
             ),
             ToggleOption(
-                id = TextTileStyleId.LARGE,
-                text = Txt.of(R.string.text_tile_style_large)
+                id = TextTileSizeId.LARGE,
+                text = Txt.of(R.string.text_tile_size_large)
             ),
         ),
-        selectedValue = TextTileStyleId.SMALL
+        selectedValue = TextTileSizeId.SMALL
+    )
+
+    private val style = ToggleGroupItem(
+        title = Txt.of(R.string.tile_background_style),
+        options = listOf(
+            ToggleOption(
+                id = TextTileStyleId.OUTLINED,
+                text = Txt.of(R.string.tile_style_outlined),
+            ),
+            ToggleOption(
+                id = TextTileStyleId.FILLED,
+                text = Txt.of(R.string.tile_style_filled),
+            ),
+            ToggleOption(
+                id = TextTileStyleId.EMPTY,
+                text = Txt.of(R.string.tile_style_empty),
+            ),
+        ),
+        selectedValue = TextTileStyleId.OUTLINED,
     )
 
     init {
@@ -79,6 +99,7 @@ class AddTextTileViewModel @Inject constructor(
         publishTopic.text = tile.publishTopic
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
+        size.selectedValue = tile.design.sizeId
         style.selectedValue = tile.design.styleId
     }
 
@@ -93,7 +114,8 @@ class AddTextTileViewModel @Inject constructor(
             type = Tile.Type.TEXT,
             stateList = emptyList(),
             design = Tile.Design(
-                styleId = style.selectedValue
+                styleId = style.selectedValue,
+                sizeId = size.selectedValue,
             ),
         ) ?: Tile(
             name = name.text,
@@ -106,7 +128,8 @@ class AddTextTileViewModel @Inject constructor(
             stateList = emptyList(),
             dashboardPosition = dashboardPosition,
             design = Tile.Design(
-                styleId = style.selectedValue
+                styleId = style.selectedValue,
+                sizeId = size.selectedValue,
             ),
         )
     }
@@ -119,6 +142,7 @@ class AddTextTileViewModel @Inject constructor(
             enablePublishing,
             qos,
             retain,
+            size,
             style,
             save,
         )

@@ -5,24 +5,24 @@
     android:id="@+id/tile"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tile_small_height"
-    android:background="@drawable/bg_tile_list_item">
+    android:background="@drawable/bg_tile_list_item_empty">
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/tileSwitch"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:clickable="false"
         android:ellipsize="end"
         android:focusable="false"
         android:gravity="center"
         tools:lines="2"
-        android:padding="20dp"
+        android:paddingHorizontal="12dp"
         android:textAppearance="@style/TextAppearance.MQTTHub.Body"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:switchPadding="16dp"
+        app:switchPadding="12dp"
         tools:checked="false"
         tools:text="Light" />
 

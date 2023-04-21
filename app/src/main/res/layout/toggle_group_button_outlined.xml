@@ -5,4 +5,4 @@
     android:textAppearance="@style/TextAppearance.MQTTHub.Body"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/text_tile_style_small" />
+    android:text="@string/text_tile_size_small" />

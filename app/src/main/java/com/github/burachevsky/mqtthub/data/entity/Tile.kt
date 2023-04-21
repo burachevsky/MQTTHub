@@ -71,11 +71,8 @@ data class Tile(
     data class Design(
         @SerializedName("styleId")
         val styleId: Int = 0,
-    )
-}
 
-object TextTileStyleId {
-    const val SMALL = 0
-    const val MEDIUM = 1
-    const val LARGE = 2
+        @SerializedName("sizeId")
+        val sizeId: Int = 0
+    )
 }

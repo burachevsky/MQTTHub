@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:layout_height="220dp"
-    android:background="@drawable/bg_tile_list_item"
+    android:background="@drawable/bg_tile_list_item_filled"
     android:transitionName="itemTile"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

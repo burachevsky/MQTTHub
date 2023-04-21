@@ -7,6 +7,7 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
 import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
@@ -85,16 +86,22 @@ class TextTileItemViewHolder(
     }
 
     private fun bindDesign(item: TextTileItem) {
+        val backgroundRes: Int = when (item.tile.design.styleId){
+            TextTileStyleId.FILLED -> R.drawable.bg_tile_list_item_filled
+            TextTileStyleId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
+            else -> R.drawable.bg_tile_list_item_empty
+        }
+
         val heightRes: Int
         val lines: Int
 
-        when (item.tile.design.styleId) {
-            TextTileStyleId.MEDIUM -> {
+        when (item.tile.design.sizeId) {
+            TextTileSizeId.MEDIUM -> {
                 heightRes = R.dimen.tile_medium_height
                 lines = 4
             }
 
-            TextTileStyleId.LARGE -> {
+            TextTileSizeId.LARGE -> {
                 heightRes = R.dimen.tile_large_height
                 lines = 7
             }
@@ -108,6 +115,7 @@ class TextTileItemViewHolder(
         binding.tile.updateLayoutParams {
             height = context.resources.getDimensionPixelSize(heightRes)
         }
+        binding.tile.setBackgroundResource(backgroundRes)
         binding.tilePayload.setLines(lines)
     }
 

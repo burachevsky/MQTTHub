@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.data.entity.SwitchTileBackgroundId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSwitchTileBinding
 
@@ -32,7 +33,8 @@ data class SwitchTileItem(
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
             if (tile.payload != that.tile.payload) SWITCH_STATE_CHANGED else null,
-            if (editMode != that.editMode) EDIT_MODE_CHANGED else null
+            if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
+            if (tile.design != that.tile.design) DESIGN_CHANGED else null,
         )
     }
 
@@ -76,6 +78,7 @@ class SwitchTileItemViewHolder(
 
         bindName(item)
         bindSwitchState(item)
+        bindDesign(item)
     }
 
     override fun bind(item: ListItem, payloads: List<Int>) {
@@ -86,6 +89,7 @@ class SwitchTileItemViewHolder(
                 NAME_CHANGED -> bindName(item)
                 SWITCH_STATE_CHANGED -> bindSwitchState(item)
                 EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
+                DESIGN_CHANGED -> bindDesign(item)
             }
         }
     }
@@ -110,6 +114,16 @@ class SwitchTileItemViewHolder(
                 changeCheckedWithoutTriggering(newState)
             }
         }
+    }
+
+    private fun bindDesign(item: SwitchTileItem) {
+        binding.tile.setBackgroundResource(
+            when (item.tile.design.styleId) {
+                SwitchTileBackgroundId.FILLED -> R.drawable.bg_tile_list_item_filled
+                SwitchTileBackgroundId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
+                else -> R.drawable.bg_tile_list_item_empty
+            }
+        )
     }
 }
 

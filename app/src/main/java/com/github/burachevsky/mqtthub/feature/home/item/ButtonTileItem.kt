@@ -6,6 +6,7 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
+import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemButtonTileBinding
 
@@ -52,6 +53,14 @@ class ButtonTileItemViewHolder(
 
     override fun bind(item: ListItem) {
         item as ButtonTileItem
+
+        binding.tile.setBackgroundResource(
+            when (item.tile.design.styleId) {
+                ButtonTileStyledId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
+                else -> R.drawable.bg_tile_list_item_filled
+            }
+        )
+
         binding.buttonTile.text = item.tile.name
         bindEditMode(item.editMode)
     }

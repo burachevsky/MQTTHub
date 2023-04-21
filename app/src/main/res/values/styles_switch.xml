@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.MQTTHub.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="trackTint">@drawable/switch_track_style_surface</item>
+    </style>
+
+    <!--<style name="Track" parent="ShapeAppearance.M3.Comp.Switch.Track.Shape">
+        <item name="tint">@drawable/switch_track_style_surface</item>
+    </style>-->
+
+</resources>
