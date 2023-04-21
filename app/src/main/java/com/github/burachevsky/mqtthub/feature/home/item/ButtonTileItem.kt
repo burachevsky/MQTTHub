@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
@@ -60,6 +61,12 @@ class ButtonTileItemViewHolder(
                 else -> R.drawable.bg_tile_list_item_filled
             }
         )
+
+        binding.tile.apply {
+            layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
+                isFullSpan = item.tile.design.isFullSpan
+            }
+        }
 
         binding.buttonTile.text = item.tile.name
         bindEditMode(item.editMode)

@@ -61,6 +61,7 @@
     <string name="tile_type_switch">Switch</string>
 
     <string name="tile_size">Tile size</string>
+    <string name="tile_fills_screen_width">Tile fills screen width</string>
     <string name="tile_background_style">Tile background style</string>
     <string name="button_tile_style">Button style</string>
 

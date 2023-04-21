@@ -2,7 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
@@ -92,6 +92,8 @@ class TextTileItemViewHolder(
             else -> R.drawable.bg_tile_list_item_empty
         }
 
+        val tileIsFullSpan = item.tile.design.isFullSpan
+
         val heightRes: Int
         val lines: Int
 
@@ -112,9 +114,13 @@ class TextTileItemViewHolder(
             }
         }
 
-        binding.tile.updateLayoutParams {
-            height = context.resources.getDimensionPixelSize(heightRes)
+        binding.tile.apply {
+            layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
+                height = context.resources.getDimensionPixelSize(heightRes)
+                isFullSpan = tileIsFullSpan
+            }
         }
+
         binding.tile.setBackgroundResource(backgroundRes)
         binding.tilePayload.setLines(lines)
     }
