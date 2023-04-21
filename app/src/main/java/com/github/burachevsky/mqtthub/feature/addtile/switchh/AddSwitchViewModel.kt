@@ -9,6 +9,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
+import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
 import com.github.burachevsky.mqtthub.data.entity.SwitchTileBackgroundId
@@ -45,6 +46,10 @@ class AddSwitchViewModel @Inject constructor(
         placeholder = Txt.of("0")
     )
 
+    private val width = SwitchItem(
+        text = Txt.of(R.string.tile_fills_screen_width)
+    )
+
     private val style = ToggleGroupItem(
         title = Txt.of(R.string.tile_background_style),
         options = listOf(
@@ -77,6 +82,7 @@ class AddSwitchViewModel @Inject constructor(
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
         style.selectedValue = tile.design.styleId
+        width.isChecked = tile.design.isFullSpan
     }
 
     override fun list(): List<ListItem> {
@@ -89,6 +95,7 @@ class AddSwitchViewModel @Inject constructor(
             qos,
             retain,
             style,
+            width,
             save,
         )
     }
@@ -106,7 +113,10 @@ class AddSwitchViewModel @Inject constructor(
                 Tile.State(SWITCH_ON, onState.text),
                 Tile.State(SWITCH_OFF, offState.text)
             ),
-            design = Tile.Design(styleId = style.selectedValue),
+            design = Tile.Design(
+                styleId = style.selectedValue,
+                isFullSpan = width.isChecked,
+            ),
         ) ?: Tile(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
@@ -120,7 +130,10 @@ class AddSwitchViewModel @Inject constructor(
                 Tile.State(SWITCH_OFF, offState.text)
             ),
             dashboardPosition = dashboardPosition,
-            design = Tile.Design(styleId = style.selectedValue),
+            design = Tile.Design(
+                styleId = style.selectedValue,
+                isFullSpan = width.isChecked,
+            ),
         )
     }
 }

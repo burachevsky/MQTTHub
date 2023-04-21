@@ -73,6 +73,9 @@ data class Tile(
         val styleId: Int = 0,
 
         @SerializedName("sizeId")
-        val sizeId: Int = 0
+        val sizeId: Int = 0,
+
+        @SerializedName("isFullSpan")
+        val isFullSpan: Boolean = false,
     )
 }

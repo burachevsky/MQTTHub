@@ -57,6 +57,10 @@ class AddTextTileViewModel @Inject constructor(
         selectedValue = TextTileSizeId.SMALL
     )
 
+    private val width = SwitchItem(
+        text = Txt.of(R.string.tile_fills_screen_width)
+    )
+
     private val style = ToggleGroupItem(
         title = Txt.of(R.string.tile_background_style),
         options = listOf(
@@ -101,6 +105,7 @@ class AddTextTileViewModel @Inject constructor(
         qos.selectedValue = tile.qos
         size.selectedValue = tile.design.sizeId
         style.selectedValue = tile.design.styleId
+        width.isChecked = tile.design.isFullSpan
     }
 
     override fun collectTile(): Tile {
@@ -116,6 +121,7 @@ class AddTextTileViewModel @Inject constructor(
             design = Tile.Design(
                 styleId = style.selectedValue,
                 sizeId = size.selectedValue,
+                isFullSpan = width.isChecked,
             ),
         ) ?: Tile(
             name = name.text,
@@ -130,6 +136,7 @@ class AddTextTileViewModel @Inject constructor(
             design = Tile.Design(
                 styleId = style.selectedValue,
                 sizeId = size.selectedValue,
+                isFullSpan = width.isChecked,
             ),
         )
     }
@@ -143,6 +150,7 @@ class AddTextTileViewModel @Inject constructor(
             qos,
             retain,
             size,
+            width,
             style,
             save,
         )

@@ -6,6 +6,7 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
+import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
 import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
@@ -51,6 +52,10 @@ class AddButtonTileViewModel @Inject constructor(
         selectedValue = ButtonTileStyledId.OUTLINED
     )
 
+    private val width = SwitchItem(
+        text = Txt.of(R.string.tile_fills_screen_width)
+    )
+
     init {
         init()
     }
@@ -62,6 +67,7 @@ class AddButtonTileViewModel @Inject constructor(
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
         style.selectedValue = tile.design.styleId
+        width.isChecked = tile.design.isFullSpan
     }
 
     override fun collectTile(): Tile {
@@ -75,7 +81,10 @@ class AddButtonTileViewModel @Inject constructor(
             dashboardId = dashboardId,
             type = Tile.Type.BUTTON,
             stateList = emptyList(),
-            design = Tile.Design(styleId = style.selectedValue),
+            design = Tile.Design(
+                styleId = style.selectedValue,
+                isFullSpan = width.isChecked,
+            ),
         ) ?: Tile(
             name = name.text,
             subscribeTopic = "",
@@ -87,7 +96,10 @@ class AddButtonTileViewModel @Inject constructor(
             type = Tile.Type.BUTTON,
             stateList = emptyList(),
             dashboardPosition = dashboardPosition,
-            design = Tile.Design(styleId = style.selectedValue),
+            design = Tile.Design(
+                styleId = style.selectedValue,
+                isFullSpan = width.isChecked,
+            ),
         )
     }
 
@@ -99,6 +111,7 @@ class AddButtonTileViewModel @Inject constructor(
             qos,
             retain,
             style,
+            width,
             save,
         )
     }

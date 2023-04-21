@@ -1,9 +1,11 @@
 package com.github.burachevsky.mqtthub.feature.home.item
 
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
@@ -124,6 +126,18 @@ class SwitchTileItemViewHolder(
                 else -> R.drawable.bg_tile_list_item_empty
             }
         )
+
+        val tileIsFullSpan = item.tile.design.isFullSpan
+
+        binding.tile.apply {
+            layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
+                isFullSpan = tileIsFullSpan
+                binding.tileSwitch.gravity = when {
+                    tileIsFullSpan -> Gravity.START or Gravity.CENTER_VERTICAL
+                    else -> Gravity.CENTER
+                }
+            }
+        }
     }
 }
 
