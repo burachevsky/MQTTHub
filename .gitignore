@@ -19,3 +19,5 @@ local.properties
 /buildSrc/build/
 /app/release/MQTTHub.apk
 /app/release/output-metadata.json
+/app/schemas/com.github.burachevsky.mqtthub.data.AppDatabase
+/app/debug

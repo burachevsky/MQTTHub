@@ -11,17 +11,15 @@ class CompositeAdapter(
     private val adapters: Map<Int, ItemAdapter> =
         itemAdapters.associateBy { it.viewType() }
 
-    private val defaultAdapter = object : ItemAdapter {
-        override fun viewType(): Int = 0
-    }
-
     override fun getItemViewType(position: Int): Int {
         return getItem(position).layout()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        return adapters[viewType]?.onCreateViewHolder(parent)
-            ?: defaultAdapter.onCreateViewHolder(parent)
+        val adapter = adapters[viewType]
+            ?: defaultAdapterFor(viewType)
+
+        return adapter.onCreateViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -37,6 +35,12 @@ class CompositeAdapter(
             holder.bind(getItem(position))
         } else {
             holder.bind(getItem(position), payloads.first() as List<Int>)
+        }
+    }
+
+    private fun defaultAdapterFor(viewType: Int): ItemAdapter {
+        return object : ItemAdapter {
+            override fun viewType(): Int = viewType
         }
     }
 

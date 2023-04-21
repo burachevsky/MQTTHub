@@ -30,7 +30,7 @@ data class InputFieldItem(
     override fun layout() = LAYOUT
 
     companion object {
-        const val LAYOUT = R.layout.list_item_input_field
+        val LAYOUT get() = R.layout.list_item_input_field
     }
 }
 
@@ -74,14 +74,14 @@ class InputFieldItemViewHolder(itemView: View) : ItemViewHolder(itemView) {
         if (!item.initialized) {
             item.initialized = true
             binding.inputFieldEditText.setText(
-                item.initText.get(itemView.context).ifEmpty { item.text }
+                item.initText.get(context).ifEmpty { item.text }
             )
         } else {
             binding.inputFieldEditText.setText(item.text)
         }
 
-        binding.inputFieldLayout.hint = item.label?.get(itemView.context)
-        binding.inputFieldLayout.placeholderText = item.placeholder?.get(itemView.context)
+        binding.inputFieldLayout.hint = item.label?.get(context)
+        binding.inputFieldLayout.placeholderText = item.placeholder?.get(context)
 
         when (item.type) {
             FieldType.DEFAULT -> {

@@ -25,7 +25,7 @@ data class ButtonTileItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_button_tile
+        val LAYOUT get() = R.layout.list_item_button_tile
     }
 }
 
@@ -37,7 +37,7 @@ class ButtonTileItemViewHolder(
     private val binding = ListItemButtonTileBinding.bind(itemView)
 
     init {
-        binding.buttonTile.setOnClickListener {
+        binding.tile.setOnClickListener {
             listener.onClick(adapterPosition)
         }
 

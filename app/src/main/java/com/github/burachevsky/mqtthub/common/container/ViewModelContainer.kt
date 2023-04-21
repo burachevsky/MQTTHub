@@ -2,12 +2,9 @@ package com.github.burachevsky.mqtthub.common.container
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataScope
-import com.github.burachevsky.mqtthub.common.effect.Navigate
-import com.github.burachevsky.mqtthub.common.effect.ToastMessage
-import com.github.burachevsky.mqtthub.common.effect.UIEffect
+import com.github.burachevsky.mqtthub.common.event.Navigate
+import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
-import com.github.burachevsky.mqtthub.common.text.Txt
-import com.github.burachevsky.mqtthub.common.text.of
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,16 +14,16 @@ import kotlinx.coroutines.async as libAsync
 class ViewModelContainer<N : Navigator>(
     val scope: CoroutineScope
 ) {
-    private val _effect = MutableSharedFlow<UIEffect>()
-    val effect: SharedFlow<UIEffect> = _effect
+    private val _effect = MutableSharedFlow<AppEvent>()
+    val effect: SharedFlow<AppEvent> = _effect
 
-    fun raiseEffect(effect: UIEffect) {
+    fun raiseEffect(effect: AppEvent) {
         launch(Dispatchers.Main) {
             _effect.emit(effect)
         }
     }
 
-    inline fun raiseEffect(effect: () -> UIEffect) {
+    inline fun raiseEffect(effect: () -> AppEvent) {
         raiseEffect(effect())
     }
 

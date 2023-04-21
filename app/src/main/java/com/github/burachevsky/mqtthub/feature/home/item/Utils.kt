@@ -3,13 +3,15 @@ package com.github.burachevsky.mqtthub.feature.home.item
 import android.view.View
 import androidx.core.view.isVisible
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.ext.showPopupMenu
+import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
+import com.github.burachevsky.mqtthub.common.ext.isState
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 
 const val NAME_CHANGED = 1
 const val PAYLOAD_CHANGED = 2
 const val EDIT_MODE_CHANGED = 3
 const val SWITCH_STATE_CHANGED = 4
+const val DESIGN_CHANGED = 5
 
 fun ItemViewHolder.bindEditMode(editMode: EditMode?) {
     itemView.findViewById<View>(R.id.editModeOverlay)?.apply {
@@ -25,4 +27,8 @@ fun ItemViewHolder.bindEditMode(editMode: EditMode?) {
             isVisible = false
         }
     }
+}
+
+fun SwitchTileItem.isChecked(): Boolean {
+    return tile.isState(SWITCH_ON)
 }

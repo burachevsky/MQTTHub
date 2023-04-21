@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">MQTT Hub</string>
 
-    <string name="brokers_title">Brokers</string>
+    <string name="default_dashboard_name">Dashboard</string>
+
+    <string name="home_brokers">Brokers</string>
+    <string name="home_edit_brokers">Edit brokers</string>
+    <string name="home_edit_dashboards">Edit dashboards</string>
     <string name="brokers_empty">There are no brokers yet :(</string>
 
     <string name="tiles_empty">There are no tiles yet :(</string>
@@ -27,6 +31,7 @@
     <string name="tiles_selected">%d selected</string>
 
     <string name="new_tile">New tile</string>
+    <string name="add_first_broker">Add first broker</string>
     <string name="new_text_tile">New text tile</string>
     <string name="edit_text_tile">Edit text tile</string>
     <string name="new_button_tile">New button</string>
@@ -43,6 +48,7 @@
     <string name="off_state">Off state</string>
 
     <string name="error_failed_to_connect">Failed to connect</string>
+    <string name="error_lost_connection_with_broker">Lost connection with %s [%s]</string>
     <string name="error_failed_to_connect_to_broker">Failed to connect to %s [%s]</string>
 
     <string name="delete">Delete</string>
@@ -53,6 +59,12 @@
     <string name="tile_type_text">Text</string>
     <string name="tile_type_button">Button</string>
     <string name="tile_type_switch">Switch</string>
+
+    <string name="style">Style</string>
+
+    <string name="text_tile_style_small">Small</string>
+    <string name="text_tile_style_medium">Medium</string>
+    <string name="text_tile_style_large">Large</string>
 
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
@@ -68,4 +80,18 @@
 
     <string name="publish_title">Test</string>
 
+    <string name="home_dashboards">Dashboards</string>
+    <string name="home_create_new_dashboard">Create new dashboard</string>
+    <string name="home_enter_a_dashboard_name">Enter a dashboard name</string>
+    <string name="home_add_new_broker">Add new broker</string>
+    <string name="home_settings">Settings</string>
+    <string name="home_help_and_feedback">Help and feedback</string>
+    <string name="home_version">MQTT Hub v%s</string>
+
+    <string name="dashboards_min_items_dialog_message">Can\'t delete the only dashboard</string>
+    <string name="dashboards_min_items_dialog_button">OK</string>
+    <string name="dashboards_delete_dialog_title">Delete %s?</string>
+    <string name="dashboards_delete_dialog_message">This action cannot be undone</string>
+
+    <string name="tile_details_publish">Publish</string>
 </resources>

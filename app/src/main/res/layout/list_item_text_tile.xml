@@ -4,44 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/tile_default_height"
+    android:layout_height="wrap_content"
+    tools:layout_height="220dp"
     android:background="@drawable/bg_tile_list_item"
-    app:layout_constraintTop_toTopOf="parent"
+    android:transitionName="itemTile"
     app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
+    app:layout_constraintTop_toTopOf="parent">
 
     <TextView
         android:id="@+id/tileName"
         style="@style/TextAppearance.MQTTHub.Label"
-        android:textColor="?attr/colorOnSecondaryContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        android:transitionName="itemTileName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Tile name" />
 
     <TextView
         android:id="@+id/tilePayload"
+        style="@style/TextAppearance.MQTTHub.Body"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Hello world"
-        app:layout_constraintTop_toBottomOf="@id/tileName"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:ellipsize="end"
+        tools:lines="8"
+        android:transitionName="itemTilePayload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="16dp"/>
+        app:layout_constraintTop_toBottomOf="@id/tileName"
+        tools:text="Hello world\nhello world\nhelloworld\nhelloworld\nhelloworld\nhelloworld\nhelloworld" />
 
     <View
         android:id="@+id/editModeOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@drawable/bg_tile_edit_mode_selected"
-        android:visibility="gone"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

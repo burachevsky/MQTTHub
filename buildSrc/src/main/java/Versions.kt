@@ -4,10 +4,10 @@ object Versions {
 
     const val COMPILE_SDK = 33
     const val TARGET_SDK = 33
-    const val MIN_SDK = 24
+    const val MIN_SDK = 26
 
-    const val KOTLIN = "1.7.10"
-    const val ANDROID_GRADLE_PLUGIN = "7.3.0"
+    const val KOTLIN = "1.8.20"
+    const val ANDROID_GRADLE_PLUGIN = "8.0.0"
     const val NAVIGATION = "2.5.2"
 
     const val APPCOMPAT = "1.5.1"
@@ -15,9 +15,10 @@ object Versions {
     const val APPSTARTUP = "1.1.1"
     const val CARDVIEW = "1.0.0"
     const val CONSTRAINT_LAYOUT = "2.1.4"
-    const val CORE = "1.9.0"
+    const val CORE = "1.10.0"
     const val COROUTINES = "1.6.4"
     const val COROUTINES_TEST = "1.6.4"
+    const val DRAWER_LAYOUT_VERSION = "1.2.0"
     const val ESPRESSO = "3.1.1"
     const val FLEXBOX = "3.0.0"
     const val FRAGMENT = "1.5.3"

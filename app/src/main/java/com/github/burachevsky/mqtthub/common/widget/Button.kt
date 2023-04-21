@@ -13,7 +13,7 @@ class ButtonItem(val text: Txt) : ListItem {
     override fun layout() = LAYOUT
 
     companion object {
-        const val LAYOUT = R.layout.list_item_button
+        val LAYOUT get() = R.layout.list_item_button
     }
 
     fun interface Listener {
@@ -36,7 +36,7 @@ class ButtonItemViewHolder(
 
     override fun bind(item: ListItem) {
         item as ButtonItem
-        binding.button.text = item.text.get(itemView.context)
+        binding.button.text = item.text.get(context)
     }
 }
 

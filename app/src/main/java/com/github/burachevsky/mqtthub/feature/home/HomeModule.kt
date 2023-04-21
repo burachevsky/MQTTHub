@@ -1,14 +1,14 @@
 package com.github.burachevsky.mqtthub.feature.home
 
+import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import dagger.Module
 import dagger.Provides
 
 @Module
-class HomeModule(fragment: HomeFragment) {
-    private val args = HomeFragmentArgs.fromBundle(fragment.requireArguments())
+class HomeModule(private val fragment: HomeFragment) {
 
     @Provides
-    fun provideArgs(): HomeFragmentArgs {
-        return args
+    fun provideVMContainer(): ViewModelContainer<HomeNavigator> {
+        return fragment.viewModel.container
     }
 }

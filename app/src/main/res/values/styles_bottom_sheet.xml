@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MQTTHub.BottomSheetDialog"
-        parent="Theme.Material3.Light.BottomSheetDialog">
-
+    <style name="Theme.MQTTHub.BottomSheetDialog" parent="Theme.Material3.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.MQTTHub.BottomSheet</item>
     </style>
 
-    <style name="Widget.MQTTHub.BottomSheet"
-        parent="Widget.Material3.BottomSheet.Modal">
+    <style name="Widget.MQTTHub.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
         <item name="shapeAppearanceOverlay">@style/BottomSheetOverlay</item>
     </style>
 

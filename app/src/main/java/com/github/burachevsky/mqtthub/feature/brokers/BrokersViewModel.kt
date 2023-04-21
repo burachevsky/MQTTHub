@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
-import com.github.burachevsky.mqtthub.common.effect.AlertDialog
-import com.github.burachevsky.mqtthub.common.eventbus.EventBus
+import com.github.burachevsky.mqtthub.common.event.AlertDialog
+import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
 import com.github.burachevsky.mqtthub.common.ext.get
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class BrokersViewModel @Inject constructor(
     private val getBrokers: GetBrokers,
     private val deleteBroker: DeleteBroker,
-    eventBus: EventBus,
+    private val eventBus: EventBus,
 ) : ViewModel(), VM<BrokersNavigator> {
 
     override val container = ViewModelContainer<BrokersNavigator>(viewModelScope)
@@ -33,10 +33,11 @@ class BrokersViewModel @Inject constructor(
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
-    val noBrokersYet: Flow<Boolean> = items.map { it.isEmpty() }
+    private val _noBrokersYet = MutableStateFlow(false)
+    val noBrokersYet: StateFlow<Boolean> = _noBrokersYet
 
     init {
-        eventBus.apply{
+        eventBus.apply {
             subscribe<BrokerAdded>(viewModelScope) {
                 addBrokerToList(it.broker)
             }
@@ -47,16 +48,13 @@ class BrokersViewModel @Inject constructor(
         }
 
         container.launch(Dispatchers.Main) {
-            _items.value = getBrokers().map(::BrokerItem)
+            val brokerItems = getBrokers().map(::BrokerItem)
+            _noBrokersYet.value = brokerItems.isEmpty()
+            _items.value = brokerItems
         }
     }
 
     fun brokerClicked(position: Int) {
-        container.navigator {
-            navigateHome(
-                _items.get<BrokerItem>(position).broker.id
-            )
-        }
     }
 
     fun addBrokerClicked() {
@@ -92,12 +90,13 @@ class BrokersViewModel @Inject constructor(
             val id = items.get<BrokerItem>(position).broker.id
             deleteBroker(id)
             _items.value = _items.value.filterIndexed { i, _ -> i != position }
+            eventBus.send(BrokerDeleted(id))
         }
     }
 
     private fun addBrokerToList(broker: Broker) {
-        _items.update {
-            it + BrokerItem(broker)
+        _items.value = _items.value.toMutableList().apply {
+            add(NEW_ITEM_POSITION, BrokerItem(broker))
         }
     }
 
@@ -111,5 +110,9 @@ class BrokersViewModel @Inject constructor(
                 this[pos] = (this[pos] as BrokerItem).copy(broker = broker)
             }
         }
+    }
+
+    companion object {
+        const val NEW_ITEM_POSITION = 0
     }
 }

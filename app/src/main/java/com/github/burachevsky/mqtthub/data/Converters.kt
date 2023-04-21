@@ -16,4 +16,14 @@ object Converters {
     fun toStateList(json: String): List<Tile.State> {
         return Gson().fromJson(json, object : TypeToken<ArrayList<Tile.State>>() {}.type)
     }
+
+    @TypeConverter
+    fun fromTileDesign(design: Tile.Design): String {
+        return Gson().toJson(design)
+    }
+
+    @TypeConverter
+    fun toDesign(json: String): Tile.Design {
+        return Gson().fromJson(json, object : TypeToken<Tile.Design>() {}.type)
+    }
 }

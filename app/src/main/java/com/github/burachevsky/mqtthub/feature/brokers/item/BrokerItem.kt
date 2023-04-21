@@ -22,7 +22,7 @@ data class BrokerItem(
     }
 
     companion object {
-        const val LAYOUT = R.layout.list_item_broker
+        val LAYOUT get() = R.layout.list_item_broker
     }
 
     interface Listener {
@@ -66,6 +66,10 @@ class BrokerItemViewHolder(
 
         binding.editButton.setOnClickListener {
             listener.onEditClick(adapterPosition)
+        }
+
+        binding.deleteButton.setOnClickListener {
+            listener.onDeleteClick(adapterPosition)
         }
     }
 
