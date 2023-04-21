@@ -9,6 +9,9 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
+import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
+import com.github.burachevsky.mqtthub.common.widget.ToggleOption
+import com.github.burachevsky.mqtthub.data.entity.SwitchTileBackgroundId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -42,6 +45,25 @@ class AddSwitchViewModel @Inject constructor(
         placeholder = Txt.of("0")
     )
 
+    private val style = ToggleGroupItem(
+        title = Txt.of(R.string.tile_background_style),
+        options = listOf(
+            ToggleOption(
+                id = SwitchTileBackgroundId.OUTLINED,
+                text = Txt.of(R.string.tile_style_outlined),
+            ),
+            ToggleOption(
+                id = SwitchTileBackgroundId.FILLED,
+                text = Txt.of(R.string.tile_style_filled),
+            ),
+            ToggleOption(
+                id = SwitchTileBackgroundId.EMPTY,
+                text = Txt.of(R.string.tile_style_empty),
+            ),
+        ),
+        selectedValue = SwitchTileBackgroundId.OUTLINED,
+    )
+
     init {
         init()
     }
@@ -54,6 +76,7 @@ class AddSwitchViewModel @Inject constructor(
         offState.text = tile.stateList.getPayload(SWITCH_OFF).orEmpty()
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
+        style.selectedValue = tile.design.styleId
     }
 
     override fun list(): List<ListItem> {
@@ -65,6 +88,7 @@ class AddSwitchViewModel @Inject constructor(
             offState,
             qos,
             retain,
+            style,
             save,
         )
     }
@@ -81,7 +105,8 @@ class AddSwitchViewModel @Inject constructor(
             stateList = listOf(
                 Tile.State(SWITCH_ON, onState.text),
                 Tile.State(SWITCH_OFF, offState.text)
-            )
+            ),
+            design = Tile.Design(styleId = style.selectedValue),
         ) ?: Tile(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
@@ -95,6 +120,7 @@ class AddSwitchViewModel @Inject constructor(
                 Tile.State(SWITCH_OFF, offState.text)
             ),
             dashboardPosition = dashboardPosition,
+            design = Tile.Design(styleId = style.selectedValue),
         )
     }
 }

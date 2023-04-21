@@ -6,6 +6,9 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
+import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
+import com.github.burachevsky.mqtthub.common.widget.ToggleOption
+import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -33,6 +36,21 @@ class AddButtonTileViewModel @Inject constructor(
         label = Txt.of(R.string.publish_payload)
     )
 
+    private val style = ToggleGroupItem(
+        title = Txt.of(R.string.button_tile_style),
+        options = listOf(
+            ToggleOption(
+                id = ButtonTileStyledId.OUTLINED,
+                text = Txt.of(R.string.tile_style_outlined)
+            ),
+            ToggleOption(
+                id = ButtonTileStyledId.FILLED,
+                text = Txt.of(R.string.tile_style_filled)
+            ),
+        ),
+        selectedValue = ButtonTileStyledId.OUTLINED
+    )
+
     init {
         init()
     }
@@ -43,6 +61,7 @@ class AddButtonTileViewModel @Inject constructor(
         payload.text = tile.payload
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
+        style.selectedValue = tile.design.styleId
     }
 
     override fun collectTile(): Tile {
@@ -56,6 +75,7 @@ class AddButtonTileViewModel @Inject constructor(
             dashboardId = dashboardId,
             type = Tile.Type.BUTTON,
             stateList = emptyList(),
+            design = Tile.Design(styleId = style.selectedValue),
         ) ?: Tile(
             name = name.text,
             subscribeTopic = "",
@@ -67,6 +87,7 @@ class AddButtonTileViewModel @Inject constructor(
             type = Tile.Type.BUTTON,
             stateList = emptyList(),
             dashboardPosition = dashboardPosition,
+            design = Tile.Design(styleId = style.selectedValue),
         )
     }
 
@@ -77,6 +98,7 @@ class AddButtonTileViewModel @Inject constructor(
             payload,
             qos,
             retain,
+            style,
             save,
         )
     }
