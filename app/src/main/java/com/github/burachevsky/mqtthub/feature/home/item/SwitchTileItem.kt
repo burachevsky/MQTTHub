@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.Gravity
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
@@ -37,6 +38,7 @@ data class SwitchTileItem(
             if (tile.payload != that.tile.payload) SWITCH_STATE_CHANGED else null,
             if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
             if (tile.design != that.tile.design) DESIGN_CHANGED else null,
+            if (tile.publishTopic != that.tile.publishTopic) PUBLISH_TOPIC_CHANGED else null,
         )
     }
 
@@ -48,17 +50,13 @@ data class SwitchTileItem(
 class SwitchTileItemViewHolder(
     itemView: View,
     private val listener: TileItem.Listener
-) : ItemViewHolder(itemView), OnCheckedChangeListener {
+) : ItemViewHolder(itemView), OnCheckedChangeListener, OnClickListener {
 
     private val binding = ListItemSwitchTileBinding.bind(itemView)
 
     private var item: SwitchTileItem? = null
 
     init {
-        binding.tileSwitch.setOnClickListener {
-            listener.onClick(adapterPosition)
-        }
-
         binding.tileSwitch.setOnCheckedChangeListener(this)
 
         binding.editModeOverlay.setOnClickListener {
@@ -71,6 +69,14 @@ class SwitchTileItemViewHolder(
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        if (!item?.tile?.publishTopic.isNullOrEmpty()) {
+            listener.onClick(adapterPosition)
+        } else {
+            item?.let(::bindSwitchState)
+        }
+    }
+
+    override fun onClick(v: View?) {
         listener.onClick(adapterPosition)
     }
 
@@ -81,6 +87,7 @@ class SwitchTileItemViewHolder(
         bindName(item)
         bindSwitchState(item)
         bindDesign(item)
+        bindPublishTopic(item)
     }
 
     override fun bind(item: ListItem, payloads: List<Int>) {
@@ -92,6 +99,7 @@ class SwitchTileItemViewHolder(
                 SWITCH_STATE_CHANGED -> bindSwitchState(item)
                 EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
                 DESIGN_CHANGED -> bindDesign(item)
+                PUBLISH_TOPIC_CHANGED -> bindPublishTopic(item)
             }
         }
     }
@@ -115,6 +123,15 @@ class SwitchTileItemViewHolder(
             if (isChecked != newState) {
                 changeCheckedWithoutTriggering(newState)
             }
+        }
+    }
+
+    private fun bindPublishTopic(item: SwitchTileItem) {
+        val hasTopic = item.tile.publishTopic.isNotEmpty()
+
+        binding.tileSwitch.apply {
+            setOnClickListener(if (hasTopic) this@SwitchTileItemViewHolder else null)
+            isClickable = hasTopic
         }
     }
 

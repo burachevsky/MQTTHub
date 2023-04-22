@@ -12,6 +12,7 @@ const val PAYLOAD_CHANGED = 2
 const val EDIT_MODE_CHANGED = 3
 const val SWITCH_STATE_CHANGED = 4
 const val DESIGN_CHANGED = 5
+const val PUBLISH_TOPIC_CHANGED = 6
 
 fun ItemViewHolder.bindEditMode(editMode: EditMode?) {
     itemView.findViewById<View>(R.id.editModeOverlay)?.apply {

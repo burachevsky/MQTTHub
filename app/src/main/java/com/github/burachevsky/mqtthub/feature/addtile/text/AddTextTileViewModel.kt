@@ -84,10 +84,6 @@ class AddTextTileViewModel @Inject constructor(
         init()
     }
 
-    private fun update() {
-        _items.value = list()
-    }
-
     private fun showPublishingField() {
         if (publishTopic.text.isEmpty()) {
             publishTopic.text = subscribeTopic.text
