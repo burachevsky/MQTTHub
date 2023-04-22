@@ -128,8 +128,10 @@ class BrokerConnection(
 
     fun publish(tile: Tile, payload: String) {
         launchIfNotCanceled {
-            Timber.i("BrokerConnection: publishing payload to topic ${tile.publishTopic}: $payload")
-            mqttClient.publish(tile.publishTopic, payload.toByteArray(), tile.qos, tile.retained)
+            if (tile.publishTopic.isNotEmpty()) {
+                Timber.i("BrokerConnection: publishing payload to topic ${tile.publishTopic}: $payload")
+                mqttClient.publish(tile.publishTopic, payload.toByteArray(), tile.qos, tile.retained)
+            }
         }
     }
 

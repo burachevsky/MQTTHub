@@ -15,11 +15,9 @@ internal inline fun BrokerConnection.ifNotCanceled(block: () -> Unit) {
 internal inline fun BrokerConnection.reportIfNotCanceled(
     brokerEvent: () -> BrokerEvent
 ) {
-    ifNotCanceled {
-        val event = brokerEvent()
-        connectionScope.launch {
-            eventBus.send(event)
-        }
+    val event = brokerEvent()
+    launchIfNotCanceled {
+        eventBus.send(event)
     }
 }
 
@@ -28,7 +26,9 @@ internal inline fun BrokerConnection.launchIfNotCanceled(
 ) {
     ifNotCanceled {
         connectionScope.launch {
-            block()
+            execSafely {
+                block()
+            }
         }
     }
 }
@@ -41,8 +41,15 @@ internal suspend inline fun BrokerConnection.execSafely(
         block()
     } catch (e: Throwable) {
         Timber.e(e)
-        reportIfNotCanceled {
-            errorEvent(this, e)
+        ifNotCanceled {
+            try {
+                val event = errorEvent(this, e)
+                connectionScope.launch {
+                    eventBus.send(event)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
         }
     }
 }
