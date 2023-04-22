@@ -12,7 +12,7 @@ internal class SubscriptionManager(
 
     private val subscriptions = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
 
-    suspend fun subscribeIfHaveNotAlready(topics: List<String>) {
+    fun subscribeIfHaveNotAlready(topics: List<String>) {
         val newTopics = topics.filter { it.isNotEmpty() && !subscriptions.containsKey(it) }
             .distinct()
 
@@ -27,17 +27,15 @@ internal class SubscriptionManager(
         }
 
         if (newTopics.isNotEmpty()) {
-            connection.execSafely {
-                mqttClient.subscribe(newTopics.toTypedArray())
-            }
+            connection.mqttClient.subscribe(newTopics.toTypedArray())
         }
     }
 
-    suspend fun subscribeIfHaveNotAlready(topic: String) {
+    fun subscribeIfHaveNotAlready(topic: String) {
         subscribeIfHaveNotAlready(listOf(topic))
     }
 
-    suspend fun unsubscribe(topics: List<String>) {
+    fun unsubscribe(topics: List<String>) {
         val distinctTopics = topics.filter { it.isNotEmpty() }
             .distinct()
 
@@ -47,13 +45,11 @@ internal class SubscriptionManager(
         distinctTopics.forEach(subscriptions::remove)
 
         if (distinctTopics.isNotEmpty()) {
-            connection.execSafely {
-                mqttClient.unsubscribe(distinctTopics.toTypedArray())
-            }
+            connection.mqttClient.unsubscribe(distinctTopics.toTypedArray())
         }
     }
 
-    suspend fun unsubscribe(topic: String) {
+    fun unsubscribe(topic: String) {
         unsubscribe(listOf(topic))
     }
 
