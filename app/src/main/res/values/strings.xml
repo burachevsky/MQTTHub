@@ -38,6 +38,8 @@
     <string name="edit_button_tile">Edit button</string>
     <string name="new_switch">New switch</string>
     <string name="edit_switch">Edit switch</string>
+    <string name="new_chart">New chart</string>
+    <string name="edit_chart">Edit chart</string>
     <string name="tile_name">Tile name</string>
     <string name="subscribe_topic">Subscribe topic</string>
     <string name="publish_topic">Publish topic</string>
@@ -59,6 +61,7 @@
     <string name="tile_type_text">Text</string>
     <string name="tile_type_button">Button</string>
     <string name="tile_type_switch">Switch</string>
+    <string name="tile_type_chart">Chart</string>
 
     <string name="tile_size">Tile size</string>
     <string name="tile_fills_screen_width">Tile fills screen width</string>

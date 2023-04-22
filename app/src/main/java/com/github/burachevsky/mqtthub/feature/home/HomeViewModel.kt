@@ -224,6 +224,8 @@ class HomeViewModel @Inject constructor(
                 Tile.Type.TEXT -> container.raiseEffect {
                     OpenTextTileDetails(position, tile.id)
                 }
+
+                Tile.Type.CHART -> {}
             }
         }
     }
@@ -370,6 +372,7 @@ class HomeViewModel @Inject constructor(
                 Tile.Type.BUTTON -> navigateAddButtonTile(dashboardId, tile.id, position)
                 Tile.Type.TEXT -> navigateAddTextTile(dashboardId, tile.id, position)
                 Tile.Type.SWITCH -> navigateAddSwitch(dashboardId, tile.id, position)
+                Tile.Type.CHART -> navigateAddChart(dashboardId, tile.id, position)
             }
         }
     }
@@ -527,6 +530,10 @@ class HomeViewModel @Inject constructor(
                 TileTypeId.SWITCH -> container.navigator {
                     navigateAddSwitch(dashboardId, dashboardPosition = items.value.size)
                 }
+
+                TileTypeId.CHART -> container.navigator {
+                    navigateAddChart(dashboardId, dashboardPosition = items.value.size)
+                }
             }
         }
     }
@@ -600,7 +607,7 @@ class HomeViewModel @Inject constructor(
         _items.update { item ->
             item.map {
                 if (it is TileItem && it.tile.subscribeTopic == topic) {
-                    it.copyTile(it.tile.copy(payload = payload))
+                    it.copyTile(it.tile.copy(payload = payload).initPayload())
                 } else it
             }
         }

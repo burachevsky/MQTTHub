@@ -7,6 +7,10 @@ import com.google.gson.reflect.TypeToken
 
 object Converters {
 
+    inline fun <reified T> fromJson(json: String): T {
+        return Gson().fromJson(json, object : TypeToken<T>() {}.type)
+    }
+
     @TypeConverter
     fun fromStateList(list: List<Tile.State>): String {
         return Gson().toJson(list)

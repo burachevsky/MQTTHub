@@ -22,3 +22,9 @@ object SwitchTileBackgroundId {
     const val OUTLINED = 1
     const val EMPTY = 2
 }
+
+object ChartTileStyleId {
+    const val FILLED = 0
+    const val OUTLINED = 1
+    const val EMPTY = 2
+}

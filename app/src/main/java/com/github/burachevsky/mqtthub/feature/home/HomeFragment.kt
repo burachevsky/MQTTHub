@@ -64,6 +64,7 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
         TextTileItemAdapter(tileItemListener),
         ButtonTileItemAdapter(tileItemListener),
         SwitchTileItemAdapter(tileItemListener),
+        ChartTileItemAdapter(tileItemListener),
     )
 
     private val drawerListAdapter = CompositeAdapter(

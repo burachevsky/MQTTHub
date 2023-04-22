@@ -10,6 +10,7 @@ object Versions {
     const val ANDROID_GRADLE_PLUGIN = "8.0.0"
     const val NAVIGATION = "2.5.2"
 
+    const val AACHART_CORE = "-SNAPSHOT"
     const val APPCOMPAT = "1.5.1"
     const val ACTIVITY = "1.6.0"
     const val APPSTARTUP = "1.1.1"
@@ -33,6 +34,7 @@ object Versions {
     const val OKHTTP = "4.10.0"
     const val PAHO = "1.1.2-SNAPSHOT"
     const val ROOM = "2.4.3"
+    const val ROTATE_LAYOUT = "3.0.0"
     const val TIMBER = "5.0.1"
     const val VIEWPAGER2 = "1.0.0"
 }

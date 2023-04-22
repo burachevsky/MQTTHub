@@ -1,5 +1,6 @@
 object Libs {
     const val ACTIVITY_KTX = "androidx.activity:activity-ktx"
+    const val AACHART_CORE = "com.github.AAChartModel:AAChartCore-Kotlin"
     const val APPCOMPAT = "androidx.appcompat:appcompat"
     const val APP_STARTUP = "androidx.startup:startup-runtime"
     const val CARDVIEW = "androidx.cardview:cardview"
@@ -34,6 +35,7 @@ object Libs {
     const val ROOM_COMPILER = "androidx.room:room-compiler"
     const val ROOM_KTX = "androidx.room:room-ktx"
     const val ROOM_RUNTIME = "androidx.room:room-runtime"
+    const val ROTATE_LAYOUT = "rongi.rotate-layout:rotate-layout"
     const val TIMBER = "com.jakewharton.timber:timber"
     const val VIEWPAGER2 = "androidx.viewpager2:viewpager2"
 }

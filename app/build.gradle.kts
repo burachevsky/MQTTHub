@@ -127,4 +127,10 @@ dependencies {
     //Paho
     implementation("${Libs.PAHO}:${Versions.PAHO}")
     implementation("${Libs.PAHO_ANDROID}:${Versions.PAHO}")
+
+    //Charts
+    implementation("${Libs.AACHART_CORE}:${Versions.AACHART_CORE}")
+
+    //RotateLayout
+    implementation("${Libs.ROTATE_LAYOUT}:${Versions.ROTATE_LAYOUT}")
 }

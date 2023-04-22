@@ -3,8 +3,12 @@ package com.github.burachevsky.mqtthub.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.github.burachevsky.mqtthub.data.Converters
+import com.github.burachevsky.mqtthub.data.entity.chart.ChartPayload
 import com.google.gson.annotations.SerializedName
+import timber.log.Timber
 
 @Entity(
     tableName = "tiles",
@@ -56,8 +60,29 @@ data class Tile(
     val design: Design = Design()
 ) {
 
+    @Ignore
+    var chartPayload: ChartPayload? = null
+
+    init {
+        initPayload()
+    }
+
+    fun initPayload(): Tile {
+        when (type) {
+            Type.CHART -> try {
+                chartPayload = Converters.fromJson<ChartPayload>(payload)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+
+            else -> {}
+        }
+
+        return this
+    }
+
     enum class Type {
-        TEXT, BUTTON, SWITCH
+        TEXT, BUTTON, SWITCH, CHART
     }
 
     data class State(
