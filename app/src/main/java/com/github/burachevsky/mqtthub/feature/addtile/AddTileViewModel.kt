@@ -82,6 +82,10 @@ abstract class AddTileViewModel (
 
     protected val save = ButtonItem(Txt.of(R.string.save))
 
+    protected fun update() {
+        _items.value = list()
+    }
+
     fun init() {
         container.launch(Dispatchers.Main) {
             if (isEditMode()) {
@@ -89,7 +93,7 @@ abstract class AddTileViewModel (
                     .also(::initFields)
             }
 
-            _items.value = list()
+            update()
         }
     }
 

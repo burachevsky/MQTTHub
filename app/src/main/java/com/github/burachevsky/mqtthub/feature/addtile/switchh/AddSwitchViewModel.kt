@@ -36,14 +36,17 @@ class AddSwitchViewModel @Inject constructor(
 
     override val title = if (isEditMode()) R.string.edit_switch else R.string.new_switch
 
+    private val enablePublishing = SwitchItem(
+        text = Txt.of(R.string.enable_publishing),
+        onCheckChanged = { showPublishingField() }
+    )
+
     private val onState = InputFieldItem(
         label = Txt.of(R.string.on_state),
-        placeholder = Txt.of("1")
     )
 
     private val offState = InputFieldItem(
         label = Txt.of(R.string.off_state),
-        placeholder = Txt.of("0")
     )
 
     private val width = SwitchItem(
@@ -73,12 +76,21 @@ class AddSwitchViewModel @Inject constructor(
         init()
     }
 
+    private fun showPublishingField() {
+        if (publishTopic.text.isEmpty()) {
+            publishTopic.text = subscribeTopic.text
+        }
+
+        update()
+    }
+
     override fun initFields(tile: Tile) {
         name.text = tile.name
         subscribeTopic.text = tile.subscribeTopic
         publishTopic.text = tile.publishTopic
-        onState.text = tile.stateList.getPayload(SWITCH_ON).orEmpty()
-        offState.text = tile.stateList.getPayload(SWITCH_OFF).orEmpty()
+        enablePublishing.isChecked = tile.publishTopic.isNotEmpty()
+        onState.text = tile.stateList.getPayload(SWITCH_ON) ?: DEFAULT_STATE_ON
+        offState.text = tile.stateList.getPayload(SWITCH_OFF) ?: DEFAULT_STATE_OFF
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
         style.selectedValue = tile.design.styleId
@@ -86,10 +98,11 @@ class AddSwitchViewModel @Inject constructor(
     }
 
     override fun list(): List<ListItem> {
-        return listOf(
+        return listOfNotNull(
             name,
             subscribeTopic,
-            publishTopic,
+            if (enablePublishing.isChecked) publishTopic else null,
+            enablePublishing,
             onState,
             offState,
             qos,
@@ -104,7 +117,7 @@ class AddSwitchViewModel @Inject constructor(
         return oldTile?.copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
-            publishTopic = publishTopic.text,
+            publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
             qos = qos.selectedValue,
             retained = retain.isChecked,
             dashboardId = dashboardId,
@@ -120,7 +133,7 @@ class AddSwitchViewModel @Inject constructor(
         ) ?: Tile(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
-            publishTopic = publishTopic.text,
+            publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
             qos = qos.selectedValue,
             retained = retain.isChecked,
             dashboardId = dashboardId,
@@ -135,5 +148,10 @@ class AddSwitchViewModel @Inject constructor(
                 isFullSpan = width.isChecked,
             ),
         )
+    }
+
+    companion object {
+        const val DEFAULT_STATE_ON = "1"
+        const val DEFAULT_STATE_OFF = "2"
     }
 }
