@@ -3,32 +3,27 @@ package com.github.burachevsky.mqtthub.feature.addtile
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
-import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.widget.*
 import com.github.burachevsky.mqtthub.databinding.FragmentAddTileBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import kotlin.reflect.KClass
 
-abstract class AddTileFragment<VM : AddTileViewModel>(
-    private val viewModelClass: KClass<VM>,
-) : Fragment(), ViewController<VM> {
+abstract class AddTileFragment<VM : AddTileViewModel> : Fragment(R.layout.fragment_add_tile),
+    ViewController<VM> {
 
     abstract var viewModelFactory: ViewModelFactory<VM>
 
-    override val container = ViewContainer(this, ::Navigator)
-
-    private var _binding: FragmentAddTileBinding? = null
-    private val binding get() = _binding!!
+    override val binding by viewBinding(FragmentAddTileBinding::bind)
+    override val container by viewContainer()
 
     open val listAdapter = CompositeAdapter(
         InputFieldItemAdapter(),
@@ -48,19 +43,6 @@ abstract class AddTileFragment<VM : AddTileViewModel>(
         inject()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        container.onCreate()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAddTileBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,10 +61,5 @@ abstract class AddTileFragment<VM : AddTileViewModel>(
         collectOnStarted(viewModel.itemsChanged) {
             listAdapter.notifyDataSetChanged()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

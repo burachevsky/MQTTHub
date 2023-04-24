@@ -1,10 +1,9 @@
 package com.github.burachevsky.mqtthub.feature.addbroker
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
@@ -39,7 +38,7 @@ class AddBrokerViewModel @Inject constructor(
 
     val title: Int = if (isEditMode()) R.string.edit_broker else R.string.add_broker
 
-    override val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val name = InputFieldItem(
         label = Txt.of(R.string.broker_name),

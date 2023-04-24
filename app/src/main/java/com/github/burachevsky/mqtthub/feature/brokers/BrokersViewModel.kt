@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.event.AlertDialog
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
@@ -28,7 +28,7 @@ class BrokersViewModel @Inject constructor(
     private val eventBus: EventBus,
 ) : ViewModel(), VM<BrokersNavigator> {
 
-    override val container = ViewModelContainer<BrokersNavigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items

@@ -2,15 +2,15 @@ package com.github.burachevsky.mqtthub.feature.brokers
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
@@ -21,17 +21,14 @@ import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItemAdapter
 import javax.inject.Inject
 
-class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
-
-    private var _binding: FragmentBrokersBinding? = null
-    private val binding get() = _binding!!
-
-    override val container = ViewContainer(this, ::BrokersNavigator)
+class BrokersFragment : Fragment(R.layout.fragment_brokers), ViewController<BrokersViewModel> {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<BrokersViewModel>
 
+    override val binding by viewBinding(FragmentBrokersBinding::bind)
     override val viewModel: BrokersViewModel by viewModels { viewModelFactory }
+    override val container by viewContainer()
 
     private val listAdapter = CompositeAdapter(
         BrokerItemAdapter(
@@ -56,20 +53,6 @@ class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
         appComponent.inject(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        container.onCreate()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentBrokersBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
@@ -90,10 +73,5 @@ class BrokersFragment : Fragment(), ViewController<BrokersViewModel> {
             binding.noBrokersText.isVisible = it
             binding.recyclerView.isVisible = !it
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

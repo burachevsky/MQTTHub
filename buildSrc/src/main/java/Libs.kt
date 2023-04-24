@@ -3,6 +3,7 @@ object Libs {
     const val AACHART_CORE = "com.github.AAChartModel:AAChartCore-Kotlin"
     const val APPCOMPAT = "androidx.appcompat:appcompat"
     const val APP_STARTUP = "androidx.startup:startup-runtime"
+    const val BY_VIEW_BINDING = "com.github.kirich1409:viewbindingpropertydelegate-noreflection"
     const val CARDVIEW = "androidx.cardview:cardview"
     const val CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout"
     const val CORE_KTX = "androidx.core:core-ktx"

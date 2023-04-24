@@ -1,10 +1,9 @@
 package com.github.burachevsky.mqtthub.feature.dashboards
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.event.AlertDialog
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
@@ -33,7 +32,7 @@ class DashboardsViewModel @Inject constructor(
     private val deleteDashboard: DeleteDashboard,
 ) : ViewModel(), VM<DashboardsNavigator> {
 
-    override val container = ViewModelContainer<DashboardsNavigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items

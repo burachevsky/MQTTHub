@@ -1,9 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.selector
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.text.Txt
@@ -15,7 +14,7 @@ class SelectorViewModel @Inject constructor(
     private val eventBus: EventBus,
 ) : ViewModel(), VM<Navigator> {
 
-    override val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     val title: Txt = config.title
 

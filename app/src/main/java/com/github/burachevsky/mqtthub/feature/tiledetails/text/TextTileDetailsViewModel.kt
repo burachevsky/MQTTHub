@@ -1,9 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.tiledetails.text
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
@@ -21,7 +20,7 @@ class TextTileDetailsViewModel @Inject constructor(
     private val eventBus: EventBus,
 ) : ViewModel(), VM<Navigator> {
 
-    override val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val tile: Flow<Tile> = observeTile(tileId)
 

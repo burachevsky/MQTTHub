@@ -7,7 +7,7 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileFragment
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import javax.inject.Inject
 
-class AddSwitchFragment : AddTileFragment<AddSwitchViewModel>(AddSwitchViewModel::class) {
+class AddSwitchFragment : AddTileFragment<AddSwitchViewModel>() {
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory<AddSwitchViewModel>

@@ -1,9 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.publishtext
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragmentArgs
@@ -17,7 +16,7 @@ class PublishTextViewModel @Inject constructor(
 
     val tileName = args.tileName
 
-    override val container = ViewModelContainer<Navigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val tileId = args.tileId
 

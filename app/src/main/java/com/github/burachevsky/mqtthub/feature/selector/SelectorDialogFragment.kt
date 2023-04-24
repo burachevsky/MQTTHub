@@ -2,33 +2,29 @@ package com.github.burachevsky.mqtthub.feature.selector
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
-import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentSelectorBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
 
-class SelectorDialogFragment : BottomSheetDialogFragment(),
+class SelectorDialogFragment : BottomSheetDialogFragment(R.layout.fragment_selector),
     ViewController<SelectorViewModel> {
-
-    private var _binding: FragmentSelectorBinding? = null
-    private val binding get() = _binding!!
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<SelectorViewModel>
 
-    override val viewModel: SelectorViewModel by viewModels { viewModelFactory }
-
-    override val container = ViewContainer(this, ::Navigator)
+    override val binding  by viewBinding(FragmentSelectorBinding::bind)
+    override val viewModel by viewModels<SelectorViewModel> { viewModelFactory }
+    override val container by viewContainer()
 
     private val listAdapter = CompositeAdapter(
         TileTypeItemAdapter(
@@ -46,20 +42,6 @@ class SelectorDialogFragment : BottomSheetDialogFragment(),
             .inject(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        container.onCreate()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSelectorBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.title.text = viewModel.title.get(requireContext())
 
@@ -69,10 +51,5 @@ class SelectorDialogFragment : BottomSheetDialogFragment(),
                 it.submitList(viewModel.items)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }
