@@ -112,6 +112,7 @@ dependencies {
 
     // Kotlin
     implementation("${Libs.KOTLIN_STDLIB}:${Versions.KOTLIN}")
+    implementation(kotlin("reflect"))
 
     // Instrumentation tests
     androidTestImplementation("${Libs.ESPRESSO_CORE}:${Versions.ESPRESSO}")
@@ -133,4 +134,7 @@ dependencies {
 
     //RotateLayout
     implementation("${Libs.ROTATE_LAYOUT}:${Versions.ROTATE_LAYOUT}")
+
+    //by viewBinding()
+    implementation("${Libs.BY_VIEW_BINDING}:${Versions.BY_VIEW_BINDING}")
 }

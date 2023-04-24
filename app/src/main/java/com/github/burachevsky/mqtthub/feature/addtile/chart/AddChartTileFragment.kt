@@ -7,7 +7,7 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileFragment
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import javax.inject.Inject
 
-class AddChartTileFragment : AddTileFragment<AddChartTileViewModel>(AddChartTileViewModel::class) {
+class AddChartTileFragment : AddTileFragment<AddChartTileViewModel>() {
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory<AddChartTileViewModel>

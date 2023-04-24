@@ -7,8 +7,7 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileFragment
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import javax.inject.Inject
 
-class AddButtonTileFragment :
-    AddTileFragment<AddButtonTileViewModel>(AddButtonTileViewModel::class) {
+class AddButtonTileFragment : AddTileFragment<AddButtonTileViewModel>() {
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory<AddButtonTileViewModel>

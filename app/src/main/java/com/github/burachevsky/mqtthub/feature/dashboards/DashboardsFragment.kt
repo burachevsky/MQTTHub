@@ -2,14 +2,14 @@ package com.github.burachevsky.mqtthub.feature.dashboards
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.github.burachevsky.mqtthub.common.container.ViewContainer
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
@@ -20,17 +20,15 @@ import com.github.burachevsky.mqtthub.feature.dashboards.item.DashboardItem
 import com.github.burachevsky.mqtthub.feature.dashboards.item.DashboardItemAdapter
 import javax.inject.Inject
 
-class DashboardsFragment : Fragment(), ViewController<DashboardsViewModel> {
-
-    private var _binding: FragmentDashboardsBinding? = null
-    private val binding get() = _binding!!
-
-    override val container = ViewContainer(this, ::DashboardsNavigator)
+class DashboardsFragment : Fragment(R.layout.fragment_dashboards),
+    ViewController<DashboardsViewModel> {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<DashboardsViewModel>
 
+    override val binding by viewBinding(FragmentDashboardsBinding::bind)
     override val viewModel: DashboardsViewModel by viewModels { viewModelFactory }
+    override val container by viewContainer()
 
     private val listAdapter = CompositeAdapter(
         DashboardItemAdapter(
@@ -52,20 +50,6 @@ class DashboardsFragment : Fragment(), ViewController<DashboardsViewModel> {
             .inject(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        container.onCreate()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentDashboardsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
@@ -76,10 +60,5 @@ class DashboardsFragment : Fragment(), ViewController<DashboardsViewModel> {
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

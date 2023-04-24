@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.VM
-import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
+import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.event.AlertDialog
 import com.github.burachevsky.mqtthub.common.event.ToastMessage
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
@@ -59,7 +59,7 @@ class HomeViewModel @Inject constructor(
     @Named(Name.MQTT_EVENT_BUS) private val mqttEventBus: EventBus,
 ) : ViewModel(), VM<HomeNavigator> {
 
-    override val container = ViewModelContainer<HomeNavigator>(viewModelScope)
+    override val container = viewModelContainer()
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Empty)
     val connectionState: StateFlow<ConnectionState> = _connectionState

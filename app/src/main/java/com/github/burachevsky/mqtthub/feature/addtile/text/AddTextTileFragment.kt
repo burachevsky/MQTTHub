@@ -7,7 +7,7 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileFragment
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import javax.inject.Inject
 
-class AddTextTileFragment : AddTileFragment<AddTextTileViewModel>(AddTextTileViewModel::class) {
+class AddTextTileFragment : AddTileFragment<AddTextTileViewModel>() {
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory<AddTextTileViewModel>

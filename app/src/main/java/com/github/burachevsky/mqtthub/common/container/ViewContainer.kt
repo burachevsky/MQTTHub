@@ -3,9 +3,8 @@ package com.github.burachevsky.mqtthub.common.container
 import android.app.Activity
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.github.burachevsky.mqtthub.R
@@ -20,21 +19,33 @@ import kotlinx.coroutines.launch
 class ViewContainer(
     private val viewController: ViewController<*>,
     private val navigatorFactory: NavigatorFactory,
-) {
+) : LifecycleOwner by viewController {
+
     private var vmContainer: ViewModelContainer<*>? = null
-        private set
-
-    var activity: Activity? = if (viewController is Activity) viewController else null
-        private set
-
-    private var viewAppEventHandler: AppEventHandler? = null
-
+    private var activity: Activity? = null
+    private var appEventHandler: AppEventHandler? = null
     private var navigator: Navigator? = null
+    private var effectCollectionJob: Job? = null
 
-    private var effectCollection: Job? = null
+    fun onStart() {
+        cancelEffectCollection()
+        initComponents()
+        startEffectCollection()
+    }
+
+    fun onStop() {
+        cancelEffectCollection()
+    }
+
+    fun onDestroy() {
+        cancelEffectCollection()
+        activity = null
+        appEventHandler = null
+        vmContainer = null
+    }
 
     private fun initComponents() {
-        this.vmContainer = viewController.viewModel.container
+        vmContainer = viewController.viewModel.container
 
         when (viewController) {
             is Activity -> {
@@ -52,35 +63,14 @@ class ViewContainer(
         }
 
         if (viewController is AppEventHandler) {
-            viewAppEventHandler = viewController
-        }
-    }
-
-    fun onCreate() {
-        viewController.lifecycleScope.launch {
-            viewController.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                effectCollection = launch {
-                    vmContainer?.effect?.collect(::handleEffect)
-                }
-            }
+            appEventHandler = viewController
         }
 
-        viewController.lifecycleScope.launch {
-            viewController.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                cancelEffectCollection()
-                initComponents()
-            }
-        }
-
-        viewController.lifecycleScope.launch {
-            viewController.repeatOnLifecycle(Lifecycle.State.DESTROYED) {
-                clear()
-            }
-        }
+        requireNotNull(activity)
     }
 
     private fun handleEffect(effect: AppEvent) {
-        if (viewAppEventHandler?.handleEffect(effect) == true)
+        if (appEventHandler?.handleEffect(effect) == true)
             return
 
         when (effect) {
@@ -127,15 +117,14 @@ class ViewContainer(
         }
     }
 
-    private fun cancelEffectCollection() {
-        effectCollection?.cancel()
-        effectCollection = null
+    private fun startEffectCollection() {
+        effectCollectionJob = lifecycleScope.launch {
+            vmContainer?.effect?.collect(::handleEffect)
+        }
     }
 
-    private fun clear() {
-        cancelEffectCollection()
-        activity = null
-        viewAppEventHandler = null
-        vmContainer = null
+    private fun cancelEffectCollection() {
+        effectCollectionJob?.cancel()
+        effectCollectionJob = null
     }
 }

@@ -14,6 +14,7 @@ object Versions {
     const val APPCOMPAT = "1.5.1"
     const val ACTIVITY = "1.6.0"
     const val APPSTARTUP = "1.1.1"
+    const val BY_VIEW_BINDING = "1.5.9"
     const val CARDVIEW = "1.0.0"
     const val CONSTRAINT_LAYOUT = "2.1.4"
     const val CORE = "1.10.0"

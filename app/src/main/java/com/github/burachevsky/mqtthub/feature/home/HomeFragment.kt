@@ -13,9 +13,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.container.ViewContainer
 import com.github.burachevsky.mqtthub.common.container.ViewController
+import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.ext.appComponent
@@ -34,17 +35,15 @@ import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFr
 import timber.log.Timber
 import javax.inject.Inject
 
-class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler {
-
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
-
-    override val container = ViewContainer(this, ::HomeNavigator)
+class HomeFragment : Fragment(R.layout.fragment_home),
+    ViewController<HomeViewModel>, AppEventHandler {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<HomeViewModel>
 
+    override val binding by viewBinding(FragmentHomeBinding::bind)
     override val viewModel: HomeViewModel by viewModels { viewModelFactory }
+    override val container by viewContainer()
 
     @Inject
     lateinit var drawerManager: HomeDrawerManager
@@ -94,20 +93,6 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
         super.onAttach(context)
         appComponent.homeComponent(HomeModule(this))
             .inject(this)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        container.onCreate()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -315,10 +300,5 @@ class HomeFragment : Fragment(), ViewController<HomeViewModel>, AppEventHandler 
                 inflateMenu(menuRes)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
