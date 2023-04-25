@@ -1,6 +1,5 @@
 object Libs {
     const val ACTIVITY_KTX = "androidx.activity:activity-ktx"
-    const val AACHART_CORE = "com.github.AAChartModel:AAChartCore-Kotlin"
     const val APPCOMPAT = "androidx.appcompat:appcompat"
     const val APP_STARTUP = "androidx.startup:startup-runtime"
     const val BY_VIEW_BINDING = "com.github.kirich1409:viewbindingpropertydelegate-noreflection"
@@ -29,6 +28,7 @@ object Libs {
     const val MATERIAL = "com.google.android.material:material"
     const val NAVIGATION_FRAGMENT_KTX = "androidx.navigation:navigation-fragment-ktx"
     const val NAVIGATION_UI_KTX = "androidx.navigation:navigation-ui-ktx"
+    const val MP_ANDROID_CHART = "com.github.PhilJay:MPAndroidChart"
     const val OKHTTP = "com.squareup.okhttp3:okhttp"
     const val OKHTTP_LOGGING_INTERCEPTOR = "com.squareup.okhttp3:logging-interceptor"
     const val PAHO = "org.eclipse.paho:org.eclipse.paho.client.mqttv3"

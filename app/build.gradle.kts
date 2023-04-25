@@ -130,7 +130,8 @@ dependencies {
     implementation("${Libs.PAHO_ANDROID}:${Versions.PAHO}")
 
     //Charts
-    implementation("${Libs.AACHART_CORE}:${Versions.AACHART_CORE}")
+    implementation("${Libs.MP_ANDROID_CHART}:${Versions.MP_ANDROID_CHART}")
+
 
     //RotateLayout
     implementation("${Libs.ROTATE_LAYOUT}:${Versions.ROTATE_LAYOUT}")

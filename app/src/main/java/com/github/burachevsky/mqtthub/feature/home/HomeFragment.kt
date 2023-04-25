@@ -4,11 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,7 +34,6 @@ import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAd
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
-import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFragment : Fragment(R.layout.fragment_home),
@@ -103,6 +104,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         setupDrawerRecyclerView()
     }
 
+    override fun onStart() {
+        super.onStart()
+        postponeEnterTransition()
+    }
+
     override fun onResume() {
         super.onResume()
         backPressedCallback.isEnabled = true
@@ -131,19 +137,19 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             }
 
             is OpenTextTileDetails -> {
-                 /*val viewHolder = binding.recyclerView
+                 val viewHolder = binding.recyclerView
                      .findViewHolderForAdapterPosition(effect.position)
-                    as TextTileItemViewHolder*/
+                    as TextTileItemViewHolder
 
                 findNavController().navigate(
                     R.id.navigateTextTileDetails,
                     TextTileDetailsFragmentArgs(effect.tileId).toBundle(),
                     null,
-                    /*FragmentNavigatorExtras(
+                    FragmentNavigatorExtras(
                         viewHolder.binding.tile to "detailsTile",
                         viewHolder.binding.tileName to "detailsTileName",
                         viewHolder.binding.tilePayload to "detailsPayloadName",
-                    )*/
+                    )
                 )
             }
         }
@@ -212,7 +218,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun observeViewModel() {
         collectOnStarted(viewModel.connectionState, binding.connection::applyState)
-        collectOnStarted(viewModel.items, listAdapter::submitList)
+
+        collectOnStarted(viewModel.items) {
+            listAdapter.submitList(it)
+
+            binding.root.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
+        }
+
         collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
         collectOnStarted(viewModel.title, binding.toolbar::setTitle)
@@ -238,19 +252,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         return ItemMoveCallback(
             object  : ItemMoveCallback.ItemTouchHelperContract {
                 override fun onItemMoved(fromPosition: Int, toPosition: Int) {
-                    Timber.d(
-                        "onItemMoved(fromPosition = $fromPosition, toPosition = $toPosition)"
-                    )
                     viewModel.moveItem(positionFrom = fromPosition, positionTo = toPosition)
                 }
 
                 override fun onItemSelected(position: Int) {
-                    Timber.d("onItemSelected(myViewHolder = $position)")
                     viewModel.tileLongClicked(position)
                 }
 
                 override fun onItemReleased(position: Int) {
-                    Timber.d("onItemReleased(myViewHolder = $position)")
                     viewModel.commitReorder(position)
                 }
 

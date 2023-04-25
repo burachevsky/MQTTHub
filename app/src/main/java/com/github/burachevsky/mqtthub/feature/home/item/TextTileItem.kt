@@ -40,6 +40,10 @@ data class TextTileItem(
 
     companion object {
         val LAYOUT get() = R.layout.list_item_text_tile
+
+        const val TILE_TRANSITION_NAME = "text_tile_"
+        const val TILE_NAME_TRANSITION_NAME = "text_tile_name_"
+        const val TILE_PAYLOAD_TRANSITION_NAME = "text_tile_payload_"
     }
 }
 
@@ -79,10 +83,18 @@ class TextTileItemViewHolder(
 
     override fun bind(item: ListItem) {
         item as TextTileItem
+        bindTransitionName(item)
         bindDesign(item)
         bindTileName(item)
         bindTilePayload(item)
         bindEditMode(item.editMode)
+    }
+
+    private fun bindTransitionName(item: TextTileItem) {
+        val id = item.tile.id
+        binding.tile.transitionName = TextTileItem.TILE_TRANSITION_NAME + id
+        binding.tileName.transitionName = TextTileItem.TILE_NAME_TRANSITION_NAME + id
+        binding.tilePayload.transitionName = TextTileItem.TILE_PAYLOAD_TRANSITION_NAME + id
     }
 
     private fun bindDesign(item: TextTileItem) {
