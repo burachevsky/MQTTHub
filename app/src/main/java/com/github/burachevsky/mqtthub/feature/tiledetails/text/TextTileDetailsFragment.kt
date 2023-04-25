@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
@@ -37,12 +38,9 @@ class TextTileDetailsFragment : Fragment(R.layout.fragment_text_tile_details),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*val animation = TransitionInflater.from(requireContext())
-            .inflateTransition(android.R.transition.slide_left)
 
+        prepareTransitions()
         postponeEnterTransition()
-        sharedElementEnterTransition = animation
-        sharedElementReturnTransition = animation*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +61,7 @@ class TextTileDetailsFragment : Fragment(R.layout.fragment_text_tile_details),
 
         collectOnStarted(viewModel.tileName) {
             binding.tileName.text = it
-            //startPostponedEnterTransition()
+            startPostponedEnterTransition()
         }
         collectOnStarted(viewModel.tilePayload, binding.tilePayload::setText)
 
@@ -76,5 +74,14 @@ class TextTileDetailsFragment : Fragment(R.layout.fragment_text_tile_details),
     private fun publishText() {
         viewModel.enterPublishText(binding.editText.text.toString())
         binding.editText.setText("")
+    }
+
+    private fun prepareTransitions() {
+        val transition = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.move)
+            .also { it.duration = 150 }
+
+        sharedElementEnterTransition = transition
+        sharedElementReturnTransition = transition
     }
 }

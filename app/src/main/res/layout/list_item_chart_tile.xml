@@ -24,52 +24,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Tile name" />
 
-    <TextView
-        android:id="@+id/xAxisTitle"
-        style="@style/TextAppearance.MQTTHub.Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="4dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAlignment="center"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Timestamp" />
-
-    <com.github.rongi.rotate_layout.layout.RotateLayout
-        android:id="@+id/yAxisTitleLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginVertical="12dp"
-        android:layout_marginStart="4dp"
-        app:angle="90"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/yAxisTitle"
-            style="@style/TextAppearance.MQTTHub.Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            tools:text="Temperature, C" />
-
-    </com.github.rongi.rotate_layout.layout.RotateLayout>
-
-    <com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
+    <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
-        app:layout_constraintBottom_toTopOf="@id/xAxisTitle"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/yAxisTitleLayout"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tileName" />
 
     <View

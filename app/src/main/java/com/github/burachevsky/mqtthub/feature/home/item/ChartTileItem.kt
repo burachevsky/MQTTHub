@@ -3,21 +3,18 @@ package com.github.burachevsky.mqtthub.feature.home.item
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartSymbolStyleType
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartSymbolType
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
-import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
-import com.github.aachartmodel.aainfographics.aachartcreator.aa_toAAOptions
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.common.ext.mapToArray
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.ChartTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
-import com.github.burachevsky.mqtthub.data.entity.chart.ChartPayload
 import com.github.burachevsky.mqtthub.databinding.ListItemChartTileBinding
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
 data class ChartTileItem(
     override val tile: Tile,
@@ -56,8 +53,6 @@ class ChartTileItemViewHolder(
 ): ItemViewHolder(itemView) {
 
     private val binding = ListItemChartTileBinding.bind(itemView)
-
-    private var chartModel: AAChartModel? = null
 
     init {
         binding.tile.setOnClickListener {
@@ -118,44 +113,31 @@ class ChartTileItemViewHolder(
     private fun bindTilePayload(item: ChartTileItem) {
         val payload = item.tile.chartPayload ?: return
 
-        binding.xAxisTitle.text = payload.xTitle
-        binding.yAxisTitle.text = payload.yTitle
-
-        if (chartModel == null) {
-            chartModel = AAChartModel()
-                .chartType(AAChartType.Area)
-                .tooltipEnabled(true)
-                .subtitle("")
-                .yAxisTitle("")
-                .markerRadius(3)
-                .markerSymbol(AAChartSymbolType.Circle)
-                .markerSymbolStyle(AAChartSymbolStyleType.Normal)
-                .touchEventEnabled(false)
-                .legendEnabled(false)
-                .backgroundColor(context.getColor(R.color.md_theme_light_surface))
-                .dataLabelsEnabled(false)
-                .updateData(payload)
-                .apply { aa_toAAOptions().chart?.animation = false }
-                .also(binding.chart::aa_drawChartWithChartModel)
-        } else {
-            chartModel?.updateData(payload)
-                ?.apply { aa_toAAOptions().chart?.animation = false }
-                ?.also(binding.chart::aa_refreshChartWithChartModel)
+        val entries = payload.data.mapIndexed { i, it ->
+            Entry(i.toFloat(), it.y)
         }
-    }
 
-    private fun AAChartModel.updateData(payload: ChartPayload): AAChartModel {
-        return categories(payload.data.mapToArray { x })
-            .series(
-                arrayOf(
-                    AASeriesElement()
-                        .name(payload.yTitle)
-                        .fillColor("#E9DDFF")
-                        .color("#6750A4")
-                        .allowPointSelect(false)
-                        .data(payload.data.mapToArray { y })
-                )
-            )
+        val primaryColor = context.getColor(R.color.md_theme_light_primary)
+
+        val dataSet = LineDataSet(entries, null).apply {
+            lineWidth = 2f
+            color = primaryColor
+            setCircleColor(primaryColor)
+            setDrawCircleHole(false)
+            setDrawValues(false)
+        }
+        binding.chart.apply {
+            legend.isEnabled = false
+            setTouchEnabled(false)
+            axisRight.isEnabled = false
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.setDrawAxisLine(false)
+            xAxis.setDrawGridLines(true)
+            xAxis.valueFormatter = IndexAxisValueFormatter(payload.data.map { it.x })
+            data = LineData(dataSet)
+            description.isEnabled = false
+            invalidate()
+        }
     }
 }
 
