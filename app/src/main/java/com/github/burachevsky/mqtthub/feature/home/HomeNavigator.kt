@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsFragmentArgs
 import com.github.burachevsky.mqtthub.feature.addtile.button.AddButtonTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.addtile.chart.AddChartTileFragmentArgs
+import com.github.burachevsky.mqtthub.feature.addtile.slider.AddSliderTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.addtile.switchh.AddSwitchFragmentArgs
 import com.github.burachevsky.mqtthub.feature.addtile.text.AddTextTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragmentArgs
@@ -42,6 +43,12 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
             AddChartTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
+    fun navigateAddSlider(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
+        navController.navigate(
+            R.id.navigateAddSlider,
+            AddSliderTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+        )
+
     fun navigateSelectTileType() = navController.navigate(
         R.id.navigateSelector,
         SelectorDialogFragmentArgs(
@@ -67,7 +74,12 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
                         id = TileTypeId.CHART,
                         text = Txt.of(R.string.tile_type_chart),
                         icon = R.drawable.ic_chart_type,
-                    )
+                    ),
+                    SelectorItem(
+                        id = TileTypeId.SLIDER,
+                        text = Txt.of(R.string.tile_type_slider),
+                        icon = R.drawable.ic_slider_type,
+                    ),
                 )
             )
         ).toBundle()

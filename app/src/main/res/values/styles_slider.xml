@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.MQTTHub.Slider.WithoutSteps" parent="Widget.Material3.Slider">
+        <item name="tickVisible">false</item>
+    </style>
+
+</resources>

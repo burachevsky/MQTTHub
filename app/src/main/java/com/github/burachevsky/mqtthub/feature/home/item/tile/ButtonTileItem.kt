@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.item
+package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,9 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemButtonTileBinding
+import com.github.burachevsky.mqtthub.feature.home.item.EditMode
+import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
 
 data class ButtonTileItem(
     override val tile: Tile,

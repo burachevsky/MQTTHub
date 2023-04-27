@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.item
+package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +11,13 @@ import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
 import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
+import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EditMode
+import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
 
 data class TextTileItem(
     override val tile: Tile,

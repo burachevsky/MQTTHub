@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.item
+package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,13 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.ChartTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemChartTileBinding
+import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EditMode
+import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -55,10 +62,6 @@ class ChartTileItemViewHolder(
     private val binding = ListItemChartTileBinding.bind(itemView)
 
     init {
-        binding.tile.setOnClickListener {
-            listener.onClick(adapterPosition)
-        }
-
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }

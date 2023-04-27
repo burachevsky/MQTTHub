@@ -50,6 +50,10 @@
         app:destination="@id/addChartFragment" />
 
     <action
+        android:id="@+id/navigateAddSlider"
+        app:destination="@id/addSliderFragment" />
+
+    <action
         android:id="@+id/navigateSelector"
         app:destination="@id/selectorDialogFragment" />
 
@@ -144,6 +148,27 @@
             app:argType="integer" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/addSliderFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addtile.slider.AddSliderTileFragment"
+        android:label="AddSliderFragment"
+        tools:layout="@layout/fragment_add_tile">
+
+        <argument
+            android:name="dashboardId"
+            app:argType="long" />
+
+        <argument
+            android:name="tileId"
+            app:argType="long" />
+
+        <argument
+            android:name="dashboardPosition"
+            app:argType="integer" />
+
+    </fragment>
+
 
     <dialog
         android:id="@+id/publishTextDialogFragment"
