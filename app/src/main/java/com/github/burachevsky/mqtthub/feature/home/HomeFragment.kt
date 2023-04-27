@@ -33,6 +33,13 @@ import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
+import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.SwitchTileItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.TextTileItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.tile.TextTileItemViewHolder
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
 import javax.inject.Inject
 
@@ -65,6 +72,13 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         ButtonTileItemAdapter(tileItemListener),
         SwitchTileItemAdapter(tileItemListener),
         ChartTileItemAdapter(tileItemListener),
+        SliderTileItemAdapter(
+            object : SliderTileItem.Listener, TileItem.Listener by tileItemListener {
+                override fun sliderValueChanged(position: Int, value: Float) {
+                    viewModel.sliderValueChanged(position, value)
+                }
+            }
+        ),
     )
 
     private val drawerListAdapter = CompositeAdapter(

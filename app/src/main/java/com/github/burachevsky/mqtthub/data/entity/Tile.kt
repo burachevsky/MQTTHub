@@ -27,31 +27,31 @@ data class Tile(
     val id: Long = 0,
 
     @ColumnInfo(name = "name")
-    val name: String,
+    val name: String = "",
 
     @ColumnInfo(name = "subscribe_topic")
-    val subscribeTopic: String,
+    val subscribeTopic: String = "",
 
     @ColumnInfo(name = "publish_topic")
-    val publishTopic: String,
+    val publishTopic: String = "",
 
     @ColumnInfo(name = "qos")
-    val qos: Int,
+    val qos: Int = 0,
 
     @ColumnInfo(name = "retained")
-    val retained: Boolean,
+    val retained: Boolean = false,
 
     @ColumnInfo(name = "type")
-    val type: Type,
+    val type: Type = Type.TEXT,
 
     @ColumnInfo(name = "last_payload")
     val payload: String = "",
 
     @ColumnInfo(name = "state_list")
-    val stateList: List<State>,
+    val stateList: List<State> = listOf(),
 
     @ColumnInfo(name = "dashboard_id")
-    val dashboardId: Long,
+    val dashboardId: Long = 0,
 
     @ColumnInfo(name = "dashboard_position")
     val dashboardPosition: Int = 0,
@@ -82,7 +82,7 @@ data class Tile(
     }
 
     enum class Type {
-        TEXT, BUTTON, SWITCH, CHART
+        TEXT, BUTTON, SWITCH, CHART, SLIDER
     }
 
     data class State(

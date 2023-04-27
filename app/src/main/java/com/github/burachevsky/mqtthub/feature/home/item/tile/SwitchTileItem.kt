@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.item
+package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.Gravity
 import android.view.View
@@ -14,6 +14,15 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.SwitchTileBackgroundId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSwitchTileBinding
+import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.EditMode
+import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.PUBLISH_TOPIC_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.SWITCH_STATE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
+import com.github.burachevsky.mqtthub.feature.home.item.isChecked
 
 data class SwitchTileItem(
     override val tile: Tile,

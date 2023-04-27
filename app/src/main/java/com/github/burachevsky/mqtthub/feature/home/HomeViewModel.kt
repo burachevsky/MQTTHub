@@ -37,6 +37,7 @@ import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.home.item.*
+import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextEntered
 import com.github.burachevsky.mqtthub.feature.selector.ItemSelected
 import kotlinx.coroutines.*
@@ -226,7 +227,17 @@ class HomeViewModel @Inject constructor(
                 }
 
                 Tile.Type.CHART -> {}
+
+                Tile.Type.SLIDER -> {}
             }
+        }
+    }
+
+    fun sliderValueChanged(position: Int, value: Float) {
+        val item = items.get<SliderTileItem>(position)
+        val newPayload = "$value"
+        if (item.tile.payload != newPayload) {
+            publish(item.tile.id, "$value")
         }
     }
 
@@ -373,6 +384,7 @@ class HomeViewModel @Inject constructor(
                 Tile.Type.TEXT -> navigateAddTextTile(dashboardId, tile.id, position)
                 Tile.Type.SWITCH -> navigateAddSwitch(dashboardId, tile.id, position)
                 Tile.Type.CHART -> navigateAddChart(dashboardId, tile.id, position)
+                Tile.Type.SLIDER -> navigateAddSlider(dashboardId, tile.id, position)
             }
         }
     }
@@ -533,6 +545,10 @@ class HomeViewModel @Inject constructor(
 
                 TileTypeId.CHART -> container.navigator {
                     navigateAddChart(dashboardId, dashboardPosition = items.value.size)
+                }
+
+                TileTypeId.SLIDER -> container.navigator {
+                    navigateAddSlider(dashboardId, dashboardPosition = items.value.size)
                 }
             }
         }

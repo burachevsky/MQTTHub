@@ -28,3 +28,9 @@ object ChartTileStyleId {
     const val OUTLINED = 1
     const val EMPTY = 2
 }
+
+object SliderTileStyleId {
+    const val FILLED = 0
+    const val OUTLINED = 1
+    const val EMPTY = 2
+}
