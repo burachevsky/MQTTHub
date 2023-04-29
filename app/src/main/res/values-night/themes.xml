@@ -28,16 +28,18 @@
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
-        <!-- Primary brand color. -->
-        <!--<item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>-->
-        <!-- Secondary brand color. -->
-        <!--<item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>-->
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="windowNoTitle">true</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="toolbarStyle">@style/Widget.MQTTHub.Toolbar</item>
+        <item name="android:textViewStyle">@style/TextAppearance.MQTTHub.Body</item>
+        <item name="textInputStyle">@style/Widget.MQTTHub.TextInputLayout</item>
+        <item name="materialDividerStyle">@style/Widget.MQTTHub.Divider</item>
+        <item name="bottomSheetDialogTheme">@style/Theme.MQTTHub.BottomSheetDialog</item>
+        <item name="appBarLayoutStyle">@style/Widget.MQTTHub.AppBarLayout</item>
+        <item name="materialSwitchStyle">@style/Widget.MQTTHub.Switch</item>
+        <item name="switchStyle">@style/Widget.MQTTHub.Switch</item>
+        <item name="sliderStyle">@style/Widget.MQTTHub.Slider.WithoutSteps</item>
     </style>
 </resources>

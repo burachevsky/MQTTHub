@@ -1,11 +1,17 @@
 package com.github.burachevsky.mqtthub.feature.home
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.getSystemService
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED
 import androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED
 import androidx.fragment.app.Fragment
@@ -16,7 +22,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.DependableOnStatusBarHeight
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
@@ -41,10 +49,11 @@ import com.github.burachevsky.mqtthub.feature.home.item.tile.SwitchTileItemAdapt
 import com.github.burachevsky.mqtthub.feature.home.item.tile.TextTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.TextTileItemViewHolder
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragmentArgs
+import com.google.android.material.elevation.SurfaceColors
 import javax.inject.Inject
 
 class HomeFragment : Fragment(R.layout.fragment_home),
-    ViewController<HomeViewModel>, AppEventHandler {
+    ViewController<HomeViewModel>, AppEventHandler, DependableOnStatusBarHeight {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<HomeViewModel>
@@ -100,6 +109,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+            vibrateAsEditModeChanged()
             viewModel.navigateUp()
         }
     }
@@ -110,12 +120,41 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             .inject(this)
     }
 
+    @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.root.setOnApplyWindowInsetsListener { v, insets ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                fitStatusBarHeight(statusBarInsets.top)
+            } else {
+                fitStatusBarHeight(insets.systemWindowInsetTop)
+            }
+
+            insets
+        }
+
         drawerManager.fillDrawer()
+        binding.editModeToolbar.setBackgroundColor(
+            SurfaceColors.SURFACE_2.getColor(requireContext())
+        )
+
         setupListeners()
         observeViewModel()
         setupRecyclerView()
         setupDrawerRecyclerView()
+    }
+
+    override fun fitStatusBarHeight(statusBarHeight: Int) {
+        (requireActivity() as AppActivity).statusBarHeight = statusBarHeight
+        binding.drawerRecyclerView.updatePadding(
+            top = statusBarHeight
+        )
+        binding.toolbarLayout.updatePadding(
+            top = statusBarHeight
+        )
+        binding.editModeToolbar.updatePadding(
+            top = statusBarHeight
+        )
     }
 
     override fun onStart() {
@@ -202,16 +241,17 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     private fun setupListeners() {
-        binding.addTileButton.setOnClickListener {
-            viewModel.addTileClicked()
-        }
-
         binding.connection.setOnClickListener {
             viewModel.connectionClicked()
         }
 
         binding.editModeToolbar.setNavigationOnClickListener {
+            vibrateAsEditModeChanged()
             viewModel.navigateUp()
+        }
+
+        binding.bottomAppBarToolbar.setNavigationOnClickListener {
+            viewModel.showOptionsMenu()
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -219,6 +259,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
 
         binding.editModeToolbar.setOnMenuItemClickListener {
+            handleContextMenuAction(it.itemId)
+        }
+
+        binding.bottomAppBarToolbar.setOnMenuItemClickListener {
             handleContextMenuAction(it.itemId)
         }
 
@@ -255,9 +299,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             if (it) {
                 binding.noTilesText.isVisible = false
             }
-            binding.addTileButton.apply {
-                if (it) hide() else show()
-            }
+            binding.bottomAppBar.isVisible = !it
             binding.recyclerView.isVisible = !it
         }
     }
@@ -287,15 +329,20 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     private fun handleContextMenuAction(id: Int?): Boolean {
         when (id) {
             R.id.edit -> viewModel.editTileClicked()
+            R.id.edit_mode -> {
+                vibrateAsEditModeChanged()
+                viewModel.editModeClicked()
+            }
             R.id.delete -> viewModel.deleteTilesClicked()
             R.id.duplicate -> viewModel.duplicateTileClicked()
+            R.id.newTile -> viewModel.addTileClicked()
             else -> return false
         }
         return true
     }
 
     private fun bindEditMode(editMode: EditModeState) {
-        val showEditToolbar = editMode.isEditMode && !editMode.isMovingMode
+        val showEditToolbar = editMode.isEditMode
 
         binding.editModeToolbar.isVisible = showEditToolbar
         binding.toolbarLayout.isVisible = !showEditToolbar
@@ -303,9 +350,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         binding.editModeToolbar.title = requireContext()
             .getString(R.string.tiles_selected, editMode.selectedCount)
 
-        binding.addTileButton.run {
-            if (showEditToolbar) hide() else show()
-        }
+        binding.bottomAppBar.isVisible = !showEditToolbar
 
         binding.drawerLayout.setDrawerLockMode(
             if (showEditToolbar) LOCK_MODE_LOCKED_CLOSED else LOCK_MODE_UNLOCKED
@@ -323,5 +368,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 inflateMenu(menuRes)
             }
         }
+    }
+
+    private fun vibrateAsEditModeChanged() {
+        requireContext().getSystemService<Vibrator>()
+            ?.vibrate(VibrationEffect.createOneShot(10, 255))
     }
 }

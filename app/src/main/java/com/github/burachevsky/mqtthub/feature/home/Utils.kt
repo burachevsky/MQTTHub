@@ -29,3 +29,8 @@ object TileTypeId {
     const val CHART = 3
     const val SLIDER = 4
 }
+
+object OptionMenuId {
+    const val EXPORT = 5
+    const val IMPORT = 6
+}

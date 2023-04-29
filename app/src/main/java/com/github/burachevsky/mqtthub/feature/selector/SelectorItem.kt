@@ -38,8 +38,10 @@ class TileTypeItemViewHolder(
     private val binding = ListItemSelectorItemBinding.bind(itemView)
 
     init {
-        binding.root.setOnClickListener {
-            listener.onClick(adapterPosition)
+        binding.root.apply {
+            setOnClickListener {
+                listener.onClick(adapterPosition)
+            }
         }
     }
 

@@ -1,9 +1,9 @@
 package com.github.burachevsky.mqtthub
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewbinding.ViewBinding
@@ -23,11 +23,16 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
     override val viewModel: AppViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
+    var statusBarHeight: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_app)
         (application as App).appComponent.inject(this)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
         findNavController().setGraph(R.navigation.app_graph)
     }
 

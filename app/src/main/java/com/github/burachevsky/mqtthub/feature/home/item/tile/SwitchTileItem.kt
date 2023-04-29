@@ -11,7 +11,6 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
-import com.github.burachevsky.mqtthub.data.entity.SwitchTileBackgroundId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSwitchTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
@@ -23,6 +22,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.SWITCH_STATE_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
 import com.github.burachevsky.mqtthub.feature.home.item.isChecked
+import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
 
 data class SwitchTileItem(
     override val tile: Tile,
@@ -145,13 +145,7 @@ class SwitchTileItemViewHolder(
     }
 
     private fun bindDesign(item: SwitchTileItem) {
-        binding.tile.setBackgroundResource(
-            when (item.tile.design.styleId) {
-                SwitchTileBackgroundId.FILLED -> R.drawable.bg_tile_list_item_filled
-                SwitchTileBackgroundId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
-                else -> R.drawable.bg_tile_list_item_empty
-            }
-        )
+        binding.tile.setBackgroundForStyleId(item.tile.design.styleId)
 
         val tileIsFullSpan = item.tile.design.isFullSpan
 

@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home.item
 
+import android.content.res.ColorStateList
 import android.view.View
 import androidx.core.view.isVisible
 import com.github.burachevsky.mqtthub.R
@@ -10,8 +11,10 @@ import com.github.burachevsky.mqtthub.common.constant.SWITCH_ON
 import com.github.burachevsky.mqtthub.common.ext.getPayload
 import com.github.burachevsky.mqtthub.common.ext.isState
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
+import com.github.burachevsky.mqtthub.data.entity.TileStyleId
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SwitchTileItem
+import com.google.android.material.elevation.SurfaceColors
 
 const val NAME_CHANGED = 1
 const val PAYLOAD_CHANGED = 2
@@ -51,4 +54,19 @@ fun SliderTileItem.sliderMax(): Float {
 
 fun SliderTileItem.sliderStep(): Float {
     return tile.stateList.getPayload(SLIDER_STEP)?.toFloatOrNull() ?: 0f
+}
+
+fun View.setBackgroundForStyleId(styleId: Int) {
+    setBackgroundResource(
+        when (styleId){
+            TileStyleId.FILLED -> {
+                backgroundTintList = ColorStateList
+                    .valueOf(SurfaceColors.SURFACE_2.getColor(context))
+
+                R.drawable.bg_tile_list_item_filled
+            }
+            TileStyleId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
+            else -> R.drawable.bg_tile_list_item_empty
+        }
+    )
 }

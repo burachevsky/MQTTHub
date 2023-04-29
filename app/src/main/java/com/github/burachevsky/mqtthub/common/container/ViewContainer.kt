@@ -1,12 +1,16 @@
 package com.github.burachevsky.mqtthub.common.container
 
 import android.app.Activity
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
+import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.event.*
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -19,7 +23,7 @@ import kotlinx.coroutines.launch
 class ViewContainer(
     private val viewController: ViewController<*>,
     private val navigatorFactory: NavigatorFactory,
-) : LifecycleOwner by viewController {
+) : LifecycleOwner by viewController, DependableOnStatusBarHeight {
 
     private var vmContainer: ViewModelContainer<*>? = null
     private var activity: Activity? = null
@@ -31,6 +35,7 @@ class ViewContainer(
         cancelEffectCollection()
         initComponents()
         startEffectCollection()
+        fitStatusBarHeight()
     }
 
     fun onStop() {
@@ -42,6 +47,21 @@ class ViewContainer(
         activity = null
         appEventHandler = null
         vmContainer = null
+    }
+
+    override fun fitStatusBarHeight(statusBarHeight: Int) {
+        if (viewController is DependableOnStatusBarHeight) {
+            viewController.fitStatusBarHeight(statusBarHeight)
+        } else if (viewController is Fragment && viewController !is DialogFragment) {
+            viewController.binding.root.updateLayoutParams<MarginLayoutParams> {
+                topMargin = statusBarHeight
+            }
+        }
+    }
+
+    private fun fitStatusBarHeight() {
+        (activity as? AppActivity)?.statusBarHeight
+            ?.let(::fitStatusBarHeight)
     }
 
     private fun initComponents() {

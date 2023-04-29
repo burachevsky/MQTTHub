@@ -16,7 +16,7 @@ class SelectorViewModel @Inject constructor(
 
     override val container = viewModelContainer()
 
-    val title: Txt = config.title
+    val title: Txt? = config.title
 
     val items: List<SelectorItem> = config.items
 

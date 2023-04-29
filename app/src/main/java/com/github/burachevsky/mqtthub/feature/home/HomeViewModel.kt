@@ -40,6 +40,8 @@ import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextEntered
 import com.github.burachevsky.mqtthub.feature.selector.ItemSelected
+import com.github.burachevsky.mqtthub.feature.selector.SelectorConfig
+import com.github.burachevsky.mqtthub.feature.selector.SelectorItem
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.eclipse.paho.client.mqttv3.*
@@ -86,8 +88,6 @@ class HomeViewModel @Inject constructor(
     private val _editMode = MutableStateFlow(EditModeState())
     val editMode: StateFlow<EditModeState> = _editMode
 
-    private var itemReleased = true
-
     private var dashboard: Dashboard? = null
 
     init {
@@ -121,7 +121,7 @@ class HomeViewModel @Inject constructor(
             }
 
             subscribe<ItemSelected>(viewModelScope) {
-                navigateAddTile(it.id)
+                itemSelected(it.id)
             }
 
             subscribe<PublishTextEntered>(viewModelScope) {
@@ -171,16 +171,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun tileLongClicked(position: Int): Boolean {
-        if (editMode.value.isEditMode) {
-            tileClicked(position)
-            return true
-        }
-
-        itemReleased = false
-
-        showEditMode(true, position)
-
-        return true
+        return false
     }
 
     fun tileClicked(position: Int) {
@@ -193,20 +184,18 @@ class HomeViewModel @Inject constructor(
             _editMode.value.selectedTiles.apply {
                 if (itemEditMode.isSelected) remove(tile) else add(tile)
 
-                if (isEmpty()) {
-                    showEditMode(false)
-                } else {
-                    _editMode.update {
-                        it.copy(selectedCount = size)
-                    }
+                _editMode.update {
+                    it.copy(selectedCount = size)
+                }
 
-                    _items.update {
-                        it.toMutableList().apply {
-                            set(
-                                position,
-                                item.withEditMode(itemEditMode.copy(!itemEditMode.isSelected))
+                _items.update {
+                    it.toMutableList().apply {
+                        set(
+                            position,
+                            item.withEditMode(
+                                itemEditMode.copy(isSelected = !itemEditMode.isSelected)
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -233,6 +222,27 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun showOptionsMenu() {
+        container.navigator {
+            navigateSelector(
+                SelectorConfig(
+                    items = listOf(
+                        SelectorItem(
+                            id = OptionMenuId.EXPORT,
+                            text = Txt.of(R.string.export_dashboard),
+                            icon = R.drawable.ic_export
+                        ),
+                        SelectorItem(
+                            id = OptionMenuId.IMPORT    ,
+                            text = Txt.of(R.string.import_dashboard),
+                            icon = R.drawable.ic_import
+                        ),
+                    )
+                )
+            )
+        }
+    }
+
     fun sliderValueChanged(position: Int, value: Float) {
         val item = items.get<SliderTileItem>(position)
         val newPayload = "$value"
@@ -242,19 +252,16 @@ class HomeViewModel @Inject constructor(
     }
 
     fun canMoveItem(): Boolean {
-        return editMode.value.canMoveItem && itemReleased
+        return editMode.value.isEditMode && editMode.value.canMoveItem// && itemReleased
     }
 
     fun editTileClicked() {
         findSingleSelectedItemPosition()?.let(::editTileClicked)
-        showEditMode(false)
     }
 
     fun duplicateTileClicked() {
         findSingleSelectedItemPosition()?.let { position ->
             toast(R.string.toast_tile_duplicated)
-
-            showEditMode(false)
 
             container.launch(Dispatchers.Default) {
                 val tile = addTile(
@@ -311,18 +318,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun commitReorder(position: Int) {
-        itemReleased = true
-
         val dashboardPosition = items.get<TileItem>(position).tile.dashboardPosition
 
         if (dashboardPosition == position && !editMode.value.isMovingMode) {
-            _editMode.update {
-                if (it.isEditMode) it.copy(canMoveItem = false) else it
-            }
             return
         }
-
-        showEditMode(false)
 
         _items.update { list ->
             val result = list.mapIndexed { i, it ->
@@ -344,6 +344,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun editModeClicked() {
+        showEditMode(!_editMode.value.isEditMode)
+    }
+
     private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
         if (!value) {
             _editMode.tryEmit(EditModeState(false))
@@ -358,7 +362,6 @@ class HomeViewModel @Inject constructor(
                         hashSetOf()
                     },
                     selectedCount = if (selected) 1 else 0,
-                    canMoveItem = selected
                 )
             )
 
@@ -526,11 +529,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun navigateAddTile(tileTypeId: Int) {
+    private fun itemSelected(selectedItemId: Int) {
         val dashboardId = dashboard?.id ?: return
 
         container.launch(Dispatchers.Main) {
-            when (tileTypeId) {
+            when (selectedItemId) {
                 TileTypeId.BUTTON -> container.navigator {
                     navigateAddButtonTile(dashboardId, dashboardPosition = items.value.size)
                 }
@@ -550,14 +553,20 @@ class HomeViewModel @Inject constructor(
                 TileTypeId.SLIDER -> container.navigator {
                     navigateAddSlider(dashboardId, dashboardPosition = items.value.size)
                 }
+
+                OptionMenuId.EXPORT -> container.navigator {
+
+                }
+
+                OptionMenuId.IMPORT -> container.navigator {
+
+                }
             }
         }
     }
 
     private suspend fun tilesRemoved() {
         val tiles = editMode.value.selectedTiles
-
-        showEditMode(false)
 
         _items.update {
             it.filter { it is TileItem && !tiles.contains(it.tile) }

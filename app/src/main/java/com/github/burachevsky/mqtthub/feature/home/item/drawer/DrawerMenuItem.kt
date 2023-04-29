@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home.item.drawer
 
+import android.content.res.ColorStateList
 import android.view.View
 import android.view.ViewGroup
 import com.github.burachevsky.mqtthub.R
@@ -22,7 +23,7 @@ data class DrawerMenuItem(
     val textColorAttribute: Int
         get() = when {
             isSelected -> com.google.android.material.R.attr.colorOnSecondaryContainer
-            else -> com.google.android.material.R.attr.colorOnSurfaceVariant
+            else -> com.google.android.material.R.attr.colorOnSurface
         }
 
 
@@ -67,10 +68,14 @@ class DrawerMenuItemViewHolder(
     override fun bind(item: ListItem) {
         item as DrawerMenuItem
 
+        val textColor = context.getValueFromAttribute(item.textColorAttribute)
+
+        binding.label.setTextColor(textColor)
         binding.label.text = item.text.get(context)
+        binding.icon.imageTintList = ColorStateList.valueOf(textColor)
         binding.icon.setImageResource(item.icon)
         binding.item.isSelected = item.isSelected
-        binding.label.setTextColor(context.getValueFromAttribute(item.textColorAttribute))
+        binding.label.setTextColor(textColor)
     }
 }
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Widget.MQTTHub.AppBarLayout" parent="">
+    <style name="Widget.MQTTHub.AppBarLayout" parent="Widget.Material3.AppBarLayout">
 
         <item name="android:background">@drawable/bg_appbar</item>
         <item name="liftOnScroll">true</item>
         <item name="android:animateLayoutChanges">true</item>
-        <item name="android:stateListAnimator">@drawable/appbar_elevation</item>
+        <!--<item name="android:stateListAnimator">@drawable/appbar_elevation</item>-->
 
     </style>
 

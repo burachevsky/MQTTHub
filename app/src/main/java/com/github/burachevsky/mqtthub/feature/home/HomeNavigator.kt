@@ -49,11 +49,16 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
             AddSliderTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
+    fun navigateSelector(config: SelectorConfig) = navController.navigate(
+        R.id.navigateSelector,
+        SelectorDialogFragmentArgs(config).toBundle(),
+    )
+
     fun navigateSelectTileType() = navController.navigate(
         R.id.navigateSelector,
         SelectorDialogFragmentArgs(
             SelectorConfig(
-                title = Txt.of(R.string.select_tile_type),
+                title = Txt.of(R.string.add_tile),
                 items = listOf(
                     SelectorItem(
                         id = TileTypeId.TEXT,

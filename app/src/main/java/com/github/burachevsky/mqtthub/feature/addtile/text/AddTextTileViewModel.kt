@@ -9,7 +9,7 @@ import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
 import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
-import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
+import com.github.burachevsky.mqtthub.data.entity.TileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -65,19 +65,19 @@ class AddTextTileViewModel @Inject constructor(
         title = Txt.of(R.string.tile_background_style),
         options = listOf(
             ToggleOption(
-                id = TextTileStyleId.OUTLINED,
+                id = TileStyleId.OUTLINED,
                 text = Txt.of(R.string.tile_style_outlined),
             ),
             ToggleOption(
-                id = TextTileStyleId.FILLED,
+                id = TileStyleId.FILLED,
                 text = Txt.of(R.string.tile_style_filled),
             ),
             ToggleOption(
-                id = TextTileStyleId.EMPTY,
+                id = TileStyleId.EMPTY,
                 text = Txt.of(R.string.tile_style_empty),
             ),
         ),
-        selectedValue = TextTileStyleId.OUTLINED,
+        selectedValue = TileStyleId.OUTLINED,
     )
 
     init {

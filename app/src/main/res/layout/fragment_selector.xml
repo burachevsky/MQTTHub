@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_bottom_sheet">
+    android:fitsSystemWindows="true">
 
     <TextView
         android:id="@+id/title"
@@ -14,13 +14,15 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="16dp"
-        tools:text="@string/select_tile_type"
+        tools:text="@string/add_tile"
         android:textColor="?colorOnSurface" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/list_item_selector_item" />
+        tools:listitem="@layout/list_item_selector_item"
+        android:paddingBottom="20dp"
+        android:clipToPadding="false"/>
 
 </LinearLayout>
