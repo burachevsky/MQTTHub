@@ -3,6 +3,7 @@ package com.github.burachevsky.mqtthub.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
@@ -25,6 +26,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerHeaderItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -174,24 +176,24 @@ class HomeDrawerManager @Inject constructor(
 
     private fun buttonClicked(buttonId: Int) {
         when (buttonId) {
-            BUTTON_CREATE_NEW_DASHBOARD -> {
-                container.navigator { navigateEditDashboards(addNew = true) }
+            BUTTON_CREATE_NEW_DASHBOARD -> closeDrawerAndNavigate {
+                navigateEditDashboards(addNew = true)
             }
 
-            BUTTON_ADD_NEW_BROKER -> {
-                container.navigator { navigateAddBroker() }
+            BUTTON_ADD_NEW_BROKER -> closeDrawerAndNavigate {
+                navigateAddBroker()
             }
 
             BUTTON_SETTINGS -> {}
 
             BUTTON_HELP_AND_FEEDBACK -> {}
 
-            BUTTON_EDIT_BROKERS -> {
-                container.navigator { navigateEditBrokers() }
+            BUTTON_EDIT_BROKERS -> closeDrawerAndNavigate {
+                navigateEditBrokers()
             }
 
-            BUTTON_EDIT_DASHBOARDS -> {
-                container.navigator { navigateEditDashboards() }
+            BUTTON_EDIT_DASHBOARDS -> closeDrawerAndNavigate {
+                navigateEditDashboards()
             }
         }
     }
@@ -350,6 +352,14 @@ class HomeDrawerManager @Inject constructor(
             !(it is DrawerMenuItem
                     && it.type is DrawerMenuItem.Type.Broker
                     && it.type.broker.id == brokerId)
+        }
+    }
+
+    private fun closeDrawerAndNavigate(navigate: HomeNavigator.() -> Unit) {
+        container.launch(Dispatchers.Main) {
+            container.raiseEffect(CloseHomeDrawer)
+            delay(Anim.DEFAULT_DURATION)
+            container.navigator { navigate() }
         }
     }
 
