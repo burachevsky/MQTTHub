@@ -10,14 +10,12 @@ import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
-import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
-import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.APPEARANCE_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.EditMode
 import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
-import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
-import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditModeAndBackground
 
 data class TextTileItem(
     override val tile: Tile,
@@ -32,8 +30,8 @@ data class TextTileItem(
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
             if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null,
-            if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
-            if (tile.design != that.tile.design) DESIGN_CHANGED else null,
+            if (editMode != that.editMode || tile.design != that.tile.design)
+                APPEARANCE_CHANGED else null,
         )
     }
 
@@ -66,6 +64,10 @@ class TextTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
+        binding.tile.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
+        }
+
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }
@@ -82,8 +84,7 @@ class TextTileItemViewHolder(
             when (it) {
                 NAME_CHANGED -> bindTileName(item)
                 PAYLOAD_CHANGED -> bindTilePayload(item)
-                EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
-                DESIGN_CHANGED -> bindDesign(item)
+                APPEARANCE_CHANGED -> bindAppearance(item)
             }
         }
     }
@@ -91,10 +92,9 @@ class TextTileItemViewHolder(
     override fun bind(item: ListItem) {
         item as TextTileItem
         bindTransitionName(item)
-        bindDesign(item)
         bindTileName(item)
         bindTilePayload(item)
-        bindEditMode(item.editMode)
+        bindAppearance(item)
     }
 
     private fun bindTransitionName(item: TextTileItem) {
@@ -104,7 +104,7 @@ class TextTileItemViewHolder(
         binding.tilePayload.transitionName = TextTileItem.TILE_PAYLOAD_TRANSITION_NAME + id
     }
 
-    private fun bindDesign(item: TextTileItem) {
+    private fun bindAppearance(item: TextTileItem) {
         val heightRes: Int
         val lines: Int
 
@@ -132,8 +132,8 @@ class TextTileItemViewHolder(
             }
         }
 
-        binding.tile.setBackgroundForStyleId(item.tile.design.styleId)
         binding.tilePayload.setLines(lines)
+        bindEditModeAndBackground(item)
     }
 
     private fun bindTileName(item: TextTileItem) {

@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.AppActivity
@@ -30,6 +32,7 @@ import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.ext.appComponent
+import com.github.burachevsky.mqtthub.common.ext.changeBackgroundColor
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
@@ -114,6 +117,29 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
     }
 
+    private val colorSurface by lazy(LazyThreadSafetyMode.NONE) {
+        SurfaceColors.SURFACE_0.getColor(requireContext())
+    }
+
+    private val colorSurface2 by lazy(LazyThreadSafetyMode.NONE) {
+        SurfaceColors.SURFACE_2.getColor(requireContext())
+    }
+
+    private var wasEditing = false
+
+    private var toolbarIsColored = false
+    private var currentToolbarAnimation: ValueAnimator? = null
+
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (!recyclerView.canScrollVertically(-1)) {
+                scrollChanged(recyclerViewIsAtStart = true)
+            } else {
+                scrollChanged(recyclerViewIsAtStart = false)
+            }
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appComponent.homeComponent(HomeModule(this))
@@ -133,15 +159,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             insets
         }
 
+        binding.toolbarLayout.setBackgroundColor(colorSurface)
+
         drawerManager.fillDrawer()
-        binding.editModeToolbar.setBackgroundColor(
-            SurfaceColors.SURFACE_2.getColor(requireContext())
-        )
 
         setupListeners()
         observeViewModel()
         setupRecyclerView()
         setupDrawerRecyclerView()
+
     }
 
     override fun fitStatusBarHeight(statusBarHeight: Int) {
@@ -150,9 +176,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             top = statusBarHeight
         )
         binding.toolbarLayout.updatePadding(
-            top = statusBarHeight
-        )
-        binding.editModeToolbar.updatePadding(
             top = statusBarHeight
         )
     }
@@ -165,6 +188,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override fun onResume() {
         super.onResume()
         backPressedCallback.isEnabled = true
+        binding.bottomAppBar.isVisible = !viewModel.editMode.value.isEditMode
     }
 
     override fun onPause() {
@@ -241,24 +265,29 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     private fun setupListeners() {
+        binding.recyclerView.apply {
+            removeOnScrollListener(scrollListener)
+            addOnScrollListener(scrollListener)
+        }
+
         binding.connection.setOnClickListener {
             viewModel.connectionClicked()
         }
 
-        binding.editModeToolbar.setNavigationOnClickListener {
-            vibrateAsEditModeChanged()
-            viewModel.navigateUp()
+        binding.toolbar.setNavigationOnClickListener {
+            if (viewModel.editMode.value.isEditMode) {
+                vibrateAsEditModeChanged()
+                viewModel.navigateUp()
+            } else {
+                binding.drawerLayout.open()
+            }
         }
 
         binding.bottomAppBarToolbar.setNavigationOnClickListener {
             viewModel.showOptionsMenu()
         }
 
-        binding.toolbar.setNavigationOnClickListener {
-            binding.drawerLayout.open()
-        }
-
-        binding.editModeToolbar.setOnMenuItemClickListener {
+        binding.toolbar.setOnMenuItemClickListener {
             handleContextMenuAction(it.itemId)
         }
 
@@ -287,7 +316,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
         collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
-        collectOnStarted(viewModel.title, binding.toolbar::setTitle)
+        collectOnStarted(viewModel.title) {
+            if (!viewModel.editMode.value.isEditMode) {
+                binding.toolbar.title = it
+            }
+        }
 
         collectOnStarted(viewModel.noTilesYet) {
             binding.noTilesText.isVisible = it
@@ -341,14 +374,51 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         return true
     }
 
+    private fun scrollChanged(recyclerViewIsAtStart: Boolean) {
+        if (viewModel.editMode.value.isEditMode) {
+            if (recyclerViewIsAtStart) {
+                if (toolbarIsColored) {
+                    toolbarIsColored = false
+                    currentToolbarAnimation?.cancel()
+                    currentToolbarAnimation = binding.toolbarLayout
+                        .changeBackgroundColor(colorSurface)
+                }
+
+            } else {
+                if (!toolbarIsColored) {
+                    toolbarIsColored = true
+                    currentToolbarAnimation?.cancel()
+                    currentToolbarAnimation = binding.toolbarLayout
+                        .changeBackgroundColor(colorSurface2, timeMillis = 50)
+                }
+            }
+        }
+    }
+
     private fun bindEditMode(editMode: EditModeState) {
         val showEditToolbar = editMode.isEditMode
 
-        binding.editModeToolbar.isVisible = showEditToolbar
-        binding.toolbarLayout.isVisible = !showEditToolbar
+        if (showEditToolbar) {
+            if (!wasEditing) {
+                if (binding.recyclerView.canScrollVertically(-1)) {
+                    binding.toolbarLayout.setBackgroundColor(colorSurface2)
 
-        binding.editModeToolbar.title = requireContext()
-            .getString(R.string.tiles_selected, editMode.selectedCount)
+                }
+            }
+
+            binding.toolbar.setNavigationIcon(R.drawable.ic_close)
+
+            binding.toolbar.title = requireContext()
+                .getString(R.string.tiles_selected, editMode.selectedCount)
+
+        } else {
+            binding.toolbarLayout.setBackgroundColor(colorSurface)
+
+            binding.toolbar.title = viewModel.title.value
+            binding.toolbar.setNavigationIcon(R.drawable.ic_menu)
+        }
+
+        wasEditing = showEditToolbar
 
         binding.bottomAppBar.isVisible = !showEditToolbar
 
@@ -356,17 +426,16 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             if (showEditToolbar) LOCK_MODE_LOCKED_CLOSED else LOCK_MODE_UNLOCKED
         )
 
+        binding.toolbar.menu.clear()
+
         if (editMode.isEditMode) {
-            val menuRes = if (viewModel.editMode.value.selectedCount == 1) {
-                R.menu.tile_item_menu
-            } else {
-                R.menu.home_edit_mode_menu
+            val menuRes = when (viewModel.editMode.value.selectedCount) {
+                0 -> R.menu.home_edit_mode_0_selected_menu
+                1 -> R.menu.home_edit_mode_1_selected_menu
+                else -> R.menu.home_edit_mode_menu
             }
 
-            binding.editModeToolbar.run {
-                menu.clear()
-                inflateMenu(menuRes)
-            }
+            binding.toolbar.inflateMenu(menuRes)
         }
     }
 

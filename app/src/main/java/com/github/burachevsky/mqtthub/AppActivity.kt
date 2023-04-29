@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewbinding.ViewBinding
@@ -12,6 +13,7 @@ import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.google.android.material.elevation.SurfaceColors
 import javax.inject.Inject
 
 class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
@@ -32,6 +34,10 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel> {
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+        window.statusBarColor = ColorUtils.setAlphaComponent(
+            SurfaceColors.SURFACE_0.getColor(this),
+            10
         )
         findNavController().setGraph(R.navigation.app_graph)
     }

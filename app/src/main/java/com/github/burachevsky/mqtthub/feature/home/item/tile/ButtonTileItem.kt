@@ -11,8 +11,7 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemButtonTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.EditMode
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
-import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
-import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditModeAndBackground
 
 data class ButtonTileItem(
     override val tile: Tile,
@@ -46,6 +45,10 @@ class ButtonTileItemViewHolder(
             listener.onClick(adapterPosition)
         }
 
+        binding.tile.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
+        }
+
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }
@@ -59,15 +62,13 @@ class ButtonTileItemViewHolder(
         item as ButtonTileItem
 
         binding.tile.apply {
-            setBackgroundForStyleId(item.tile.design.styleId)
-
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = item.tile.design.isFullSpan
             }
         }
 
         binding.buttonTile.text = item.tile.name
-        bindEditMode(item.editMode)
+        bindEditModeAndBackground(item)
     }
 }
 

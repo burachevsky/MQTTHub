@@ -45,6 +45,7 @@ import com.github.burachevsky.mqtthub.feature.selector.SelectorItem
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.eclipse.paho.client.mqttv3.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -89,6 +90,8 @@ class HomeViewModel @Inject constructor(
     val editMode: StateFlow<EditModeState> = _editMode
 
     private var dashboard: Dashboard? = null
+
+    private val payloadsReceivedWhileEditing = ConcurrentHashMap<String, String>()
 
     init {
         container.launch(Dispatchers.Default) {
@@ -171,6 +174,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun tileLongClicked(position: Int): Boolean {
+        if (!editMode.value.isEditMode) {
+            showEditMode(true, position)
+            return true
+        }
+
         return false
     }
 
@@ -256,21 +264,32 @@ class HomeViewModel @Inject constructor(
     }
 
     fun editTileClicked() {
-        findSingleSelectedItemPosition()?.let(::editTileClicked)
+        findSelectedItemsPositions()?.firstOrNull()?.let(::editTileClicked)
     }
 
     fun duplicateTileClicked() {
-        findSingleSelectedItemPosition()?.let { position ->
-            toast(R.string.toast_tile_duplicated)
+        val positions = findSelectedItemsPositions() ?: return
 
-            container.launch(Dispatchers.Default) {
+        container.launch(Dispatchers.Default) {
+            val addedTiles = ArrayList<Tile>()
+            var dashboardPosition = items.value.size
+
+            for (i in positions) {
                 val tile = addTile(
-                    items.get<TileItem>(position)
+                    items.get<TileItem>(i)
                         .tile
-                        .copy(id = 0, dashboardPosition = items.value.size)
+                        .copy(id = 0, dashboardPosition = dashboardPosition++)
                 )
 
-                tileAdded(tile)
+                addedTiles.add(tile)
+            }
+
+            addedTiles.forEach(::tileAdded)
+
+            if (positions.size == 1) {
+                toast(R.string.toast_tile_duplicated)
+            } else {
+                toast(R.string.toast_tiles_duplicated)
             }
         }
     }
@@ -351,6 +370,12 @@ class HomeViewModel @Inject constructor(
     private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
         if (!value) {
             _editMode.tryEmit(EditModeState(false))
+
+            container.launch(Dispatchers.Default) {
+                payloadsReceivedWhileEditing.forEach { (topic, payload) ->
+                    updatePayload(topic = topic, payload = payload)
+                }
+            }
         } else {
             val selected = selectedPosition >= 0
             _editMode.tryEmit(
@@ -458,19 +483,20 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun findSingleSelectedItemPosition(): Int? {
+    private fun findSelectedItemsPositions(): List<Int>? {
         editMode.value.run {
             if (!isEditMode) return null
-            if (selectedTiles.size != 1) return null
-            val tile = selectedTiles.first()
+            val tiles = selectedTiles
 
-            val position = items.value.indexOfFirst { it is TileItem && it.tile == tile }
+            val positions = ArrayList<Int>()
 
-            if (position >= 0) {
-                return position
+            items.value.forEachIndexed { i, it ->
+                if (it is TileItem && tiles.contains(it.tile)) {
+                    positions.add(i)
+                }
             }
 
-            return null
+            return positions
         }
     }
 
@@ -567,6 +593,9 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun tilesRemoved() {
         val tiles = editMode.value.selectedTiles
+        _editMode.update {
+            it.copy(selectedTiles = hashSetOf(), selectedCount = 0)
+        }
 
         _items.update {
             it.filter { it is TileItem && !tiles.contains(it.tile) }
@@ -604,15 +633,20 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun mqttMessageReceived(messageEvent: MqttMessageArrived) {
-        val topic = messageEvent.topic
-        val payload = messageEvent.message
+        container.withContext(Dispatchers.Default) {
+            val topic = messageEvent.topic
+            val payload = messageEvent.message
 
-        dashboard?.id?.let { dashboardId ->
-            saveUpdatedPayload(PayloadUpdate(dashboardId, topic, payload))
+            dashboard?.id?.let { dashboardId ->
+                saveUpdatedPayload(PayloadUpdate(dashboardId, topic, payload))
+            }
+
+            if (editMode.value.isEditMode) {
+                payloadsReceivedWhileEditing[topic] = payload
+            } else {
+                updatePayload(topic = topic, payload = payload)
+            }
         }
-
-        updatePayload(topic, payload = payload)
-
     }
 
     private fun unsubscribeIfNoReceivers(topics: List<String>) {
