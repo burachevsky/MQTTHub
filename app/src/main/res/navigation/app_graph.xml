@@ -16,42 +16,74 @@
             app:destination="@id/publishTextDialogFragment" />
 
         <action
-            android:id="@+id/navigateDashboards"
-            app:destination="@id/dashboardsFragment" />
-
-        <action
             android:id="@+id/navigateTextTileDetails"
             app:destination="@id/textTileDetailsFragment" />
 
     </fragment>
 
     <action
+        android:id="@+id/navigateDashboards"
+        app:destination="@id/dashboardsFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
         android:id="@+id/navigateAddBroker"
-        app:destination="@id/addBrokerFragment" />
+        app:destination="@id/addBrokerFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
 
     <action
         android:id="@+id/navigateBrokers"
-        app:destination="@id/brokersFragment"/>
+        app:destination="@id/brokersFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
 
     <action
         android:id="@+id/navigateAddTextTile"
-        app:destination="@id/addTextTileFragment" />
+        app:destination="@id/addTextTileFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
 
     <action
         android:id="@+id/navigateAddButtonTile"
-        app:destination="@id/addButtonTileFragment" />
+        app:destination="@id/addButtonTileFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
 
     <action
         android:id="@+id/navigateAddSwitch"
-        app:destination="@id/addSwitchFragment" />
+        app:destination="@id/addSwitchFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
 
     <action
         android:id="@+id/navigateAddChart"
-        app:destination="@id/addChartFragment" />
+        app:destination="@id/addChartFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
 
     <action
         android:id="@+id/navigateAddSlider"
-        app:destination="@id/addSliderFragment" />
+        app:destination="@id/addSliderFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
 
     <action
         android:id="@+id/navigateSelector"
