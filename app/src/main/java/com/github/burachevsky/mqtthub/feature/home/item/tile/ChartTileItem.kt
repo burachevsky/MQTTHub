@@ -10,14 +10,12 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemChartTileBinding
-import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
-import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.APPEARANCE_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.EditMode
 import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
-import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
-import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditModeAndBackground
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -37,8 +35,8 @@ data class ChartTileItem(
         return listOfNotNull(
             if (tile.name != that.tile.name) NAME_CHANGED else null,
             if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null,
-            if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
-            if (tile.design != that.tile.design) DESIGN_CHANGED else null,
+            if (editMode != that.editMode || tile.design != that.tile.design)
+                APPEARANCE_CHANGED else null,
         )
     }
 
@@ -72,6 +70,10 @@ class ChartTileItemViewHolder(
         .getValueFromAttribute(com.google.android.material.R.attr.colorOutline)
 
     init {
+        binding.tile.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
+        }
+
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }
@@ -88,8 +90,7 @@ class ChartTileItemViewHolder(
             when (it) {
                 NAME_CHANGED -> bindTileName(item)
                 PAYLOAD_CHANGED -> bindTilePayload(item)
-                EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
-                DESIGN_CHANGED -> bindDesign(item)
+                APPEARANCE_CHANGED -> bindAppearance(item)
             }
         }
     }
@@ -98,22 +99,21 @@ class ChartTileItemViewHolder(
         item as ChartTileItem
 
         bindTileName(item)
-        bindDesign(item)
         bindTilePayload(item)
-        bindEditMode(item.editMode)
+        bindAppearance(item)
     }
 
     private fun bindTileName(item: ChartTileItem) {
         binding.tileName.text = item.tile.name
     }
 
-    private fun bindDesign(item: ChartTileItem) {
+    private fun bindAppearance(item: ChartTileItem) {
         binding.tile.apply {
-            setBackgroundForStyleId(item.tile.design.styleId)
-
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = true
             }
+
+            bindEditModeAndBackground(item)
         }
     }
 

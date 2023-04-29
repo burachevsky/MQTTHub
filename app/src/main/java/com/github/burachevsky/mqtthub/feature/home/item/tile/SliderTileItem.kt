@@ -9,16 +9,14 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSliderTileBinding
-import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
-import com.github.burachevsky.mqtthub.feature.home.item.EDIT_MODE_CHANGED
+import com.github.burachevsky.mqtthub.feature.home.item.APPEARANCE_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.EditMode
 import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PUBLISH_TOPIC_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.STATE_LIST_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
-import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
-import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
+import com.github.burachevsky.mqtthub.feature.home.item.bindEditModeAndBackground
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMax
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMin
 import com.github.burachevsky.mqtthub.feature.home.item.sliderStep
@@ -39,8 +37,8 @@ data class SliderTileItem(
             if (tile.stateList != that.tile.stateList) STATE_LIST_CHANGED else null,
             if (tile.publishTopic != that.tile.publishTopic) PUBLISH_TOPIC_CHANGED else null,
             if (tile.payload != that.tile.payload) PAYLOAD_CHANGED else null,
-            if (editMode != that.editMode) EDIT_MODE_CHANGED else null,
-            if (tile.design != that.tile.design) DESIGN_CHANGED else null,
+            if (editMode != that.editMode || tile.design != that.tile.design)
+                APPEARANCE_CHANGED else null,
         )
     }
 
@@ -73,6 +71,10 @@ class SliderTileItemViewHolder(
     private var currentPayload = 0f
 
     init {
+        binding.tile.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
+        }
+
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }
@@ -105,8 +107,7 @@ class SliderTileItemViewHolder(
                 STATE_LIST_CHANGED -> bindSliderParams(item)
                 PUBLISH_TOPIC_CHANGED -> bindPublishTopic(item)
                 PAYLOAD_CHANGED -> bindPayload(item)
-                EDIT_MODE_CHANGED -> bindEditMode(item.editMode)
-                DESIGN_CHANGED -> bindDesign(item)
+                APPEARANCE_CHANGED -> bindAppearance(item)
             }
         }
     }
@@ -118,8 +119,7 @@ class SliderTileItemViewHolder(
         bindSliderParams(item)
         bindPublishTopic(item)
         bindPayload(item)
-        bindEditMode(item.editMode)
-        bindDesign(item)
+        bindAppearance(item)
     }
 
     private fun bindTileName(item: SliderTileItem) {
@@ -149,14 +149,14 @@ class SliderTileItemViewHolder(
         }
     }
 
-    private fun bindDesign(item: SliderTileItem) {
+    private fun bindAppearance(item: SliderTileItem) {
         binding.tile.apply {
-            setBackgroundForStyleId(item.tile.design.styleId)
-
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = item.tile.design.isFullSpan
             }
         }
+
+        bindEditModeAndBackground(item)
     }
 }
 

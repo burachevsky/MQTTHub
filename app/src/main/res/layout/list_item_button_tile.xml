@@ -5,7 +5,7 @@
     android:id="@+id/tile"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tile_small_height"
-    android:background="@drawable/bg_tile_list_item_outlined">
+    tools:background="@drawable/bg_tile_list_item_outlined">
 
     <TextView
         android:id="@+id/buttonTile"
@@ -28,7 +28,7 @@
         android:id="@+id/editModeOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_tile_edit_mode_selected"
+        tools:background="@drawable/bg_tile_edit_mode_selected"
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"

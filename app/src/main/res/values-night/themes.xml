@@ -28,8 +28,10 @@
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
-        <item name="windowNoTitle">true</item>
+        <item name="colorSurface_1_5">@color/material_dynamic_neutral20</item>
 
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <item name="toolbarStyle">@style/Widget.MQTTHub.Toolbar</item>
