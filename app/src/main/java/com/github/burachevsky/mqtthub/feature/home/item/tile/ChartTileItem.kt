@@ -4,10 +4,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.ext.getValueFromAttribute
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
-import com.github.burachevsky.mqtthub.data.entity.ChartTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemChartTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
@@ -17,6 +17,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
+import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -61,6 +62,15 @@ class ChartTileItemViewHolder(
 
     private val binding = ListItemChartTileBinding.bind(itemView)
 
+    private val primaryColor = context
+        .getValueFromAttribute(com.google.android.material.R.attr.colorPrimary)
+
+    private val textColor = context
+        .getValueFromAttribute(com.google.android.material.R.attr.colorOnSurface)
+
+    private val outlineColor = context
+        .getValueFromAttribute(com.google.android.material.R.attr.colorOutline)
+
     init {
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
@@ -99,13 +109,7 @@ class ChartTileItemViewHolder(
 
     private fun bindDesign(item: ChartTileItem) {
         binding.tile.apply {
-            setBackgroundResource(
-                when (item.tile.design.styleId){
-                    ChartTileStyleId.FILLED -> R.drawable.bg_tile_list_item_filled
-                    ChartTileStyleId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
-                    else -> R.drawable.bg_tile_list_item_empty
-                }
-            )
+            setBackgroundForStyleId(item.tile.design.styleId)
 
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = true
@@ -120,25 +124,35 @@ class ChartTileItemViewHolder(
             Entry(i.toFloat(), it.y)
         }
 
-        val primaryColor = context.getColor(R.color.md_theme_light_primary)
-
         val dataSet = LineDataSet(entries, null).apply {
             lineWidth = 2f
             color = primaryColor
             setCircleColor(primaryColor)
             setDrawCircleHole(false)
             setDrawValues(false)
+            valueTextColor = textColor
         }
         binding.chart.apply {
-            legend.isEnabled = false
-            setTouchEnabled(false)
+            axisLeft.setDrawAxisLine(false)
+            axisLeft.setDrawGridLines(true)
+            axisLeft.textColor = textColor
             axisRight.isEnabled = false
+            axisLeft.axisLineColor = outlineColor
+            axisLeft.gridColor = outlineColor
+
+            xAxis.valueFormatter = IndexAxisValueFormatter(payload.data.map { it.x })
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setDrawAxisLine(false)
             xAxis.setDrawGridLines(true)
-            xAxis.valueFormatter = IndexAxisValueFormatter(payload.data.map { it.x })
+            xAxis.textColor = textColor
+            xAxis.gridColor = outlineColor
+
+            legend.isEnabled = false
+            setTouchEnabled(false)
             data = LineData(dataSet)
             description.isEnabled = false
+            setNoDataTextColor(textColor)
+
             invalidate()
         }
     }

@@ -8,7 +8,6 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.data.entity.TextTileSizeId
-import com.github.burachevsky.mqtthub.data.entity.TextTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemTextTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
@@ -18,6 +17,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.NAME_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.PAYLOAD_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
+import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
 
 data class TextTileItem(
     override val tile: Tile,
@@ -105,14 +105,6 @@ class TextTileItemViewHolder(
     }
 
     private fun bindDesign(item: TextTileItem) {
-        val backgroundRes: Int = when (item.tile.design.styleId){
-            TextTileStyleId.FILLED -> R.drawable.bg_tile_list_item_filled
-            TextTileStyleId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
-            else -> R.drawable.bg_tile_list_item_empty
-        }
-
-        val tileIsFullSpan = item.tile.design.isFullSpan
-
         val heightRes: Int
         val lines: Int
 
@@ -136,11 +128,11 @@ class TextTileItemViewHolder(
         binding.tile.apply {
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 height = context.resources.getDimensionPixelSize(heightRes)
-                isFullSpan = tileIsFullSpan
+                isFullSpan = item.tile.design.isFullSpan
             }
         }
 
-        binding.tile.setBackgroundResource(backgroundRes)
+        binding.tile.setBackgroundForStyleId(item.tile.design.styleId)
         binding.tilePayload.setLines(lines)
     }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MQTTHub.BottomSheetDialog" parent="Theme.Material3.Light.BottomSheetDialog">
+    <style name="Theme.MQTTHub.BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.MQTTHub.BottomSheet</item>
     </style>
 

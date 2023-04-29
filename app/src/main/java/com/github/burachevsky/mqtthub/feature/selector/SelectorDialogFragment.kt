@@ -1,8 +1,11 @@
 package com.github.burachevsky.mqtthub.feature.selector
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.R
@@ -14,6 +17,7 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentSelectorBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.elevation.SurfaceColors
 import javax.inject.Inject
 
 class SelectorDialogFragment : BottomSheetDialogFragment(R.layout.fragment_selector),
@@ -42,8 +46,22 @@ class SelectorDialogFragment : BottomSheetDialogFragment(R.layout.fragment_selec
             .inject(this)
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).apply {
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.title.text = viewModel.title.get(requireContext())
+        binding.root.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(requireContext()))
+
+        viewModel.title?.get(requireContext()).let { title ->
+            binding.title.isVisible = !title.isNullOrEmpty()
+            binding.title.text = title
+        }
 
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()

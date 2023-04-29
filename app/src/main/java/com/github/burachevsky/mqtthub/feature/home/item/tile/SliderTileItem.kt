@@ -7,7 +7,6 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
-import com.github.burachevsky.mqtthub.data.entity.SliderTileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemSliderTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.DESIGN_CHANGED
@@ -19,6 +18,7 @@ import com.github.burachevsky.mqtthub.feature.home.item.PUBLISH_TOPIC_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.STATE_LIST_CHANGED
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
+import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMax
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMin
 import com.github.burachevsky.mqtthub.feature.home.item.sliderStep
@@ -150,14 +150,8 @@ class SliderTileItemViewHolder(
     }
 
     private fun bindDesign(item: SliderTileItem) {
-        binding.tile.apply{
-            setBackgroundResource(
-                when (item.tile.design.styleId){
-                    SliderTileStyleId.FILLED -> R.drawable.bg_tile_list_item_filled
-                    SliderTileStyleId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
-                    else -> R.drawable.bg_tile_list_item_empty
-                }
-            )
+        binding.tile.apply {
+            setBackgroundForStyleId(item.tile.design.styleId)
 
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = item.tile.design.isFullSpan

@@ -7,12 +7,12 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
-import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.databinding.ListItemButtonTileBinding
 import com.github.burachevsky.mqtthub.feature.home.item.EditMode
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
 import com.github.burachevsky.mqtthub.feature.home.item.bindEditMode
+import com.github.burachevsky.mqtthub.feature.home.item.setBackgroundForStyleId
 
 data class ButtonTileItem(
     override val tile: Tile,
@@ -58,14 +58,9 @@ class ButtonTileItemViewHolder(
     override fun bind(item: ListItem) {
         item as ButtonTileItem
 
-        binding.tile.setBackgroundResource(
-            when (item.tile.design.styleId) {
-                ButtonTileStyledId.OUTLINED -> R.drawable.bg_tile_list_item_outlined
-                else -> R.drawable.bg_tile_list_item_filled
-            }
-        )
-
         binding.tile.apply {
+            setBackgroundForStyleId(item.tile.design.styleId)
+
             layoutParams = StaggeredGridLayoutManager.LayoutParams(layoutParams).apply {
                 isFullSpan = item.tile.design.isFullSpan
             }

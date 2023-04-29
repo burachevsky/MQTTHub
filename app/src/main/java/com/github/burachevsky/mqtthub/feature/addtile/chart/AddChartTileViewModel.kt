@@ -6,7 +6,7 @@ import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
-import com.github.burachevsky.mqtthub.data.entity.ChartTileStyleId
+import com.github.burachevsky.mqtthub.data.entity.TileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
@@ -35,19 +35,19 @@ class AddChartTileViewModel@Inject constructor(
         title = Txt.of(R.string.tile_background_style),
         options = listOf(
             ToggleOption(
-                id = ChartTileStyleId.OUTLINED,
+                id = TileStyleId.OUTLINED,
                 text = Txt.of(R.string.tile_style_outlined),
             ),
             ToggleOption(
-                id = ChartTileStyleId.FILLED,
+                id = TileStyleId.FILLED,
                 text = Txt.of(R.string.tile_style_filled),
             ),
             ToggleOption(
-                id = ChartTileStyleId.EMPTY,
+                id = TileStyleId.EMPTY,
                 text = Txt.of(R.string.tile_style_empty),
             ),
         ),
-        selectedValue = ChartTileStyleId.OUTLINED,
+        selectedValue = TileStyleId.OUTLINED,
     )
 
     init {

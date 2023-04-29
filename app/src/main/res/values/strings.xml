@@ -58,8 +58,10 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="duplicate">Duplicate</string>
+    <string name="import_dashboard">Import dashboard</string>
+    <string name="export_dashboard">Export dashboard</string>
 
-    <string name="select_tile_type">Choose tile type</string>
+    <string name="add_tile">Add tile</string>
     <string name="tile_type_text">Text</string>
     <string name="tile_type_button">Button</string>
     <string name="tile_type_switch">Switch</string>

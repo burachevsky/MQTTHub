@@ -9,7 +9,7 @@ import com.github.burachevsky.mqtthub.common.widget.InputFieldItem
 import com.github.burachevsky.mqtthub.common.widget.SwitchItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.common.widget.ToggleOption
-import com.github.burachevsky.mqtthub.data.entity.ButtonTileStyledId
+import com.github.burachevsky.mqtthub.data.entity.TileStyleId
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
@@ -41,15 +41,15 @@ class AddButtonTileViewModel @Inject constructor(
         title = Txt.of(R.string.button_tile_style),
         options = listOf(
             ToggleOption(
-                id = ButtonTileStyledId.OUTLINED,
+                id = TileStyleId.OUTLINED,
                 text = Txt.of(R.string.tile_style_outlined)
             ),
             ToggleOption(
-                id = ButtonTileStyledId.FILLED,
+                id = TileStyleId.FILLED,
                 text = Txt.of(R.string.tile_style_filled)
             ),
         ),
-        selectedValue = ButtonTileStyledId.OUTLINED
+        selectedValue = TileStyleId.OUTLINED
     )
 
     private val width = SwitchItem(
