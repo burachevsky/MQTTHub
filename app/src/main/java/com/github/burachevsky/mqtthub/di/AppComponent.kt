@@ -12,11 +12,12 @@ import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
-import com.github.burachevsky.mqtthub.feature.addtile.DashboardsComponent
+import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextComponent
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextModule
 import com.github.burachevsky.mqtthub.feature.selector.SelectorComponent
 import com.github.burachevsky.mqtthub.feature.selector.SelectorModule
+import com.github.burachevsky.mqtthub.feature.settings.SettingsFragment
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsComponent
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsModule
 import dagger.BindsInstance
@@ -40,6 +41,7 @@ interface AppComponent {
 
     fun inject(activity: AppActivity)
     fun inject(fragment: BrokersFragment)
+    fun inject(fragment: SettingsFragment)
 
     fun homeComponent(module: HomeModule): HomeComponent
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent

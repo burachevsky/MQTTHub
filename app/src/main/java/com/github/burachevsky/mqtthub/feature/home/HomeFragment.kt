@@ -39,11 +39,12 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.github.burachevsky.mqtthub.feature.home.drawer.HomeDrawerManager
 import com.github.burachevsky.mqtthub.feature.home.item.*
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem

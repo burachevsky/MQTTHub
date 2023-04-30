@@ -13,17 +13,57 @@
 
         <action
             android:id="@+id/navigatePublishText"
-            app:destination="@id/publishTextDialogFragment" />
+            app:destination="@id/publish_text" />
 
         <action
             android:id="@+id/navigateTextTileDetails"
-            app:destination="@id/textTileDetailsFragment" />
+            app:destination="@id/text_tile_details" />
+
+        <action
+            android:id="@+id/navigateAddTextTile"
+            app:destination="@id/addTextTileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left"/>
+
+        <action
+            android:id="@+id/navigateAddButtonTile"
+            app:destination="@id/addButtonTileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/navigateAddSwitch"
+            app:destination="@id/addSwitchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/navigateAddChart"
+            app:destination="@id/addChartFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/navigateAddSlider"
+            app:destination="@id/addSliderFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left"/>
 
     </fragment>
 
     <action
         android:id="@+id/navigateDashboards"
-        app:destination="@id/dashboardsFragment"
+        app:destination="@id/dashboards"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/fade_out"
         app:popEnterAnim="@anim/fade_in"
@@ -31,7 +71,7 @@
 
     <action
         android:id="@+id/navigateAddBroker"
-        app:destination="@id/addBrokerFragment"
+        app:destination="@id/add_broker"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/fade_out"
         app:popEnterAnim="@anim/fade_in"
@@ -39,47 +79,7 @@
 
     <action
         android:id="@+id/navigateBrokers"
-        app:destination="@id/brokersFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
-        app:popExitAnim="@anim/slide_out_left"/>
-
-    <action
-        android:id="@+id/navigateAddTextTile"
-        app:destination="@id/addTextTileFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
-        app:popExitAnim="@anim/slide_out_left"/>
-
-    <action
-        android:id="@+id/navigateAddButtonTile"
-        app:destination="@id/addButtonTileFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
-        app:popExitAnim="@anim/slide_out_left" />
-
-    <action
-        android:id="@+id/navigateAddSwitch"
-        app:destination="@id/addSwitchFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
-        app:popExitAnim="@anim/slide_out_left" />
-
-    <action
-        android:id="@+id/navigateAddChart"
-        app:destination="@id/addChartFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/fade_out"
-        app:popEnterAnim="@anim/fade_in"
-        app:popExitAnim="@anim/slide_out_left" />
-
-    <action
-        android:id="@+id/navigateAddSlider"
-        app:destination="@id/addSliderFragment"
+        app:destination="@id/brokers"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/fade_out"
         app:popEnterAnim="@anim/fade_in"
@@ -87,179 +87,52 @@
 
     <action
         android:id="@+id/navigateSelector"
-        app:destination="@id/selectorDialogFragment" />
+        app:destination="@id/selector" />
+
+    <action
+        android:id="@+id/navigateSettings"
+        app:destination="@id/settings"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
 
     <fragment
         android:id="@+id/addTextTileFragment"
         android:name="com.github.burachevsky.mqtthub.feature.addtile.text.AddTextTileFragment"
         android:label="AddTextTileFragment"
-        tools:layout="@layout/fragment_add_tile">
-
-        <argument
-            android:name="dashboardId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="dashboardPosition"
-            app:argType="integer" />
-
-    </fragment>
-
-    <dialog
-        android:id="@+id/selectorDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragment"
-        android:label="SlectorDialogFragment"
-        tools:layout="@layout/fragment_selector">
-
-        <argument
-            android:name="config"
-            app:argType="com.github.burachevsky.mqtthub.feature.selector.SelectorConfig" />
-
-    </dialog>
+        tools:layout="@layout/fragment_add_tile" />
 
     <fragment
         android:id="@+id/addButtonTileFragment"
         android:name="com.github.burachevsky.mqtthub.feature.addtile.button.AddButtonTileFragment"
         android:label="AddButtonTileFragment"
-        tools:layout="@layout/fragment_add_tile">
-
-        <argument
-            android:name="dashboardId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="dashboardPosition"
-            app:argType="integer" />
-
-    </fragment>
+        tools:layout="@layout/fragment_add_tile" />
 
     <fragment
         android:id="@+id/addSwitchFragment"
         android:name="com.github.burachevsky.mqtthub.feature.addtile.switchh.AddSwitchFragment"
         android:label="AddSwitchFragment"
-        tools:layout="@layout/fragment_add_tile">
-
-        <argument
-            android:name="dashboardId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="dashboardPosition"
-            app:argType="integer" />
-
-    </fragment>
+        tools:layout="@layout/fragment_add_tile" />
 
     <fragment
         android:id="@+id/addChartFragment"
         android:name="com.github.burachevsky.mqtthub.feature.addtile.chart.AddChartTileFragment"
         android:label="AddChartFragment"
-        tools:layout="@layout/fragment_add_tile">
-
-        <argument
-            android:name="dashboardId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="dashboardPosition"
-            app:argType="integer" />
-
-    </fragment>
+        tools:layout="@layout/fragment_add_tile" />
 
     <fragment
         android:id="@+id/addSliderFragment"
         android:name="com.github.burachevsky.mqtthub.feature.addtile.slider.AddSliderTileFragment"
         android:label="AddSliderFragment"
-        tools:layout="@layout/fragment_add_tile">
+        tools:layout="@layout/fragment_add_tile" />
 
-        <argument
-            android:name="dashboardId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="dashboardPosition"
-            app:argType="integer" />
-
-    </fragment>
-
-
-    <dialog
-        android:id="@+id/publishTextDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragment"
-        android:label="PublishTextDialogFragment"
-        tools:layout="@layout/dialog_publish_text">
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-        <argument
-            android:name="tileName"
-            app:argType="string"/>
-
-    </dialog>
-
-    <fragment
-        android:id="@+id/brokersFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment"
-        android:label="BrokersFragment"
-        tools:layout="@layout/fragment_brokers" />
-
-    <fragment
-        android:id="@+id/addBrokerFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerFragment"
-        android:label="AddBrokerFragment"
-        tools:layout="@layout/fragment_add_broker">
-
-        <argument
-            android:name="brokerId"
-            app:argType="long"
-            android:defaultValue="0L" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/dashboardsFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.dashboards.DashboardsFragment"
-        android:label="DashboardsFragment"
-        tools:layout="@layout/fragment_dashboards">
-
-        <argument
-            android:name="addNew"
-            app:argType="boolean"
-            android:defaultValue="false" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/textTileDetailsFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsFragment"
-        android:label="TextTileDetailsFragment"
-        tools:layout="@layout/fragment_text_tile_details">
-
-        <argument
-            android:name="tileId"
-            app:argType="long" />
-
-    </fragment>
+    <include app:graph="@navigation/selector" />
+    <include app:graph="@navigation/settings" />
+    <include app:graph="@navigation/publish_text" />
+    <include app:graph="@navigation/dashboards" />
+    <include app:graph="@navigation/text_tile_details" />
+    <include app:graph="@navigation/brokers" />
+    <include app:graph="@navigation/add_broker" />
 
 </navigation>

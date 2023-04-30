@@ -29,6 +29,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
 
         <item name="colorSurface_1_5">@color/material_dynamic_neutral95</item>
+        <item name="colorOutlineVariant">@color/material_dynamic_neutral_variant95</item>
 
         <item name="windowNoTitle">true</item>
         <!--<item name="android:windowTranslucentStatus">true</item>-->

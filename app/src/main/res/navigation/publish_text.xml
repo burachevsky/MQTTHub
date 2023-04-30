@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/publish_text"
+    app:startDestination="@id/publishTextDialogFragment">
+
+    <dialog
+        android:id="@+id/publishTextDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragment"
+        android:label="PublishTextDialogFragment"
+        tools:layout="@layout/dialog_publish_text">
+
+        <argument
+            android:name="tileId"
+            app:argType="long" />
+
+        <argument
+            android:name="tileName"
+            app:argType="string"/>
+
+    </dialog>
+
+</navigation>
