@@ -26,3 +26,5 @@ data class AlertDialog(
         val action: (() -> Unit)? = null
     )
 }
+
+object SwitchTheme : AppEvent

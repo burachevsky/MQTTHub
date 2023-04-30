@@ -14,6 +14,10 @@ import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
+import com.github.burachevsky.mqtthub.common.widget.SubtitleItemAdapter
+import com.github.burachevsky.mqtthub.common.widget.SwitchItemAdapter
+import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItem
+import com.github.burachevsky.mqtthub.common.widget.ToggleGroupItemItemAdapter
 import com.github.burachevsky.mqtthub.databinding.FragmentSettingsBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import javax.inject.Inject
@@ -28,7 +32,17 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
     override val viewModel by viewModels<SettingsViewModel> { viewModelFactory }
     override val container by viewContainer()
 
-    private val listAdapter = CompositeAdapter()
+    private val listAdapter = CompositeAdapter(
+        SwitchItemAdapter(),
+        SubtitleItemAdapter(),
+        ToggleGroupItemItemAdapter(
+            object : ToggleGroupItem.Listener {
+                override fun onSelectionChanged(position: Int) {
+                    viewModel.toggleGroupSelectionChanged(position)
+                }
+            }
+        )
+    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,5 +60,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+
+        viewModel.recreate()
     }
 }

@@ -8,6 +8,8 @@ import com.github.burachevsky.mqtthub.data.repository.DashboardRepository
 import com.github.burachevsky.mqtthub.data.repository.DashboardRepositoryImpl
 import com.github.burachevsky.mqtthub.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.data.repository.TileRepositoryImpl
+import com.github.burachevsky.mqtthub.data.settings.Settings
+import com.github.burachevsky.mqtthub.data.settings.SettingsImpl
 import dagger.Binds
 import dagger.Module
 
@@ -30,4 +32,7 @@ abstract class LocalDataModule {
 
     @Binds
     abstract fun bindCurrentIdsRepository(impl: CurrentIdsRepositoryImpl): CurrentIdsRepository
+
+    @Binds
+    abstract fun bindSettings(impl: SettingsImpl): Settings
 }

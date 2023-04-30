@@ -173,7 +173,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     override fun fitStatusBarHeight(statusBarHeight: Int) {
-        (requireActivity() as AppActivity).statusBarHeight = statusBarHeight
+        AppActivity.statusBarHeight = statusBarHeight
         binding.drawerRecyclerView.updatePadding(
             top = statusBarHeight
         )

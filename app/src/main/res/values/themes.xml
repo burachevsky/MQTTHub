@@ -32,9 +32,7 @@
         <item name="colorOutlineVariant">@color/material_dynamic_neutral_variant95</item>
 
         <item name="windowNoTitle">true</item>
-        <!--<item name="android:windowTranslucentStatus">true</item>-->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
 
         <item name="toolbarStyle">@style/Widget.MQTTHub.Toolbar</item>
         <item name="android:textViewStyle">@style/TextAppearance.MQTTHub.Body</item>
@@ -46,4 +44,9 @@
         <item name="switchStyle">@style/Widget.MQTTHub.Switch</item>
         <item name="sliderStyle">@style/Widget.MQTTHub.Slider.WithoutSteps</item>
     </style>
+
+    <style name="Theme.MQTTHub.NoDynamicColors">
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
 </resources>

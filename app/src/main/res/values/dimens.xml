@@ -15,4 +15,8 @@
 
     <dimen name="dialog_size">300dp</dimen>
 
+    <dimen name="switch_item_margin_top_small">8dp</dimen>
+    <dimen name="switch_item_margin_top_default">24dp</dimen>
+    <dimen name="toggle_group_spacing">16dp</dimen>
+
 </resources>

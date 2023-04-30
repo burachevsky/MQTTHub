@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MQTTHub" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Theme.MQTTHub" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
@@ -32,7 +32,6 @@
         <item name="colorOutlineVariant">@color/md_theme_light_outline_variant</item>
 
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <item name="toolbarStyle">@style/Widget.MQTTHub.Toolbar</item>
@@ -45,4 +44,9 @@
         <item name="switchStyle">@style/Widget.MQTTHub.Switch</item>
         <item name="sliderStyle">@style/Widget.MQTTHub.Slider.WithoutSteps</item>
     </style>
+
+    <style name="Theme.MQTTHub.NoDynamicColors">
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
 </resources>
