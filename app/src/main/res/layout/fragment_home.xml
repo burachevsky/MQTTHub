@@ -7,54 +7,48 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/homeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:liftOnScroll="true">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/toolbarLayout"
+            <com.github.burachevsky.mqtthub.common.widget.ConnectionLabelView
+                android:id="@+id/connection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginHorizontal="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/toolbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/toolbar" />
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:navigationIcon="@drawable/ic_menu" />
 
-                <com.github.burachevsky.mqtthub.common.widget.ConnectionLabelView
-                    android:id="@+id/connection"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|bottom"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintBottom_toBottomOf="@id/toolbar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/toolbar" />
-
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:navigationIcon="@drawable/ic_menu" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="true"
             android:paddingHorizontal="12dp"
             android:paddingBottom="84dp"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbarLayout" />
 
         <TextView
             android:id="@+id/noTilesText"
@@ -63,50 +57,46 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/tiles_empty"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/addFirstBrokerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
             android:text="@string/add_first_broker"
             android:textAllCaps="false"
             android:visibility="gone"
-            app:icon="@drawable/ic_add" />
+            app:icon="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.bottomappbar.BottomAppBar
+        <FrameLayout
             android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:layout_gravity="bottom"
-            android:padding="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior"
-            app:navigationIcon="@null">
+            android:animateLayoutChanges="true"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <FrameLayout
-                android:id="@+id/bottomAppBarContainer"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/bottomAppBarToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                android:layoutDirection="rtl"
+                app:menu="@menu/home_bottom_menu"
+                app:navigationIcon="@drawable/ic_more" />
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/bottomAppBarToolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@android:color/transparent"
-                    android:layoutDirection="rtl"
-                    app:menu="@menu/home_bottom_menu"
-                    app:navigationIcon="@drawable/ic_more" />
+        </FrameLayout>
 
-            </FrameLayout>
-
-        </com.google.android.material.bottomappbar.BottomAppBar>
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"

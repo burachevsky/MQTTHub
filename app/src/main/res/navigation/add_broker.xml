@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_broker"
+    app:startDestination="@id/addBrokerFragment">
+
+    <fragment
+        android:id="@+id/addBrokerFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerFragment"
+        android:label="AddBrokerFragment"
+        tools:layout="@layout/fragment_add_broker">
+
+        <argument
+            android:name="brokerId"
+            app:argType="long"
+            android:defaultValue="0L" />
+
+    </fragment>
+
+</navigation>

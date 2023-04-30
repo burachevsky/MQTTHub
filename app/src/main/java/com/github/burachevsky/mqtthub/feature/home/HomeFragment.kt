@@ -39,11 +39,12 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.github.burachevsky.mqtthub.feature.home.drawer.HomeDrawerManager
 import com.github.burachevsky.mqtthub.feature.home.item.*
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
-import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
@@ -160,6 +161,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
 
         binding.toolbarLayout.setBackgroundColor(colorSurface)
+        binding.bottomAppBar.setBackgroundColor(colorSurface2)
 
         drawerManager.fillDrawer()
 
@@ -171,7 +173,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     override fun fitStatusBarHeight(statusBarHeight: Int) {
-        (requireActivity() as AppActivity).statusBarHeight = statusBarHeight
+        AppActivity.statusBarHeight = statusBarHeight
         binding.drawerRecyclerView.updatePadding(
             top = statusBarHeight
         )
@@ -418,9 +420,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             binding.toolbar.setNavigationIcon(R.drawable.ic_menu)
         }
 
-        wasEditing = showEditToolbar
-
         binding.bottomAppBar.isVisible = !showEditToolbar
+
+        wasEditing = showEditToolbar
 
         binding.drawerLayout.setDrawerLockMode(
             if (showEditToolbar) LOCK_MODE_LOCKED_CLOSED else LOCK_MODE_UNLOCKED

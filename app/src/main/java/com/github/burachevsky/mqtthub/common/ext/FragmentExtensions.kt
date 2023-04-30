@@ -6,6 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.burachevsky.mqtthub.App
+import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.di.AppComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -13,6 +14,9 @@ import kotlinx.coroutines.launch
 
 val Fragment.appComponent: AppComponent
     get() = (requireActivity().application as App).appComponent
+
+val Fragment.appActivity: AppActivity
+    get() = requireActivity() as AppActivity
 
 fun <T> Fragment.collectOnStarted(flow: Flow<T>, collector: FlowCollector<T>) {
     viewLifecycleOwner.run {

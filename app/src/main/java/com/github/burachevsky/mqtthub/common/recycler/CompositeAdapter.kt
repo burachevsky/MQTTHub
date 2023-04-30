@@ -2,11 +2,11 @@ package com.github.burachevsky.mqtthub.common.recycler
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter as RecyclerViewListAdapter
+import androidx.recyclerview.widget.ListAdapter
 
 class CompositeAdapter(
     vararg itemAdapters: ItemAdapter
-) : RecyclerViewListAdapter<ListItem, ItemViewHolder>(DiffCallback) {
+) : ListAdapter<ListItem, ItemViewHolder>(DiffCallback) {
 
     private val adapters: Map<Int, ItemAdapter> =
         itemAdapters.associateBy { it.viewType() }

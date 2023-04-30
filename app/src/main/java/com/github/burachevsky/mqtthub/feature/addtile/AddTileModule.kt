@@ -7,27 +7,23 @@ import javax.inject.Named
 @Module
 class AddTileModule(fragment: AddTileFragment<*>) {
 
-    private val args = fragment.requireArguments()
+    private val args = AddTileArgs.fromBundle(fragment.requireArguments())
 
     @Provides
     @Named(DASHBOARD_ID)
-    fun provideBrokerId(): Long {
-        return args.getLong(DASHBOARD_ID)
+    fun provideDashboardId(): Long {
+        return args.dashboardId
     }
 
     @Provides
     @Named(TILE_ID)
     fun provideTileId(): Long {
-        return args.getLong(TILE_ID)
+        return args.tileId
     }
 
     @Provides
     @Named(DASHBOARD_POSITION)
     fun provideDashboardPosition(): Int {
-        return args.getInt(DASHBOARD_POSITION)
+        return args.dashboardPosition
     }
 }
-
-const val DASHBOARD_ID = "dashboardId"
-const val TILE_ID = "tileId"
-const val DASHBOARD_POSITION = "dashboardPosition"

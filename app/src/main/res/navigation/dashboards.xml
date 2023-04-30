@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboards"
+    app:startDestination="@id/dashboardsFragment">
+
+    <fragment
+        android:id="@+id/dashboardsFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.dashboards.DashboardsFragment"
+        android:label="DashboardsFragment"
+        tools:layout="@layout/fragment_dashboards">
+
+        <argument
+            android:name="addNew"
+            app:argType="boolean"
+            android:defaultValue="false" />
+
+    </fragment>
+
+</navigation>

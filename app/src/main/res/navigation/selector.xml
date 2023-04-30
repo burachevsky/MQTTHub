@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selector"
+    app:startDestination="@id/selectorDialogFragment">
+
+    <dialog
+        android:id="@+id/selectorDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragment"
+        android:label="SlectorDialogFragment"
+        tools:layout="@layout/fragment_selector">
+
+        <argument
+            android:name="config"
+            app:argType="com.github.burachevsky.mqtthub.feature.selector.SelectorConfig" />
+
+    </dialog>
+
+</navigation>

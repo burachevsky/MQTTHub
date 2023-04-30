@@ -60,8 +60,7 @@ class ViewContainer(
     }
 
     private fun fitStatusBarHeight() {
-        (activity as? AppActivity)?.statusBarHeight
-            ?.let(::fitStatusBarHeight)
+        AppActivity.statusBarHeight.let(::fitStatusBarHeight)
     }
 
     private fun initComponents() {

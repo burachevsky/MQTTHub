@@ -76,66 +76,64 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
 
-    implementation("${Libs.CORE_KTX}:${Versions.CORE}")
-    implementation("${Libs.APP_STARTUP}:${Versions.APPSTARTUP}")
-    implementation("${Libs.TIMBER}:${Versions.TIMBER}")
+    implementation(libs.core.ktx)
+    implementation(libs.startup)
+    implementation(libs.timber)
 
     // UI
-    implementation("${Libs.ACTIVITY_KTX}:${Versions.ACTIVITY}")
-    implementation("${Libs.APPCOMPAT}:${Versions.APPCOMPAT}")
-    implementation("${Libs.FRAGMENT_KTX}:${Versions.FRAGMENT}")
-    implementation("${Libs.CARDVIEW}:${Versions.CARDVIEW}")
-    implementation("${Libs.CONSTRAINT_LAYOUT}:${Versions.CONSTRAINT_LAYOUT}")
-    implementation("${Libs.MATERIAL}:${Versions.MATERIAL}")
-    implementation("${Libs.FLEXBOX}:${Versions.FLEXBOX}")
-    implementation("${Libs.DRAWER_LAYOUT}:${Versions.DRAWER_LAYOUT_VERSION}")
+    implementation(libs.activity.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.fragment.ktx)
+    //implementation(libs.cardview)
+    implementation(libs.constraintlayout)
+    implementation(libs.material)
+    //implementation(libs.flexbox)
+    implementation(libs.drawerlayout)
 
     // Architecture Components
-    implementation("${Libs.LIFECYCLE_LIVE_DATA_KTX}:${Versions.LIFECYCLE}")
-    implementation("${Libs.LIFECYCLE_RUNTIME_KTX}:${Versions.LIFECYCLE}")
-    kapt("${Libs.LIFECYCLE_COMPILER}:${Versions.LIFECYCLE}")
-    implementation("${Libs.NAVIGATION_FRAGMENT_KTX}:${Versions.NAVIGATION}")
-    implementation("${Libs.NAVIGATION_UI_KTX}:${Versions.NAVIGATION}")
-    implementation("${Libs.ROOM_KTX}:${Versions.ROOM}")
-    implementation("${Libs.ROOM_RUNTIME}:${Versions.ROOM}")
-    kapt("${Libs.ROOM_COMPILER}:${Versions.ROOM}")
-    implementation("${Libs.ROOM_KTX}:${Versions.ROOM}")
-    implementation("${Libs.ROOM_RUNTIME}:${Versions.ROOM}")
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.compiler)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
     // Dagger
-    implementation("${Libs.DAGGER}:${Versions.DAGGER}")
-    kapt("${Libs.DAGGER_COMPIER}:${Versions.DAGGER}")
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
     // Glide
-    implementation("${Libs.GLIDE}:${Versions.GLIDE}")
-    kapt("${Libs.GLIDE_COMPILER}:${Versions.GLIDE}")
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
     // Kotlin
-    implementation("${Libs.KOTLIN_STDLIB}:${Versions.KOTLIN}")
+    implementation(libs.kotlin.stdlib)
     implementation(kotlin("reflect"))
 
     // Instrumentation tests
-    androidTestImplementation("${Libs.ESPRESSO_CORE}:${Versions.ESPRESSO}")
-    androidTestImplementation("${Libs.ESPRESSO_CONTRIB}:${Versions.ESPRESSO}")
-    androidTestImplementation("${Libs.EXT_JUNIT}:${Versions.EXT_JUNIT}")
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.espresso.contrib)
+    androidTestImplementation(libs.junit.ext)
 
     // Local unit tests
-    testImplementation("${Libs.JUNIT}:${Versions.JUNIT}")
+    testImplementation(libs.junit)
 
-    // Solve conflicts with gson. DataBinding is using an old version.
-    implementation("${Libs.GSON}:${Versions.GSON}")
+    // Gson
+    implementation(libs.gson)
 
     //Paho
-    implementation("${Libs.PAHO}:${Versions.PAHO}")
-    implementation("${Libs.PAHO_ANDROID}:${Versions.PAHO}")
+    implementation(libs.paho)
+    implementation(libs.paho.android)
 
     //Charts
-    implementation("${Libs.MP_ANDROID_CHART}:${Versions.MP_ANDROID_CHART}")
+    implementation(libs.mpandroidchart)
 
 
     //RotateLayout
-    implementation("${Libs.ROTATE_LAYOUT}:${Versions.ROTATE_LAYOUT}")
+    implementation(libs.rotatelayout)
 
     //by viewBinding()
-    implementation("${Libs.BY_VIEW_BINDING}:${Versions.BY_VIEW_BINDING}")
+    implementation(libs.viewbindingpropertydelegate.noreflection)
 }

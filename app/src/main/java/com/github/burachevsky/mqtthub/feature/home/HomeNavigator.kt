@@ -5,12 +5,8 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
+import com.github.burachevsky.mqtthub.feature.addtile.AddTileArgs
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addtile.button.AddButtonTileFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addtile.chart.AddChartTileFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addtile.slider.AddSliderTileFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addtile.switchh.AddSwitchFragmentArgs
-import com.github.burachevsky.mqtthub.feature.addtile.text.AddTextTileFragmentArgs
 import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragmentArgs
 import com.github.burachevsky.mqtthub.feature.selector.SelectorConfig
 import com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragmentArgs
@@ -22,31 +18,31 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
     fun navigateAddTextTile(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
         navController.navigate(
             R.id.navigateAddTextTile,
-            AddTextTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+            AddTileArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
     fun navigateAddButtonTile(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
         navController.navigate(
             R.id.navigateAddButtonTile,
-            AddButtonTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+            AddTileArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
     fun navigateAddSwitch(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
         navController.navigate(
             R.id.navigateAddSwitch,
-            AddSwitchFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+            AddTileArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
     fun navigateAddChart(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
         navController.navigate(
             R.id.navigateAddChart,
-            AddChartTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+            AddTileArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
     fun navigateAddSlider(dashboardId: Long, tileId: Long = 0, dashboardPosition: Int) =
         navController.navigate(
             R.id.navigateAddSlider,
-            AddSliderTileFragmentArgs(dashboardId, tileId, dashboardPosition).toBundle()
+            AddTileArgs(dashboardId, tileId, dashboardPosition).toBundle()
         )
 
     fun navigateSelector(config: SelectorConfig) = navController.navigate(
@@ -108,4 +104,6 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
         R.id.navigateTextTileDetails,
         TextTileDetailsFragmentArgs(tileId).toBundle()
     )
+
+    fun navigateSettings() = navController.navigate(R.id.navigateSettings)
 }

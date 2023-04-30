@@ -116,4 +116,11 @@
     <string name="tile_details_publish">Publish</string>
 
     <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dynamic_colors">Dynamic colors</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
 </resources>
