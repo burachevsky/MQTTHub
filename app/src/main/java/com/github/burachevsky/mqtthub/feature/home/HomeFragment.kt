@@ -196,7 +196,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override fun onResume() {
         super.onResume()
         backPressedCallback.isEnabled = true
-        binding.bottomAppBar.isVisible = !viewModel.editMode.value.isEditMode
+        binding.bottomAppBar.isVisible = !viewModel.editMode.value.isEditMode &&
+                !viewModel.noBrokersYet.value
     }
 
     override fun onPause() {
