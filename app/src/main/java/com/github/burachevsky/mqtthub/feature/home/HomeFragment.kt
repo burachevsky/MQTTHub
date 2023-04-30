@@ -161,6 +161,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
 
         binding.toolbarLayout.setBackgroundColor(colorSurface)
+        binding.bottomAppBar.setBackgroundColor(colorSurface2)
 
         drawerManager.fillDrawer()
 
@@ -419,9 +420,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             binding.toolbar.setNavigationIcon(R.drawable.ic_menu)
         }
 
-        wasEditing = showEditToolbar
-
         binding.bottomAppBar.isVisible = !showEditToolbar
+
+        wasEditing = showEditToolbar
 
         binding.drawerLayout.setDrawerLockMode(
             if (showEditToolbar) LOCK_MODE_LOCKED_CLOSED else LOCK_MODE_UNLOCKED
