@@ -17,6 +17,7 @@ import com.github.burachevsky.mqtthub.common.widget.ToggleOption
 import com.github.burachevsky.mqtthub.data.settings.Settings
 import com.github.burachevsky.mqtthub.data.settings.Theme
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
+import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,17 +50,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun list(): List<ListItem> {
-        return listOf(
+        return listOfNotNull(
             SubtitleItem(Txt.of(R.string.settings_appearance)),
-            SwitchItem(
-                text = Txt.of(R.string.settings_dynamic_colors),
-                marginTopRes = R.dimen.switch_item_margin_top_small,
-                isChecked = settings.dynamicColorsEnabled,
-                onCheckChanged = {
-                    settings.dynamicColorsEnabled = it
-                    switchTheme()
-                }
-            ),
             ToggleGroupItem(
                 title = Txt.of(R.string.settings_theme),
                 options = listOf(
@@ -77,9 +69,23 @@ class SettingsViewModel @Inject constructor(
                     )
                 ),
                 selectedValue = settings.theme,
-                marginTopRes = R.dimen.switch_item_margin_top_small,
+                marginTopRes = R.dimen.toggle_group_margin_top_small,
                 isVertical = false,
-            )
+            ),
+            when {
+                DynamicColors.isDynamicColorAvailable() -> SwitchItem(
+                    text = Txt.of(R.string.settings_dynamic_colors),
+                    marginTopRes = R.dimen.switch_item_margin_top_small,
+                    isChecked = settings.dynamicColorsEnabled,
+                    onCheckChanged = {
+                        settings.dynamicColorsEnabled = it
+                        switchTheme()
+                    }
+                )
+
+                else -> null
+            },
+
         )
     }
 

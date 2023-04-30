@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.MQTTHub" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
@@ -28,8 +28,8 @@
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
-        <item name="colorSurface_1_5">@color/material_dynamic_neutral20</item>
-        <item name="colorOutlineVariant">@color/md_theme_light_outline_variant</item>
+        <item name="colorSurface_1_5">@color/md_theme_dark_surface_container_low</item>
+        <item name="colorOutlineVariant">@color/md_theme_dark_outline_variant</item>
 
         <item name="windowNoTitle">true</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -46,7 +46,7 @@
     </style>
 
     <style name="Theme.MQTTHub.NoDynamicColors">
-        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
     </style>
 
 </resources>

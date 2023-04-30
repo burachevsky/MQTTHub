@@ -34,6 +34,8 @@ import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.changeBackgroundColor
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
+import com.github.burachevsky.mqtthub.common.ext.getNavigationBarHeightFromSystemAttribute
+import com.github.burachevsky.mqtthub.common.ext.getStatusBarHeightFromSystemAttribute
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
@@ -147,14 +149,20 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             .inject(this)
     }
 
-    @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setOnApplyWindowInsetsListener { v, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                fitStatusBarHeight(statusBarInsets.top)
+                val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                fitSystemBars(statusBarInsets.top, navigationBarInsets.bottom)
             } else {
-                fitStatusBarHeight(insets.systemWindowInsetTop)
+                val navigationBarHeight = requireContext()
+                    .getNavigationBarHeightFromSystemAttribute()
+
+                val statusBarHeight = requireContext()
+                    .getStatusBarHeightFromSystemAttribute()
+
+                fitSystemBars(statusBarHeight, navigationBarHeight)
             }
 
             insets
@@ -172,14 +180,12 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     }
 
-    override fun fitStatusBarHeight(statusBarHeight: Int) {
+    override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
         AppActivity.statusBarHeight = statusBarHeight
-        binding.drawerRecyclerView.updatePadding(
-            top = statusBarHeight
-        )
-        binding.toolbarLayout.updatePadding(
-            top = statusBarHeight
-        )
+        AppActivity.navigationBarHeight = navigationBarHeight
+        binding.drawerRecyclerView.updatePadding(top = statusBarHeight)
+        binding.toolbarLayout.updatePadding(top = statusBarHeight)
+        binding.bottomAppBar.updatePadding(bottom = navigationBarHeight)
     }
 
     override fun onStart() {

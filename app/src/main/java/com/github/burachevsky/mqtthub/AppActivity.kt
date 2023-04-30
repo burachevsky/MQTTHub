@@ -20,6 +20,7 @@ import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
+import com.google.android.material.color.DynamicColors
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -63,18 +64,20 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventH
             }
         }
 
-        setTheme(
-            when {
-                dynamicColorsEnabled -> R.style.Theme_MQTTHub
-                else -> R.style.Theme_MQTTHub_NoDynamicColors
-            }
-        )
+        if (DynamicColors.isDynamicColorAvailable()) {
+            setTheme(
+                when {
+                    dynamicColorsEnabled -> R.style.Theme_MQTTHub
+                    else -> R.style.Theme_MQTTHub_NoDynamicColors
+                }
+            )
 
-        if (!viewModel.themeIsInitialized) {
-            viewModel.themeIsInitialized = true
+            if (!viewModel.themeIsInitialized) {
+                viewModel.themeIsInitialized = true
 
-            if (themeId != Theme.SYSTEM && dynamicColorsEnabled) {
-                recreate()
+                if (themeId != Theme.SYSTEM && dynamicColorsEnabled) {
+                    recreate()
+                }
             }
         }
     }
@@ -99,5 +102,6 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventH
 
     companion object {
         var statusBarHeight: Int = 0
+        var navigationBarHeight: Int = 0
     }
 }
