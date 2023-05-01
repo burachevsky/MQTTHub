@@ -3,11 +3,12 @@ package com.github.burachevsky.mqtthub.feature.home
 import androidx.navigation.NavController
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
+import com.github.burachevsky.mqtthub.common.text.ParcelableTxt
 import com.github.burachevsky.mqtthub.common.text.Txt
 import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileArgs
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsFragmentArgs
-import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragmentArgs
+import com.github.burachevsky.mqtthub.feature.entertext.EnterTextDialogFragmentArgs
 import com.github.burachevsky.mqtthub.feature.selector.SelectorConfig
 import com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragmentArgs
 import com.github.burachevsky.mqtthub.feature.selector.SelectorItem
@@ -86,9 +87,9 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
         ).toBundle()
     )
 
-    fun navigatePublishTextDialog(tileId: Long, tileName: String) = navController.navigate(
-        R.id.navigatePublishText,
-        PublishTextDialogFragmentArgs(tileId, tileName).toBundle()
+    fun navigateEnterText(actionId: Int, title: ParcelableTxt) = navController.navigate(
+        R.id.navigateEnterText,
+        EnterTextDialogFragmentArgs(actionId, title).toBundle()
     )
 
     fun navigateAddBroker() = navController.navigate(R.id.navigateAddBroker)

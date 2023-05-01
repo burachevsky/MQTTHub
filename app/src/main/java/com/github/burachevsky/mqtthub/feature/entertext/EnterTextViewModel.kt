@@ -1,28 +1,27 @@
-package com.github.burachevsky.mqtthub.feature.publishtext
+package com.github.burachevsky.mqtthub.feature.entertext
 
 import androidx.lifecycle.ViewModel
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
-import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextDialogFragmentArgs
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class PublishTextViewModel @Inject constructor(
+class EnterTextViewModel @Inject constructor(
     private val eventBus: EventBus,
-    args: PublishTextDialogFragmentArgs
+    args: EnterTextDialogFragmentArgs
 ) : ViewModel(), VM<Navigator> {
-
-    val tileName = args.tileName
 
     override val container = viewModelContainer()
 
-    private val tileId = args.tileId
+    val title = args.title
+
+    private val actionId = args.actionId
 
     fun sendResult(text: String) {
         container.launch(Dispatchers.Main) {
-            eventBus.send(PublishTextEntered(tileId, text))
+            eventBus.send(TextEntered(actionId, text))
 
             container.navigator {
                 back()

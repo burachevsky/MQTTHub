@@ -1,0 +1,106 @@
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :buildSrc:inspectClassesForKotlinIC UP-TO-DATE
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:packageDebugResources
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:generateSafeArgsDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+
+> Task :app:mergeDebugResources
+/Users/alexanderb/.gradle/caches/transforms-3/43e6f5a096a43d5dd2ae2c1d9b5856d8/transformed/material-1.8.0-alpha01/res/values/values.xml: Multiple substitutions specified in non-positional format of string resource string/error_failed_to_connect_to_broker. Did you mean to add the formatted="false" attribute?
+/Users/alexanderb/AndroidStudioProjects/MQTTHub/app/src/main/res/values/strings.xml: Multiple substitutions specified in non-positional format of string resource string/error_lost_connection_with_broker. Did you mean to add the formatted="false" attribute?
+
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:buildKotlinToolingMetadata
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:processDebugManifestForPackage
+> Task :app:dataBindingMergeDependencyArtifactsRelease
+> Task :app:generateReleaseResValues
+> Task :app:generateReleaseResources
+
+> Task :app:mergeReleaseResources
+/Users/alexanderb/.gradle/caches/transforms-3/43e6f5a096a43d5dd2ae2c1d9b5856d8/transformed/material-1.8.0-alpha01/res/values/values.xml:1015:4: Multiple substitutions specified in non-positional format of string resource string/error_failed_to_connect_to_broker. Did you mean to add the formatted="false" attribute?
+/Users/alexanderb/AndroidStudioProjects/MQTTHub/app/src/main/res/values/strings.xml:62:4: Multiple substitutions specified in non-positional format of string resource string/error_lost_connection_with_broker. Did you mean to add the formatted="false" attribute?
+
+> Task :app:processDebugResources
+> Task :app:packageReleaseResources
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+> Task :app:generateReleaseBuildConfig
+> Task :app:parseReleaseLocalResources
+> Task :app:generateSafeArgsRelease
+> Task :app:dataBindingGenBaseClassesRelease
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:checkReleaseAarMetadata
+> Task :app:extractDeepLinksRelease
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:desugarReleaseFileDependencies
+> Task :app:javaPreCompileRelease
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseArtProfile
+
+> Task :app:kaptGenerateStubsDebugKotlin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+'kapt.generateStubs' is not used by the 'kotlin-kapt' plugin
+
+> Task :app:kaptGenerateStubsDebugKotlin FAILED
+> Task :app:mergeExtDexRelease UP-TO-DATE
+> Task :app:processReleaseManifestForPackage
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+See https://docs.gradle.org/8.0/userguide/command_line_interface.html#sec:command_line_warnings
+56 actionable tasks: 31 executed, 25 up-to-date

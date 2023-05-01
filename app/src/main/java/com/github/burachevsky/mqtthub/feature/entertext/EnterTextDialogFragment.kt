@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.publishtext
+package com.github.burachevsky.mqtthub.feature.entertext
 
 import android.content.Context
 import android.os.Bundle
@@ -11,24 +11,24 @@ import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
-import com.github.burachevsky.mqtthub.databinding.DialogPublishTextBinding
+import com.github.burachevsky.mqtthub.databinding.FragmentEnterTextBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
 
-class PublishTextDialogFragment : BottomSheetDialogFragment(R.layout.dialog_publish_text),
-    ViewController<PublishTextViewModel> {
+class EnterTextDialogFragment : BottomSheetDialogFragment(R.layout.fragment_enter_text),
+    ViewController<EnterTextViewModel> {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory<PublishTextViewModel>
+    lateinit var viewModelFactory: ViewModelFactory<EnterTextViewModel>
 
-    override val binding by viewBinding(DialogPublishTextBinding::bind)
-    override val viewModel: PublishTextViewModel by viewModels { viewModelFactory }
+    override val binding by viewBinding(FragmentEnterTextBinding::bind)
+    override val viewModel: EnterTextViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        appComponent.publishTextComponent(PublishTextModule(this))
+        appComponent.enterTextComponent(EnterTextModule(this))
             .inject(this)
     }
 
@@ -36,7 +36,7 @@ class PublishTextDialogFragment : BottomSheetDialogFragment(R.layout.dialog_publ
         binding.editText.requestFocus()
         dialog?.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
 
-        binding.textInputLayout.hint = viewModel.tileName
+        binding.textInputLayout.hint = viewModel.title.get(requireContext())
 
         binding.textInputLayout.setEndIconOnClickListener { sendResult() }
         binding.editText.setOnEditorActionListener { _, actionId, _ ->

@@ -7,7 +7,7 @@ plugins {
 }
 
 kapt {
-    generateStubs = true
+    /*generateStubs = true*/
 }
 
 android {
@@ -115,7 +115,7 @@ dependencies {
     // Instrumentation tests
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.espresso.contrib)
-    androidTestImplementation(libs.junit.ext)
+    //androidTestImplementation(libs.junit.ext)
 
     // Local unit tests
     testImplementation(libs.junit)

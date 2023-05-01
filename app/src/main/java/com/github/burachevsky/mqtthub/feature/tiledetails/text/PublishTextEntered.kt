@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.publishtext
+package com.github.burachevsky.mqtthub.feature.tiledetails.text
 
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 

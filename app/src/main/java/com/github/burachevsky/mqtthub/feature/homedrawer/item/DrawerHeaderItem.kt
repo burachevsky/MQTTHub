@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.drawer.item
+package com.github.burachevsky.mqtthub.feature.homedrawer.item
 
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.recycler.ListItem

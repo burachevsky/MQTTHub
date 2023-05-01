@@ -33,4 +33,6 @@ object TileTypeId {
 object OptionMenuId {
     const val EXPORT = 5
     const val IMPORT = 6
+    const val DELETE = 7
+    const val EDIT_NAME = 8
 }

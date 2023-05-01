@@ -12,16 +12,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:paddingHorizontal="16dp"
-        android:paddingVertical="16dp"
-        app:endIconDrawable="@drawable/ic_send"
-        app:endIconMode="custom">
+        android:paddingVertical="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionSend"
-            android:inputType="text" />
+            android:inputType="textPersonName" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

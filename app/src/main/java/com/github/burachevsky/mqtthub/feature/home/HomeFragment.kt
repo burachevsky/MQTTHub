@@ -2,12 +2,14 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.constant.ContentType
 import com.github.burachevsky.mqtthub.common.container.DependableOnStatusBarHeight
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
@@ -41,12 +44,12 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import com.github.burachevsky.mqtthub.feature.home.drawer.HomeDrawerManager
+import com.github.burachevsky.mqtthub.feature.homedrawer.HomeDrawerViewModel
 import com.github.burachevsky.mqtthub.feature.home.item.*
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItemAdapter
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
@@ -69,7 +72,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override val container by viewContainer()
 
     @Inject
-    lateinit var drawerManager: HomeDrawerManager
+    lateinit var drawerManager: HomeDrawerViewModel
 
     private val tileItemListener = object : TileItem.Listener {
 
@@ -142,6 +145,16 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             }
         }
     }
+
+    private val fileExporter = registerForActivityResult(
+        ActivityResultContracts.CreateDocument(ContentType.JSON),
+        ::fileForExportSelected
+    )
+
+    private val fileImporter = registerForActivityResult(
+        ActivityResultContracts.GetContent(),
+        ::fileForImportSelected
+    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -237,6 +250,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         viewHolder.binding.tilePayload to "detailsPayloadName",
                     )
                 )
+            }
+
+            is ExportDashboard -> {
+                fileExporter.launch(effect.fileName)
+            }
+
+            is ImportDashboard -> {
+                fileImporter.launch(ContentType.JSON)
             }
         }
 
@@ -446,6 +467,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             binding.toolbar.inflateMenu(menuRes)
         }
+    }
+
+    private fun fileForExportSelected(uri: Uri?) {
+        uri?.let(viewModel::exportDashboardToFile)
+    }
+
+    private fun fileForImportSelected(uri: Uri?) {
+        uri?.let(viewModel::importDashboard)
     }
 
     private fun vibrateAsEditModeChanged() {

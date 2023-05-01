@@ -61,6 +61,7 @@ data class Tile(
 ) {
 
     @Ignore
+    @Transient
     var chartPayload: ChartPayload? = null
 
     init {
