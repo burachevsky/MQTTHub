@@ -4,7 +4,7 @@ import android.app.Activity
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.DialogFragment
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +16,7 @@ import com.github.burachevsky.mqtthub.common.event.*
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -35,7 +36,7 @@ class ViewContainer(
         cancelEffectCollection()
         initComponents()
         startEffectCollection()
-        fitStatusBarHeight()
+        fitSystemBars()
     }
 
     fun onStop() {
@@ -49,18 +50,21 @@ class ViewContainer(
         vmContainer = null
     }
 
-    override fun fitStatusBarHeight(statusBarHeight: Int) {
+    override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
         if (viewController is DependableOnStatusBarHeight) {
-            viewController.fitStatusBarHeight(statusBarHeight)
-        } else if (viewController is Fragment && viewController !is DialogFragment) {
-            viewController.binding.root.updateLayoutParams<MarginLayoutParams> {
-                topMargin = statusBarHeight
+            viewController.fitSystemBars(statusBarHeight, navigationBarHeight)
+        } else if (viewController is Fragment) {
+            if (viewController !is BottomSheetDialogFragment) {
+                viewController.binding.root.updateLayoutParams<MarginLayoutParams> {
+                    topMargin = statusBarHeight
+                }
             }
+            viewController.binding.root.updatePadding(bottom = navigationBarHeight)
         }
     }
 
-    private fun fitStatusBarHeight() {
-        AppActivity.statusBarHeight.let(::fitStatusBarHeight)
+    private fun fitSystemBars() {
+        fitSystemBars(AppActivity.statusBarHeight, AppActivity.navigationBarHeight)
     }
 
     private fun initComponents() {

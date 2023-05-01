@@ -16,4 +16,8 @@ interface DashboardRepository {
     suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles
 
     suspend fun getCurrentDashboardWithTiles(): DashboardWithTiles
+
+    suspend fun packDashboardForExport(id: Long): String
+
+    suspend fun importDashboardFromJson(json: String): Dashboard
 }

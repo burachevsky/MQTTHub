@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.burachevsky.mqtthub.R
@@ -28,20 +29,27 @@ import com.github.burachevsky.mqtthub.domain.connection.MqttMessageArrived
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetCurrentBroker
 import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentBroker
 import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentDashboard
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.DeleteDashboard
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ExportDashboardToFile
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentDashboardWithTiles
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboardWithTiles
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ImportDashboardFromFile
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
 import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.addtile.TileEdited
+import com.github.burachevsky.mqtthub.feature.dashboards.DashboardDeleted
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
-import com.github.burachevsky.mqtthub.feature.publishtext.PublishTextEntered
+import com.github.burachevsky.mqtthub.feature.homedrawer.DashboardImported
+import com.github.burachevsky.mqtthub.feature.entertext.TextEntered
 import com.github.burachevsky.mqtthub.feature.selector.ItemSelected
 import com.github.burachevsky.mqtthub.feature.selector.SelectorConfig
 import com.github.burachevsky.mqtthub.feature.selector.SelectorItem
+import com.github.burachevsky.mqtthub.feature.tiledetails.text.PublishTextEntered
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.eclipse.paho.client.mqttv3.*
@@ -57,6 +65,10 @@ class HomeViewModel @Inject constructor(
     private val getDashboardWithTiles: GetDashboardWithTiles,
     private val addTile: AddTile,
     private val getCurrentBroker: GetCurrentBroker,
+    private val exportDashboardToFile: ExportDashboardToFile,
+    private val importDashboardFromFile: ImportDashboardFromFile,
+    private val deleteDashboard: DeleteDashboard,
+    private val updateDashboard: UpdateDashboard,
     internal val eventBus: EventBus,
     internal val updateCurrentBroker: UpdateCurrentBroker,
     internal val updateCurrentDashboard: UpdateCurrentDashboard,
@@ -157,6 +169,8 @@ class HomeViewModel @Inject constructor(
             subscribe<DashboardChanged>(viewModelScope) {
                 changeDashboard(it.dashboard)
             }
+
+            subscribe(viewModelScope, ::textEntered)
         }
 
         mqttEventBus.apply {
@@ -245,6 +259,16 @@ class HomeViewModel @Inject constructor(
                             text = Txt.of(R.string.import_dashboard),
                             icon = R.drawable.ic_import
                         ),
+                        SelectorItem(
+                            id = OptionMenuId.EDIT_NAME,
+                            text = Txt.of(R.string.change_dashboard_name),
+                            icon = R.drawable.ic_edit
+                        ),
+                        SelectorItem(
+                            id = OptionMenuId.DELETE,
+                            text = Txt.of(R.string.delete_dashboard),
+                            icon = R.drawable.ic_delete
+                        ),
                     )
                 )
             )
@@ -260,7 +284,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun canMoveItem(): Boolean {
-        return editMode.value.isEditMode && editMode.value.canMoveItem// && itemReleased
+        return editMode.value.isEditMode && editMode.value.canMoveItem
     }
 
     fun editTileClicked() {
@@ -365,6 +389,23 @@ class HomeViewModel @Inject constructor(
 
     fun editModeClicked() {
         showEditMode(!_editMode.value.isEditMode)
+    }
+
+    fun exportDashboardToFile(uri: Uri) {
+        container.launch(Dispatchers.IO) {
+            dashboard?.id?.let { dashboardId ->
+                exportDashboardToFile(dashboardId, uri)
+                toast(R.string.dashboard_exported_successfully)
+            }
+        }
+    }
+
+    fun importDashboard(uri: Uri) {
+        container.launch(Dispatchers.IO) {
+            val importedDashboard = importDashboardFromFile(uri)
+            eventBus.send(DashboardImported(importedDashboard))
+            toast(R.string.dashboard_imported_successfully)
+        }
     }
 
     private fun showEditMode(value: Boolean, selectedPosition: Int = -1) {
@@ -580,13 +621,58 @@ class HomeViewModel @Inject constructor(
                     navigateAddSlider(dashboardId, dashboardPosition = items.value.size)
                 }
 
-                OptionMenuId.EXPORT -> container.navigator {
-
-                }
+                OptionMenuId.EXPORT -> exportDashboardClicked()
 
                 OptionMenuId.IMPORT -> container.navigator {
-
+                    container.raiseEffect(ImportDashboard)
                 }
+
+                OptionMenuId.DELETE -> container.raiseEffect {
+                    AlertDialog(
+                        title = Txt.of(R.string.remove_dashboard_title),
+                        message = Txt.of(R.string.remove_dashboard_dialog_message),
+                        yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
+                            container.launch(Dispatchers.Default) {
+                                dashboard?.id?.let { dashboardId ->
+                                    deleteDashboard(dashboardId)
+                                    eventBus.send(DashboardDeleted(dashboardId))
+                                    toast(R.string.dashboard_deleted)
+                                }
+                            }
+                        },
+                        no = AlertDialog.Button(Txt.of(R.string.remove_dashboard_export_button)) {
+                            exportDashboardClicked()
+                        },
+                        cancel = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
+                    )
+                }
+
+                OptionMenuId.EDIT_NAME -> container.navigator {
+                    navigateEnterText(
+                        actionId = OptionMenuId.EDIT_NAME,
+                        title = Txt.of(R.string.dashboard_name)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun textEntered(event: TextEntered) {
+        when (event.actionId) {
+            OptionMenuId.EDIT_NAME -> container.launch(Dispatchers.Default) {
+                dashboard?.copy(name = event.text)?.let { updatedDashboard ->
+                    updateDashboard(updatedDashboard)
+                    eventBus.send(DashboardEdited(updatedDashboard))
+                    toast(R.string.dashboard_name_changed)
+                }
+            }
+        }
+    }
+
+    private fun exportDashboardClicked() {
+        dashboard?.name?.let { dashboardName ->
+            container.raiseEffect {
+                ExportDashboard("$dashboardName.json")
             }
         }
     }
@@ -617,6 +703,14 @@ class HomeViewModel @Inject constructor(
     private fun tileEdited(tile: Tile) {
         val i = _items.value.indexOfFirst { it is TileItem && it.tile.id == tile.id }
         val oldItem = items.get<TileItem>(i)
+
+        _editMode.update {  editModeS ->
+            editModeS.copy(
+                selectedTiles = editModeS.selectedTiles
+                    .map { if (it.id == tile.id) tile else it }
+                    .toHashSet()
+            )
+        }
 
         _items.update {
             it.toMutableList().apply {

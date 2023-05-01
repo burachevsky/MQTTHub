@@ -6,6 +6,8 @@ import com.github.burachevsky.mqtthub.data.repository.CurrentIdsRepository
 import com.github.burachevsky.mqtthub.data.repository.CurrentIdsRepositoryImpl
 import com.github.burachevsky.mqtthub.data.repository.DashboardRepository
 import com.github.burachevsky.mqtthub.data.repository.DashboardRepositoryImpl
+import com.github.burachevsky.mqtthub.data.repository.FileRepository
+import com.github.burachevsky.mqtthub.data.repository.FileRepositoryImpl
 import com.github.burachevsky.mqtthub.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.data.repository.TileRepositoryImpl
 import com.github.burachevsky.mqtthub.data.settings.Settings
@@ -35,4 +37,7 @@ abstract class LocalDataModule {
 
     @Binds
     abstract fun bindSettings(impl: SettingsImpl): Settings
+
+    @Binds
+    abstract fun bindFileRepository(impl: FileRepositoryImpl): FileRepository
 }

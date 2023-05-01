@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.drawer.item
+package com.github.burachevsky.mqtthub.feature.homedrawer.item
 
 import android.content.res.ColorStateList
 import android.view.View

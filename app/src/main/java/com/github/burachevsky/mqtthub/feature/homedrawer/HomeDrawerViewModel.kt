@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.feature.home.drawer
+package com.github.burachevsky.mqtthub.feature.homedrawer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,16 +26,16 @@ import com.github.burachevsky.mqtthub.feature.home.BrokerChanged
 import com.github.burachevsky.mqtthub.feature.home.CloseHomeDrawer
 import com.github.burachevsky.mqtthub.feature.home.DashboardChanged
 import com.github.burachevsky.mqtthub.feature.home.HomeNavigator
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerHeaderItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerHeaderItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-class HomeDrawerManager @Inject constructor(
+class HomeDrawerViewModel @Inject constructor(
     val container: ViewModelContainer<HomeNavigator>,
     private val eventBus: EventBus,
     private val getBrokers: GetBrokers,
@@ -70,6 +70,10 @@ class HomeDrawerManager @Inject constructor(
 
             subscribe<DashboardDeleted>(viewModelScope) {
                 deleteDashboardFromList(it.dashboardId)
+            }
+
+            subscribe<DashboardImported>(viewModelScope) {
+                addAndSwitchDashboard(it.dashboard)
             }
         }
     }
@@ -265,6 +269,21 @@ class HomeDrawerManager @Inject constructor(
                     (items.get<DrawerMenuItem>(position).type as DrawerMenuItem.Type.Dashboard)
                         .dashboard
                 )
+            }
+        }
+    }
+
+    private fun addAndSwitchDashboard(dashboard: Dashboard) {
+        container.launch(Dispatchers.Default) {
+            addDashboardToList(dashboard)
+            val position = items.value.indexOfFirst {
+                it is DrawerMenuItem &&
+                        it.type is DrawerMenuItem.Type.Dashboard &&
+                        it.type.dashboard.id == dashboard.id
+            }
+
+            if (position >= 0) {
+                dashboardClicked(position, dashboard)
             }
         }
     }

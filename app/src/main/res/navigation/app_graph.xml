@@ -12,8 +12,8 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/navigatePublishText"
-            app:destination="@id/publish_text" />
+            android:id="@+id/navigateEnterText"
+            app:destination="@id/enter_text" />
 
         <action
             android:id="@+id/navigateTextTileDetails"
@@ -129,7 +129,7 @@
 
     <include app:graph="@navigation/selector" />
     <include app:graph="@navigation/settings" />
-    <include app:graph="@navigation/publish_text" />
+    <include app:graph="@navigation/enter_text" />
     <include app:graph="@navigation/dashboards" />
     <include app:graph="@navigation/text_tile_details" />
     <include app:graph="@navigation/brokers" />

@@ -54,7 +54,7 @@
         android:id="@+id/textInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface_container_low"
+        android:background="@color/md_theme_light_surface_container_low"
         android:visibility="gone"
         app:boxBackgroundMode="none"
         app:endIconDrawable="@drawable/ic_send"

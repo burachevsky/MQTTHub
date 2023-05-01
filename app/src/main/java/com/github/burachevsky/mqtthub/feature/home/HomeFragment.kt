@@ -2,12 +2,14 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.constant.ContentType
 import com.github.burachevsky.mqtthub.common.container.DependableOnStatusBarHeight
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
@@ -34,17 +37,19 @@ import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.changeBackgroundColor
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
+import com.github.burachevsky.mqtthub.common.ext.getNavigationBarHeightFromSystemAttribute
+import com.github.burachevsky.mqtthub.common.ext.getStatusBarHeightFromSystemAttribute
 import com.github.burachevsky.mqtthub.common.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import com.github.burachevsky.mqtthub.feature.home.drawer.HomeDrawerManager
+import com.github.burachevsky.mqtthub.feature.homedrawer.HomeDrawerViewModel
 import com.github.burachevsky.mqtthub.feature.home.item.*
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItemAdapter
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
@@ -67,7 +72,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override val container by viewContainer()
 
     @Inject
-    lateinit var drawerManager: HomeDrawerManager
+    lateinit var drawerManager: HomeDrawerViewModel
 
     private val tileItemListener = object : TileItem.Listener {
 
@@ -141,20 +146,36 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         }
     }
 
+    private val fileExporter = registerForActivityResult(
+        ActivityResultContracts.CreateDocument(ContentType.JSON),
+        ::fileForExportSelected
+    )
+
+    private val fileImporter = registerForActivityResult(
+        ActivityResultContracts.GetContent(),
+        ::fileForImportSelected
+    )
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appComponent.homeComponent(HomeModule(this))
             .inject(this)
     }
 
-    @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setOnApplyWindowInsetsListener { v, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                fitStatusBarHeight(statusBarInsets.top)
+                val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                fitSystemBars(statusBarInsets.top, navigationBarInsets.bottom)
             } else {
-                fitStatusBarHeight(insets.systemWindowInsetTop)
+                val navigationBarHeight = requireContext()
+                    .getNavigationBarHeightFromSystemAttribute()
+
+                val statusBarHeight = requireContext()
+                    .getStatusBarHeightFromSystemAttribute()
+
+                fitSystemBars(statusBarHeight, navigationBarHeight)
             }
 
             insets
@@ -172,14 +193,12 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     }
 
-    override fun fitStatusBarHeight(statusBarHeight: Int) {
+    override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
         AppActivity.statusBarHeight = statusBarHeight
-        binding.drawerRecyclerView.updatePadding(
-            top = statusBarHeight
-        )
-        binding.toolbarLayout.updatePadding(
-            top = statusBarHeight
-        )
+        AppActivity.navigationBarHeight = navigationBarHeight
+        binding.drawerRecyclerView.updatePadding(top = statusBarHeight)
+        binding.toolbarLayout.updatePadding(top = statusBarHeight)
+        binding.bottomAppBar.updatePadding(bottom = navigationBarHeight)
     }
 
     override fun onStart() {
@@ -190,7 +209,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     override fun onResume() {
         super.onResume()
         backPressedCallback.isEnabled = true
-        binding.bottomAppBar.isVisible = !viewModel.editMode.value.isEditMode
+        binding.bottomAppBar.isVisible = !viewModel.editMode.value.isEditMode &&
+                !viewModel.noBrokersYet.value
     }
 
     override fun onPause() {
@@ -230,6 +250,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         viewHolder.binding.tilePayload to "detailsPayloadName",
                     )
                 )
+            }
+
+            is ExportDashboard -> {
+                fileExporter.launch(effect.fileName)
+            }
+
+            is ImportDashboard -> {
+                fileImporter.launch(ContentType.JSON)
             }
         }
 
@@ -439,6 +467,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             binding.toolbar.inflateMenu(menuRes)
         }
+    }
+
+    private fun fileForExportSelected(uri: Uri?) {
+        uri?.let(viewModel::exportDashboardToFile)
+    }
+
+    private fun fileForImportSelected(uri: Uri?) {
+        uri?.let(viewModel::importDashboard)
     }
 
     private fun vibrateAsEditModeChanged() {

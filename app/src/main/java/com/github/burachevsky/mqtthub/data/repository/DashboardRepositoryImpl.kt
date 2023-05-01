@@ -3,15 +3,18 @@ package com.github.burachevsky.mqtthub.data.repository
 import android.content.Context
 import androidx.room.Transaction
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.data.Converters
 import com.github.burachevsky.mqtthub.data.dao.DashboardDao
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.DashboardWithTiles
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class DashboardRepositoryImpl @Inject constructor(
     private val dashboardDao: DashboardDao,
     private val applicationContext: Context,
     private val currentIdsRepository: CurrentIdsRepository,
+    private val tileRepository: TileRepository,
 ): DashboardRepository {
 
     override suspend fun insertDashboard(dashboard: Dashboard): Dashboard {
@@ -56,5 +59,31 @@ class DashboardRepositoryImpl @Inject constructor(
         }
 
         return getDashboardWithTiles(currentDashboardId)
+    }
+
+    override suspend fun packDashboardForExport(id: Long): String {
+        val dashboardWithTiles = getDashboardWithTiles(id).run {
+            copy(
+                dashboard = dashboard.copy(id = 0),
+                tiles = tiles.map {
+                    it.copy(id = 0, dashboardId = 0, payload = "")
+                }
+            )
+        }
+
+        return Gson().toJson(dashboardWithTiles)
+    }
+
+    @Transaction
+    override suspend fun importDashboardFromJson(json: String): Dashboard {
+        val importedDashboardWithTiles = Converters.fromJson<DashboardWithTiles>(json)
+
+        val dashboard = insertDashboard(importedDashboardWithTiles.dashboard)
+
+        importedDashboardWithTiles.tiles.forEach { tile ->
+            tileRepository.insertTile(tile.copy(dashboardId = dashboard.id))
+        }
+
+        return dashboard
     }
 }

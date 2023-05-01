@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/enter_text"
+    app:startDestination="@id/enterTextDialogFragment">
+
+    <dialog
+        android:id="@+id/enterTextDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.entertext.EnterTextDialogFragment"
+        android:label="EnterTextDialogFragment"
+        tools:layout="@layout/fragment_enter_text">
+
+        <argument
+            android:name="actionId"
+            app:argType="integer" />
+
+        <argument
+            android:name="title"
+            app:argType="com.github.burachevsky.mqtthub.common.text.ParcelableTxt"/>
+
+    </dialog>
+
+</navigation>

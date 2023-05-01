@@ -120,6 +120,8 @@ class ChartTileItemViewHolder(
     private fun bindTilePayload(item: ChartTileItem) {
         val payload = item.tile.chartPayload ?: return
 
+        binding.yAxisTitle.text = payload.yTitle
+
         val entries = payload.data.mapIndexed { i, it ->
             Entry(i.toFloat(), it.y)
         }

@@ -58,8 +58,11 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="duplicate">Duplicate</string>
+    <string name="change_dashboard_name">Change dashboard name</string>
+    <string name="dashboard_name">Dashboard name</string>
     <string name="import_dashboard">Import dashboard</string>
     <string name="export_dashboard">Export dashboard</string>
+    <string name="delete_dashboard">Delete dashboard</string>
 
     <string name="add_tile">Add tile</string>
     <string name="tile_type_text">Text</string>
@@ -94,7 +97,7 @@
     <string name="qos_1">1</string>
     <string name="qos_2">2</string>
 
-    <string name="toast_tile_duplicated">Tile added to the end of dashboard</string>
+    <string name="toast_tile_duplicated">Tile added to the end of the dashboard</string>
     <string name="toast_tiles_duplicated">Tiles added to the end of the dashboard</string>
     <string name="toast_changes_saved">Changes saved</string>
 
@@ -122,5 +125,15 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
+
+    <string name="dashboard_exported_successfully">Dashboard exported successfully</string>
+    <string name="dashboard_imported_successfully">Dashboard imported successfully</string>
+    <string name="dashboard_deleted">Dashboard deleted</string>
+
+    <string name="remove_dashboard_title">Delete dashboard?</string>
+    <string name="remove_dashboard_dialog_message">This action cannot be undone.\n\nExport the dashboard before deleting if you want to restore it later.</string>
+    <string name="remove_dashboard_export_button">Export</string>
+
+    <string name="dashboard_name_changed">Dashboard name changed</string>
 
 </resources>
