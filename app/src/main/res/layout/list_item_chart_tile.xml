@@ -23,16 +23,34 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Tile name" />
 
+    <com.github.rongi.rotate_layout.layout.RotateLayout
+        android:id="@+id/yAxisTitleLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:angle="90"
+        android:layout_marginStart="4dp">
+
+        <TextView
+            android:id="@+id/yAxisTitle"
+            style="@style/TextAppearance.MQTTHub.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="123"
+            android:gravity="center"/>
+
+    </com.github.rongi.rotate_layout.layout.RotateLayout>
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/yAxisTitleLayout"
         app:layout_constraintTop_toBottomOf="@id/tileName" />
 
     <View
