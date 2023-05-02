@@ -137,7 +137,7 @@ class AddSliderTileViewModel@Inject constructor(
                 Tile.State(SLIDER_MAX, maxValue.text),
                 Tile.State(SLIDER_STEP, step.text)
             ),
-            dashboardPosition = oldTile?.dashboardPosition ?: dashboardPosition,
+            dashboardPosition = dashboardPosition,
             design = Tile.Design(
                 styleId = style.selectedValue,
                 isFullSpan = width.isChecked,

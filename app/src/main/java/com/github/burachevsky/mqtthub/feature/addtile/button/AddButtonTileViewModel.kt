@@ -71,21 +71,7 @@ class AddButtonTileViewModel @Inject constructor(
     }
 
     override fun collectTile(): Tile {
-        return oldTile?.copy(
-            name = name.text,
-            subscribeTopic = "",
-            publishTopic = publishTopic.text,
-            payload = payload.text,
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.BUTTON,
-            stateList = emptyList(),
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                isFullSpan = width.isChecked,
-            ),
-        ) ?: Tile(
+        return (oldTile ?: Tile()).copy(
             name = name.text,
             subscribeTopic = "",
             publishTopic = publishTopic.text,

@@ -1,8 +1,10 @@
 package com.github.burachevsky.mqtthub.feature.entertext
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
@@ -30,6 +32,15 @@ class EnterTextDialogFragment : BottomSheetDialogFragment(R.layout.fragment_ente
         super.onAttach(context)
         appComponent.enterTextComponent(EnterTextModule(this))
             .inject(this)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).apply {
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

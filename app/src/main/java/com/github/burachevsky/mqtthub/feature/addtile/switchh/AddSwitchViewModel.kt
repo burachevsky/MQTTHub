@@ -114,23 +114,7 @@ class AddSwitchViewModel @Inject constructor(
     }
 
     override fun collectTile(): Tile {
-        return oldTile?.copy(
-            name = name.text,
-            subscribeTopic = subscribeTopic.text,
-            publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.SWITCH,
-            stateList = listOf(
-                Tile.State(SWITCH_ON, onState.text),
-                Tile.State(SWITCH_OFF, offState.text)
-            ),
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                isFullSpan = width.isChecked,
-            ),
-        ) ?: Tile(
+        return (oldTile ?: Tile()).copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",

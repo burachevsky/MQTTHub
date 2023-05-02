@@ -99,32 +99,20 @@ class AddTextTileViewModel @Inject constructor(
         publishTopic.text = tile.publishTopic
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
+        notifyPayloadUpdate.isChecked = tile.notifyPayloadUpdate
         size.selectedValue = tile.design.sizeId
         style.selectedValue = tile.design.styleId
         width.isChecked = tile.design.isFullSpan
     }
 
     override fun collectTile(): Tile {
-        return oldTile?.copy(
+        return (oldTile ?: Tile()).copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
             publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
             qos = qos.selectedValue,
             retained = retain.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.TEXT,
-            stateList = emptyList(),
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                sizeId = size.selectedValue,
-                isFullSpan = width.isChecked,
-            ),
-        ) ?: Tile(
-            name = name.text,
-            subscribeTopic = subscribeTopic.text,
-            publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
+            notifyPayloadUpdate = notifyPayloadUpdate.isChecked,
             dashboardId = dashboardId,
             type = Tile.Type.TEXT,
             stateList = emptyList(),
@@ -145,6 +133,7 @@ class AddTextTileViewModel @Inject constructor(
             enablePublishing,
             qos,
             retain,
+            notifyPayloadUpdate,
             size,
             width,
             style,

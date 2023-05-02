@@ -74,22 +74,9 @@ class AddChartTileViewModel@Inject constructor(
     }
 
     override fun collectTile(): Tile {
-        return oldTile?.copy(
+        return (oldTile ?: Tile()).copy(
             name = name.text,
             subscribeTopic = subscribeTopic.text,
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.CHART,
-            stateList = emptyList(),
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                isFullSpan = true,
-            ),
-        ) ?: Tile(
-            name = name.text,
-            subscribeTopic = subscribeTopic.text,
-            publishTopic = "",
             qos = qos.selectedValue,
             retained = retain.isChecked,
             dashboardId = dashboardId,

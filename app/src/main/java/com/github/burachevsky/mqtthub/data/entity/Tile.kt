@@ -47,6 +47,9 @@ data class Tile(
     @ColumnInfo(name = "last_payload")
     val payload: String = "",
 
+    @ColumnInfo(name = "notify_payload_update")
+    val notifyPayloadUpdate: Boolean = false,
+
     @ColumnInfo(name = "state_list")
     val stateList: List<State> = listOf(),
 

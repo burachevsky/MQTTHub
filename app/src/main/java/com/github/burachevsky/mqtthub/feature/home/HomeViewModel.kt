@@ -8,6 +8,7 @@ import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.event.AlertDialog
+import com.github.burachevsky.mqtthub.common.event.NotifyPayloadUpdate
 import com.github.burachevsky.mqtthub.common.event.ToastMessage
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
@@ -53,6 +54,7 @@ import com.github.burachevsky.mqtthub.feature.tiledetails.text.PublishTextEntere
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.eclipse.paho.client.mqttv3.*
+import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Named
@@ -402,9 +404,14 @@ class HomeViewModel @Inject constructor(
 
     fun importDashboard(uri: Uri) {
         container.launch(Dispatchers.IO) {
-            val importedDashboard = importDashboardFromFile(uri)
-            eventBus.send(DashboardImported(importedDashboard))
-            toast(R.string.dashboard_imported_successfully)
+            try {
+                val importedDashboard = importDashboardFromFile(uri)
+                eventBus.send(DashboardImported(importedDashboard))
+                toast(R.string.dashboard_imported_successfully)
+            } catch (e: Exception) {
+                Timber.e(e)
+                toast(R.string.failed_to_import_dashboard)
+            }
         }
     }
 
@@ -757,11 +764,23 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun updatePayload(topic: String, payload: String) {
-        _items.update { item ->
-            item.map {
-                if (it is TileItem && it.tile.subscribeTopic == topic) {
-                    it.copyTile(it.tile.copy(payload = payload).initPayload())
-                } else it
+        _items.update { items ->
+            items.map { item ->
+                if (item is TileItem && item.tile.subscribeTopic == topic) {
+                    item.copyTile(
+                        item.tile.copy(payload = payload).initPayload()
+                            .also { updatedTile ->
+                                if (
+                                    updatedTile.notifyPayloadUpdate &&
+                                    item.tile.payload != payload
+                                ) {
+                                    container.raiseEffect {
+                                        NotifyPayloadUpdate(updatedTile)
+                                    }
+                                }
+                            }
+                    )
+                } else item
             }
         }
     }

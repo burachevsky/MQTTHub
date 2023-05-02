@@ -2,8 +2,12 @@ package com.github.burachevsky.mqtthub.feature.addtile
 
 import androidx.lifecycle.ViewModel
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.viewModelContainer
+import com.github.burachevsky.mqtthub.common.event.AlertDialog
+import com.github.burachevsky.mqtthub.common.event.RequestNotificationsPermissionIfNeeded
+import com.github.burachevsky.mqtthub.common.event.GoToNotificationSettings
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.toast
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
@@ -16,6 +20,7 @@ import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -34,11 +39,11 @@ abstract class AddTileViewModel (
 
     override val container = viewModelContainer()
 
-    protected val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
+    private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items
 
-    protected val _itemsChanged = MutableSharedFlow<Unit>()
-    val itemsChanged: SharedFlow<Unit> = _itemsChanged
+    private val _itemChanged = MutableSharedFlow<Int>()
+    val itemChanged: SharedFlow<Int> = _itemChanged
 
     protected var oldTile: Tile? = null
 
@@ -77,6 +82,22 @@ abstract class AddTileViewModel (
             ),
         ),
         selectedValue = QosId.Qos0
+    )
+
+    private var goneToSettingsToAllowNotifications = false
+    private var notificationsPermissionAlreadyRequested = false
+    protected val notifyPayloadUpdate = SwitchItem(
+        text = Txt.of(R.string.notify_payload_update),
+        onCheckChanged = { isChecked ->
+            if (isChecked) {
+                if (!notificationsPermissionAlreadyRequested) {
+                    notificationsPermissionAlreadyRequested = true
+                    container.raiseEffect(RequestNotificationsPermissionIfNeeded)
+                } else {
+                    container.raiseEffect(CheckForNotificationsPermission)
+                }
+            }
+        }
     )
 
     protected val save = ButtonItem(Txt.of(R.string.save))
@@ -118,6 +139,43 @@ abstract class AddTileViewModel (
 
             container.navigator {
                 back()
+            }
+        }
+    }
+
+    fun onNotificationPermissionResult(isGranted: Boolean) {
+        if (!isGranted) {
+            container.launch(Dispatchers.Main) {
+                notifyPayloadUpdate.isChecked = false
+
+                delay(Anim.MEDIUM_DURATION)
+                _itemChanged.emit(items.value.indexOf(notifyPayloadUpdate))
+
+                delay(Anim.DEFAULT_DURATION)
+                container.raiseEffect {
+                    AlertDialog(
+                        title = Txt.of(R.string.notification_required_dialog_title),
+                        message = Txt.of(R.string.notification_required_dialog_message),
+                        yes = AlertDialog.Button(
+                            text = Txt.of(R.string.notification_required_dialog_settings_button),
+                            action = {
+                                goneToSettingsToAllowNotifications = true
+                                container.raiseEffect(GoToNotificationSettings)
+                            }
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    fun notificationPermissionWhenResumed(isGranted: Boolean) {
+        if (goneToSettingsToAllowNotifications) {
+            goneToSettingsToAllowNotifications = false
+
+            notifyPayloadUpdate.isChecked = isGranted
+            container.launch(Dispatchers.Main) {
+                _itemChanged.emit(items.value.indexOf(notifyPayloadUpdate))
             }
         }
     }

@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.common.event
 
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
 import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 
 data class ToastMessage(
@@ -28,3 +29,9 @@ data class AlertDialog(
 }
 
 object SwitchTheme : AppEvent
+
+object RequestNotificationsPermissionIfNeeded : AppEvent
+
+object GoToNotificationSettings : AppEvent
+
+data class NotifyPayloadUpdate(val tile: Tile) : AppEvent

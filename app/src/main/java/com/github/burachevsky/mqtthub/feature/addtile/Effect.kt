@@ -10,3 +10,5 @@ data class TileAdded(
 data class TileEdited(
     val tile: Tile
 ) : AppEvent
+
+object CheckForNotificationsPermission : AppEvent
