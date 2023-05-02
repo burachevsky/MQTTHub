@@ -87,9 +87,13 @@ class HomeNavigator(navController: NavController) : Navigator(navController) {
         ).toBundle()
     )
 
-    fun navigateEnterText(actionId: Int, title: ParcelableTxt) = navController.navigate(
+    fun navigateEnterText(
+        actionId: Int,
+        title: ParcelableTxt,
+        initText: ParcelableTxt
+    ) = navController.navigate(
         R.id.navigateEnterText,
-        EnterTextDialogFragmentArgs(actionId, title).toBundle()
+        EnterTextDialogFragmentArgs(actionId, title, initText).toBundle()
     )
 
     fun navigateAddBroker() = navController.navigate(R.id.navigateAddBroker)

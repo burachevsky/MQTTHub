@@ -3,8 +3,10 @@ package com.github.burachevsky.mqtthub.data
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-val MIGRATION_6_7 = object : Migration(6, 7) {
+val MIGRATION_11_12 = object : Migration(11, 12) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("ALTER TABLE tiles ADD COLUMN dashboard_position INTEGER")
+        database.execSQL(
+            "ALTER TABLE tiles ADD COLUMN notify_payload_update INTEGER DEFAULT 0 NOT NULL"
+        )
     }
 }

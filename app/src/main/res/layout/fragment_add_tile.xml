@@ -13,11 +13,19 @@
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_arrow_back" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/list_item_input_field" />
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/recyclerViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/list_item_input_field"
+            android:nestedScrollingEnabled="true"/>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

@@ -16,7 +16,7 @@ class EnterTextViewModel @Inject constructor(
     override val container = viewModelContainer()
 
     val title = args.title
-
+    val initText = args.initText
     private val actionId = args.actionId
 
     fun sendResult(text: String) {

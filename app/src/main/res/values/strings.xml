@@ -1,7 +1,12 @@
+<!DOCTYPE resources [
+    <!ENTITY appname "MQTT Hub">
+]>
 <resources>
-    <string name="app_name">MQTT Hub</string>
+    <string name="app_name">&appname;</string>
 
     <string name="default_dashboard_name">Dashboard</string>
+
+    <string name="cancel">Cancel</string>
 
     <string name="home_brokers">Brokers</string>
     <string name="home_edit_brokers">Edit brokers</string>
@@ -128,6 +133,7 @@
 
     <string name="dashboard_exported_successfully">Dashboard exported successfully</string>
     <string name="dashboard_imported_successfully">Dashboard imported successfully</string>
+    <string name="failed_to_import_dashboard">The file is corrupt and cannot be opened</string>
     <string name="dashboard_deleted">Dashboard deleted</string>
 
     <string name="remove_dashboard_title">Delete dashboard?</string>
@@ -135,5 +141,12 @@
     <string name="remove_dashboard_export_button">Export</string>
 
     <string name="dashboard_name_changed">Dashboard name changed</string>
+
+    <string name="notify_payload_update">Notify payload changes</string>
+    <string name="notification_channel_name_payload_updates">Payload updates</string>
+
+    <string name="notification_required_dialog_title">Notifications permission is required to use this feature</string>
+    <string name="notification_required_dialog_message">To be notified about payload updates you have to allow the app to use notifications.\n\nConsider enabling notifications for &appname; manually in settings.</string>
+    <string name="notification_required_dialog_settings_button">Go to notification settings</string>
 
 </resources>

@@ -12,7 +12,7 @@ import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.Tile
 
 @Database(
-    version = 11,
+    version = 12,
     entities = [
         Broker::class,
         Tile::class,
@@ -42,8 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context): AppDatabase {
             return Room
                 .databaseBuilder(context, AppDatabase::class.java, APP_DB_NAME)
-                .addMigrations(MIGRATION_6_7)
-                .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_11_12)
                 .build()
         }
     }

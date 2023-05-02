@@ -3,25 +3,27 @@ package com.github.burachevsky.mqtthub.feature.tiledetails.text
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.R
+import com.github.burachevsky.mqtthub.common.container.DependentOnStatusBarHeight
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.common.ext.appComponent
 import com.github.burachevsky.mqtthub.common.ext.collectOnStarted
-import com.github.burachevsky.mqtthub.common.ext.setFocus
-import com.github.burachevsky.mqtthub.common.ext.setOnEnterListener
 import com.github.burachevsky.mqtthub.databinding.FragmentTextTileDetailsBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.google.android.material.elevation.SurfaceColors
 import javax.inject.Inject
 
 class TextTileDetailsFragment : Fragment(R.layout.fragment_text_tile_details),
-    ViewController<TextTileDetailsViewModel> {
+    ViewController<TextTileDetailsViewModel>, DependentOnStatusBarHeight {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<TextTileDetailsViewModel>
@@ -48,32 +50,32 @@ class TextTileDetailsFragment : Fragment(R.layout.fragment_text_tile_details),
             findNavController().navigateUp()
         }
 
-        binding.editText.setOnEnterListener(::publishText)
-        binding.textInputLayout.setEndIconOnClickListener { publishText() }
-
-        binding.tileName.setOnClickListener {
-            binding.editText.setFocus(false)
-        }
-
-        binding.tilePayload.setOnClickListener {
-            binding.editText.setFocus(false)
-        }
-
         collectOnStarted(viewModel.tileName) {
             binding.tileName.text = it
             startPostponedEnterTransition()
         }
         collectOnStarted(viewModel.tilePayload, binding.tilePayload::setText)
 
-        collectOnStarted(viewModel.isSendEnabled) { isSendEnabled ->
-            binding.textInputLayout.isVisible = isSendEnabled
-            binding.editText.setFocus(isSendEnabled)
+        binding.inputTextButton.setOnClickListener {
+            viewModel.publishTextClicked()
         }
+
+        collectOnStarted(viewModel.isSendEnabled) { isSendEnabled ->
+            binding.inputTextButton.isVisible = isSendEnabled
+        }
+
+        binding.inputTextButton.setBackgroundColor(
+            SurfaceColors.SURFACE_2.getColor(requireContext())
+        )
     }
 
-    private fun publishText() {
-        viewModel.enterPublishText(binding.editText.text.toString())
-        binding.editText.setText("")
+    override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
+        binding.tileDetails.updateLayoutParams<MarginLayoutParams> {
+            topMargin = statusBarHeight
+        }
+        binding.inputTextButton.updateLayoutParams<MarginLayoutParams> {
+            bottomMargin = navigationBarHeight
+        }
     }
 
     private fun prepareTransitions() {

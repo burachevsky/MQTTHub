@@ -1,6 +1,9 @@
 package com.github.burachevsky.mqtthub.common.container
 
 import android.app.Activity
+import android.content.Intent
+import android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+import android.provider.Settings.EXTRA_APP_PACKAGE
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.core.view.updateLayoutParams
@@ -14,6 +17,7 @@ import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.event.*
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
+import com.github.burachevsky.mqtthub.common.notification.notifyPayloadUpdate
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -24,7 +28,7 @@ import kotlinx.coroutines.launch
 class ViewContainer(
     private val viewController: ViewController<*>,
     private val navigatorFactory: NavigatorFactory,
-) : LifecycleOwner by viewController, DependableOnStatusBarHeight {
+) : LifecycleOwner by viewController, DependentOnStatusBarHeight {
 
     private var vmContainer: ViewModelContainer<*>? = null
     private var activity: Activity? = null
@@ -51,7 +55,7 @@ class ViewContainer(
     }
 
     override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
-        if (viewController is DependableOnStatusBarHeight) {
+        if (viewController is DependentOnStatusBarHeight) {
             viewController.fitSystemBars(statusBarHeight, navigationBarHeight)
         } else if (viewController is Fragment) {
             if (viewController !is BottomSheetDialogFragment) {
@@ -137,6 +141,18 @@ class ViewContainer(
                     .create()
                     .show()
             }
+
+            GoToNotificationSettings -> withActivity {
+                startActivity(
+                    Intent(ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(EXTRA_APP_PACKAGE, packageName)
+                    }
+                )
+            }
+
+            is NotifyPayloadUpdate -> withActivity {
+                notifyPayloadUpdate(effect.tile)
+            }
         }
     }
 
@@ -149,5 +165,9 @@ class ViewContainer(
     private fun cancelEffectCollection() {
         effectCollectionJob?.cancel()
         effectCollectionJob = null
+    }
+
+    private inline fun withActivity(block: Activity.() -> Unit) {
+        activity?.block()
     }
 }

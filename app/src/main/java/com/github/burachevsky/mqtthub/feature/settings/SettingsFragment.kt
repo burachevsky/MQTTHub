@@ -29,7 +29,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
     lateinit var viewModelFactory: ViewModelFactory<SettingsViewModel>
 
     override val binding by viewBinding(FragmentSettingsBinding::bind)
-    override val viewModel by viewModels<SettingsViewModel> { viewModelFactory }
+    override val viewModel: SettingsViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
     private val listAdapter = CompositeAdapter(
