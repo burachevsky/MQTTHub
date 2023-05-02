@@ -43,6 +43,7 @@ import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.addtile.TileEdited
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardDeleted
+import com.github.burachevsky.mqtthub.feature.entertext.EnterTextActionId
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
 import com.github.burachevsky.mqtthub.feature.homedrawer.DashboardImported
@@ -656,8 +657,9 @@ class HomeViewModel @Inject constructor(
 
                 OptionMenuId.EDIT_NAME -> container.navigator {
                     navigateEnterText(
-                        actionId = OptionMenuId.EDIT_NAME,
-                        title = Txt.of(R.string.dashboard_name)
+                        actionId = EnterTextActionId.CHANGE_DASHBOARD_NAME,
+                        title = Txt.of(R.string.dashboard_name),
+                        initText = Txt.of(dashboard?.name)
                     )
                 }
             }
@@ -666,11 +668,13 @@ class HomeViewModel @Inject constructor(
 
     private fun textEntered(event: TextEntered) {
         when (event.actionId) {
-            OptionMenuId.EDIT_NAME -> container.launch(Dispatchers.Default) {
-                dashboard?.copy(name = event.text)?.let { updatedDashboard ->
-                    updateDashboard(updatedDashboard)
-                    eventBus.send(DashboardEdited(updatedDashboard))
-                    toast(R.string.dashboard_name_changed)
+            EnterTextActionId.CHANGE_DASHBOARD_NAME -> {
+                container.launch(Dispatchers.Default) {
+                    dashboard?.copy(name = event.text)?.let { updatedDashboard ->
+                        updateDashboard(updatedDashboard)
+                        eventBus.send(DashboardEdited(updatedDashboard))
+                        toast(R.string.dashboard_name_changed)
+                    }
                 }
             }
         }

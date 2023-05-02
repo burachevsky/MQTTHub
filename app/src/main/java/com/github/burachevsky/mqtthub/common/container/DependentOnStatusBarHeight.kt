@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.common.container
 
-interface DependableOnStatusBarHeight {
+interface DependentOnStatusBarHeight {
 
     fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int)
 }

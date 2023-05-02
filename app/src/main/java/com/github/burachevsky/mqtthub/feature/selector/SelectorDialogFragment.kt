@@ -27,7 +27,7 @@ class SelectorDialogFragment : BottomSheetDialogFragment(R.layout.fragment_selec
     lateinit var viewModelFactory: ViewModelFactory<SelectorViewModel>
 
     override val binding  by viewBinding(FragmentSelectorBinding::bind)
-    override val viewModel by viewModels<SelectorViewModel> { viewModelFactory }
+    override val viewModel: SelectorViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
     private val listAdapter = CompositeAdapter(

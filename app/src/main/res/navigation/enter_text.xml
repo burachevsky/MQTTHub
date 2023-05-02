@@ -19,6 +19,12 @@
             android:name="title"
             app:argType="com.github.burachevsky.mqtthub.common.text.ParcelableTxt"/>
 
+        <argument
+            android:name="initText"
+            app:argType="com.github.burachevsky.mqtthub.common.text.ParcelableTxt"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+
     </dialog>
 
 </navigation>

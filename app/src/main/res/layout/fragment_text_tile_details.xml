@@ -5,7 +5,8 @@
     android:id="@+id/tileDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:transitionName="detailsTile">
+    android:transitionName="detailsTile"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -18,7 +19,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/textInputLayout"
+        app:layout_constraintBottom_toTopOf="@id/inputTextButton"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
@@ -50,27 +51,29 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
+    <FrameLayout
+        android:id="@+id/inputTextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_theme_light_surface_container_low"
-        android:visibility="gone"
-        app:boxBackgroundMode="none"
-        app:endIconDrawable="@drawable/ic_send"
-        app:endIconMode="custom"
-        app:hintEnabled="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible">
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editText"
+        <TextView
+            style="@style/TextAppearance.MQTTHub.Body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tile_details_publish"
-            android:imeOptions="actionSend"
-            android:inputType="text" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/tile_details_publish"
+            android:textColor="?colorOnSurfaceVariant"
+            android:padding="16dp" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            app:srcCompat="@drawable/ic_send"
+            app:tint="?colorOnSurfaceVariant"
+            android:layout_marginEnd="16dp"/>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

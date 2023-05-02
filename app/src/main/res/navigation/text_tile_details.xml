@@ -15,6 +15,12 @@
             android:name="tileId"
             app:argType="long" />
 
+        <action
+            android:id="@+id/navigateEnterText"
+            app:destination="@id/enter_text" />
+
     </fragment>
+
+    <include app:graph="@navigation/enter_text" />
 
 </navigation>

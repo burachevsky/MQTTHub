@@ -29,7 +29,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.ContentType
-import com.github.burachevsky.mqtthub.common.container.DependableOnStatusBarHeight
+import com.github.burachevsky.mqtthub.common.container.DependentOnStatusBarHeight
 import com.github.burachevsky.mqtthub.common.container.ViewController
 import com.github.burachevsky.mqtthub.common.container.viewContainer
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
@@ -62,7 +62,7 @@ import com.google.android.material.elevation.SurfaceColors
 import javax.inject.Inject
 
 class HomeFragment : Fragment(R.layout.fragment_home),
-    ViewController<HomeViewModel>, AppEventHandler, DependableOnStatusBarHeight {
+    ViewController<HomeViewModel>, AppEventHandler, DependentOnStatusBarHeight {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<HomeViewModel>

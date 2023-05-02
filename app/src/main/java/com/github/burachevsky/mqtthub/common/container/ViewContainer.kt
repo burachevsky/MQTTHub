@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 class ViewContainer(
     private val viewController: ViewController<*>,
     private val navigatorFactory: NavigatorFactory,
-) : LifecycleOwner by viewController, DependableOnStatusBarHeight {
+) : LifecycleOwner by viewController, DependentOnStatusBarHeight {
 
     private var vmContainer: ViewModelContainer<*>? = null
     private var activity: Activity? = null
@@ -55,7 +55,7 @@ class ViewContainer(
     }
 
     override fun fitSystemBars(statusBarHeight: Int, navigationBarHeight: Int) {
-        if (viewController is DependableOnStatusBarHeight) {
+        if (viewController is DependentOnStatusBarHeight) {
             viewController.fitSystemBars(statusBarHeight, navigationBarHeight)
         } else if (viewController is Fragment) {
             if (viewController !is BottomSheetDialogFragment) {
