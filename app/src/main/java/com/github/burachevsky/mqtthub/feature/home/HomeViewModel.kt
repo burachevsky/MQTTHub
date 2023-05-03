@@ -8,7 +8,6 @@ import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.VM
 import com.github.burachevsky.mqtthub.common.container.viewModelContainer
 import com.github.burachevsky.mqtthub.common.event.AlertDialog
-import com.github.burachevsky.mqtthub.common.event.NotifyPayloadUpdate
 import com.github.burachevsky.mqtthub.common.event.ToastMessage
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.get
@@ -63,7 +62,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class HomeViewModel @Inject constructor(
-    private val saveUpdatedPayload: SaveUpdatedPayload,
+    //private val saveUpdatedPayload: SaveUpdatedPayload,
     private val updateTiles: UpdateTiles,
     private val deleteTiles: DeleteTiles,
     private val getCurrentDashboardWithTiles: GetCurrentDashboardWithTiles,
@@ -209,7 +208,7 @@ class HomeViewModel @Inject constructor(
         val tile = item.tile
 
         if (editMode.value.isEditMode) {
-            val itemEditMode = item.editMode!!
+            val itemEditMode = item.editMode ?: EditMode(true)
 
             _editMode.value.selectedTiles.apply {
                 if (itemEditMode.isSelected) remove(tile) else add(tile)
@@ -775,10 +774,6 @@ class HomeViewModel @Inject constructor(
             val topic = messageEvent.topic
             val payload = messageEvent.message
 
-            dashboard?.id?.let { dashboardId ->
-                saveUpdatedPayload(PayloadUpdate(dashboardId, topic, payload))
-            }
-
             if (editMode.value.isEditMode) {
                 payloadsReceivedWhileEditing[topic] = payload
             } else {
@@ -806,19 +801,7 @@ class HomeViewModel @Inject constructor(
         _items.update { items ->
             items.map { item ->
                 if (item is TileItem && item.tile.subscribeTopic == topic) {
-                    item.copyTile(
-                        item.tile.copy(payload = payload).initPayload()
-                            .also { updatedTile ->
-                                if (
-                                    updatedTile.notifyPayloadUpdate &&
-                                    item.tile.payload != payload
-                                ) {
-                                    container.raiseEffect {
-                                        NotifyPayloadUpdate(updatedTile)
-                                    }
-                                }
-                            }
-                    )
+                    item.copyTile(item.tile.copy(payload = payload).initPayload())
                 } else item
             }
         }

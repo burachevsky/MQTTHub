@@ -17,7 +17,6 @@ import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.event.*
 import com.github.burachevsky.mqtthub.common.navigation.Navigator
-import com.github.burachevsky.mqtthub.common.notification.notifyPayloadUpdate
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -148,10 +147,6 @@ class ViewContainer(
                         putExtra(EXTRA_APP_PACKAGE, packageName)
                     }
                 )
-            }
-
-            is NotifyPayloadUpdate -> withActivity {
-                notifyPayloadUpdate(effect.tile)
             }
         }
     }

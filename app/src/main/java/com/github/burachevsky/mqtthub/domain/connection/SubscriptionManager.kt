@@ -1,5 +1,7 @@
 package com.github.burachevsky.mqtthub.domain.connection
 
+import com.github.burachevsky.mqtthub.common.ext.throttle
+import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.eclipse.paho.client.mqttv3.MqttMessage
@@ -8,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager(
     private val connection: BrokerConnection,
+    private val savePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify
 ) {
 
     private val subscriptions = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
@@ -27,7 +30,10 @@ internal class SubscriptionManager(
         }
 
         if (newTopics.isNotEmpty()) {
-            connection.mqttClient.subscribe(newTopics.toTypedArray(), IntArray(newTopics.size) { 0 })
+            connection.mqttClient.subscribe(
+                newTopics.toTypedArray(),
+                IntArray(newTopics.size) { 0 }
+            )
         }
     }
 
@@ -71,11 +77,22 @@ internal class SubscriptionManager(
 
     private fun launchMessageCollecting(topic: String) = with(connection) {
         launchIfNotCanceled {
-            subscriptions[topic]?.collect { message ->
-                reportIfNotCanceled {
-                    MqttMessageArrived(connection, topic, String(message.payload))
+            subscriptions[topic]
+                ?.throttle(periodMillis = 16)
+                ?.collect { message ->
+                    val payload = String(message.payload)
+                    val notifyList = savePayloadAndGetTilesToNotify(topic, payload)
+
+                    if (notifyList.isNotEmpty()) {
+                        reportIfNotCanceled {
+                            NotifyPayloadUpdate(notifyList)
+                        }
+                    }
+
+                    reportIfNotCanceled {
+                        MqttMessageArrived(connection, topic, payload)
+                    }
                 }
-            }
         }
     }
 }

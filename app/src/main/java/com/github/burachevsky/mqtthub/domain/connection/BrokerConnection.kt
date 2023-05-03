@@ -4,6 +4,7 @@ import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.getServerAddress
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,11 +20,15 @@ class BrokerConnection(
     val broker: Broker,
     val eventBus: EventBus,
     connectionPool: BrokerConnectionPool,
+    updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify,
 ) : MqttCallbackExtended {
 
     val connectionScope = CoroutineScope(Dispatchers.IO)
 
-    private val subscriptionManager = SubscriptionManager(this)
+    private val subscriptionManager = SubscriptionManager(
+        this,
+        updatePayloadAndGetTilesToNotify
+    )
 
     internal val mqttClient: MqttClient =
         MqttClient(

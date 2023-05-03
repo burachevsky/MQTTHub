@@ -11,12 +11,15 @@ import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.notification.NotificationChannelId
 import com.github.burachevsky.mqtthub.common.notification.NotificationId
+import com.github.burachevsky.mqtthub.common.notification.notifyPayloadUpdate
 import com.github.burachevsky.mqtthub.di.Name
 import com.github.burachevsky.mqtthub.domain.connection.BrokerConnection
 import com.github.burachevsky.mqtthub.domain.connection.BrokerConnectionEvent
 import com.github.burachevsky.mqtthub.domain.connection.BrokerConnectionPool
+import com.github.burachevsky.mqtthub.domain.connection.NotifyPayloadUpdate
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
+import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,6 +42,9 @@ class BrokerConnectionService : Service() {
 
     @Inject
     lateinit var connectionPool: BrokerConnectionPool
+
+    @Inject
+    lateinit var updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify
 
     private var brokerConnection: BrokerConnection? = null
 
@@ -91,7 +97,12 @@ class BrokerConnectionService : Service() {
     private fun initBrokerConnection(brokerId: Long) {
         scope.launch {
             val broker = getBroker(brokerId)
-            brokerConnection = BrokerConnection(broker, eventBus, connectionPool)
+            brokerConnection = BrokerConnection(
+                broker,
+                eventBus,
+                connectionPool,
+                updatePayloadAndGetTilesToNotify,
+            )
 
             brokerConnection {
                 start()
@@ -126,6 +137,10 @@ class BrokerConnectionService : Service() {
 
                     else -> {}
                 }
+            }
+
+            eventBus.subscribe<NotifyPayloadUpdate>(this) {
+                this@BrokerConnectionService.notifyPayloadUpdate(it.notifyList)
             }
         }
     }
