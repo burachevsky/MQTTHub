@@ -27,7 +27,7 @@ internal class SubscriptionManager(
         }
 
         if (newTopics.isNotEmpty()) {
-            connection.mqttClient.subscribe(newTopics.toTypedArray())
+            connection.mqttClient.subscribe(newTopics.toTypedArray(), IntArray(newTopics.size) { 0 })
         }
     }
 

@@ -42,6 +42,8 @@ import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.feature.addtile.TileAdded
 import com.github.burachevsky.mqtthub.feature.addtile.TileEdited
+import com.github.burachevsky.mqtthub.domain.connection.BrokerConnectionPool
+import com.github.burachevsky.mqtthub.feature.connection.TerminateBrokerConnection
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardDeleted
 import com.github.burachevsky.mqtthub.feature.entertext.EnterTextActionId
 import com.github.burachevsky.mqtthub.feature.home.item.*
@@ -76,18 +78,13 @@ class HomeViewModel @Inject constructor(
     internal val updateCurrentBroker: UpdateCurrentBroker,
     internal val updateCurrentDashboard: UpdateCurrentDashboard,
     @Named(Name.MQTT_EVENT_BUS) private val mqttEventBus: EventBus,
+    private val connectionPool: BrokerConnectionPool,
 ) : ViewModel(), VM<HomeNavigator> {
 
     override val container = viewModelContainer()
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Empty)
     val connectionState: StateFlow<ConnectionState> = _connectionState
-
-    private var brokerConnection: BrokerConnection? = null
-        set(value) {
-            field?.stop()
-            field = value
-        }
 
     private val _title = MutableStateFlow("")
     val title: StateFlow<String> = _title
@@ -108,6 +105,8 @@ class HomeViewModel @Inject constructor(
 
     private val payloadsReceivedWhileEditing = ConcurrentHashMap<String, String>()
 
+    private var currentBrokerId: Long? = null
+
     init {
         container.launch(Dispatchers.Default) {
             val dashboardWithTiles = getCurrentDashboardWithTiles()
@@ -122,10 +121,16 @@ class HomeViewModel @Inject constructor(
 
             _items.emit(dashboardWithTiles.tiles.mapToItems())
 
-            brokerConnection = broker?.toBrokerConnection()
-            brokerConnection {
-                _connectionState.emit(ConnectionState.Connecting)
-                start()
+            if (broker != null) {
+                val connection = connectionPool.getConnection(broker.id)
+                currentBrokerId = broker.id
+
+                if (connection == null || !connection.isRunning) {
+                    _connectionState.emit(ConnectionState.Connecting)
+                    container.raiseEffect {
+                        StartNewBrokerConnection(broker.id)
+                    }
+                }
             }
         }
 
@@ -227,13 +232,17 @@ class HomeViewModel @Inject constructor(
 
         } else {
             when (tile.type) {
-                Tile.Type.BUTTON -> brokerConnection {
-                    publish(tile, tile.payload)
+                Tile.Type.BUTTON -> container.launch(Dispatchers.Default) {
+                    brokerConnection {
+                        publish(tile, tile.payload)
+                    }
                 }
 
-                Tile.Type.SWITCH -> brokerConnection {
-                    val newPayload = tile.getSwitchOppositeStatePayload()
-                    publish(tile, newPayload)
+                Tile.Type.SWITCH -> container.launch(Dispatchers.Default) {
+                    brokerConnection {
+                        val newPayload = tile.getSwitchOppositeStatePayload()
+                        publish(tile, newPayload)
+                    }
                 }
 
                 Tile.Type.TEXT -> container.raiseEffect {
@@ -501,6 +510,8 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }
+
+            is BrokerConnectionEvent.Terminated -> {}
         }
     }
 
@@ -550,10 +561,18 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun reconnect(force: Boolean = false) {
-        brokerConnection {
-            if (force || isDisconnected) {
-                _connectionState.tryEmit(ConnectionState.Connecting)
-                restart()
+        container.launch(Dispatchers.Default) {
+            currentBrokerId?.let { brokerId ->
+                val connection = connectionPool.getConnection(brokerId)
+
+                if (connection == null || connection.isCanceled) {
+                    container.raiseEffect {
+                        StartNewBrokerConnection(brokerId)
+                    }
+                } else if (connection.isDisconnected || force) {
+                    _connectionState.tryEmit(ConnectionState.Connecting)
+                    connection.restart()
+                }
             }
         }
     }
@@ -562,18 +581,28 @@ class HomeViewModel @Inject constructor(
         container.launch(Dispatchers.Default) {
             _noBrokersYet.emit(broker == null)
 
-            _connectionState.emit(ConnectionState.Connecting)
-            brokerConnection = broker?.toBrokerConnection()
-            brokerConnection { start() }
+        currentBrokerId?.let { currentBrokerId ->
+            mqttEventBus.send(TerminateBrokerConnection(currentBrokerId))
+        }
+
+        _connectionState.emit(ConnectionState.Connecting)
+
+        currentBrokerId = broker?.id
+
+        broker?.id?.let {
+            container.raiseEffect {
+                StartNewBrokerConnection(broker.id)
+            }
+        }
 
             updateCurrentBroker(broker?.id)
         }
     }
 
     private fun brokerDeleted(brokerId: Long) {
-        brokerConnection {
-            if (broker.id == brokerId) {
-                container.launch(Dispatchers.Default) {
+        container.launch(Dispatchers.Default) {
+            brokerConnection {
+                if (broker.id == brokerId) {
                     changeBroker(getCurrentBroker())
                 }
             }
@@ -708,7 +737,9 @@ class HomeViewModel @Inject constructor(
     private fun tileAdded(tile: Tile) {
         _items.update { it + tile.toListItem() }
         _noTilesYet.value = items.value.isEmpty()
-        brokerConnection { subscribe(tile.subscribeTopic) }
+        container.launch(Dispatchers.Default) {
+            brokerConnection { subscribe(tile.subscribeTopic) }
+        }
     }
 
     private fun tileEdited(tile: Tile) {
@@ -732,8 +763,10 @@ class HomeViewModel @Inject constructor(
         val oldTopic = oldItem.tile.subscribeTopic
 
         if (oldTopic != tile.subscribeTopic) {
-            unsubscribeIfNoReceivers(listOf(oldTopic))
-            brokerConnection { subscribe(tile.subscribeTopic) }
+            container.launch(Dispatchers.Default) {
+                unsubscribeIfNoReceivers(listOf(oldTopic))
+                brokerConnection { subscribe(tile.subscribeTopic) }
+            }
         }
     }
 
@@ -754,16 +787,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun unsubscribeIfNoReceivers(topics: List<String>) {
-        val topicsSet = topics.toHashSet()
+    private suspend fun unsubscribeIfNoReceivers(topics: List<String>) {
+        withContext(Dispatchers.Default) {
+            val topicsSet = topics.toHashSet()
 
-        items.value.asSequence()
-            .filterIsInstance<TileItem>()
-            .map { it.tile.subscribeTopic }
-            .forEach(topicsSet::remove)
+            items.value.asSequence()
+                .filterIsInstance<TileItem>()
+                .map { it.tile.subscribeTopic }
+                .forEach(topicsSet::remove)
 
-        brokerConnection {
-            unsubscribe(topicsSet.toList())
+            brokerConnection {
+                unsubscribe(topicsSet.toList())
+            }
         }
     }
 
@@ -790,23 +825,20 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun publish(tileId: Long, payload: String) {
-        brokerConnection {
-            items.value
-                .find { it is TileItem && it.tile.id == tileId }
-                .let { publish((it as TileItem).tile, payload) }
+        container.launch(Dispatchers.Default) {
+            brokerConnection {
+                items.value
+                    .find { it is TileItem && it.tile.id == tileId }
+                    .let { publish((it as TileItem).tile, payload) }
+            }
         }
     }
 
-    private fun Broker.toBrokerConnection(): BrokerConnection {
-        return BrokerConnection(this, mqttEventBus)
-    }
-
-    private inline fun brokerConnection(block: BrokerConnection.() -> Unit) {
-        brokerConnection?.block()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        brokerConnection = null
+    private suspend fun brokerConnection(action: suspend BrokerConnection.() -> Unit) {
+        currentBrokerId?.let { brokerId ->
+            withContext(Dispatchers.Default) {
+                connectionPool.getConnection(brokerId)?.action()
+            }
+        }
     }
 }

@@ -18,11 +18,18 @@ import com.github.burachevsky.mqtthub.data.entity.Tile
 
 fun Context.createNotificationChannels() {
     getSystemService<NotificationManager>()
-        ?.createNotificationChannel(
-            NotificationChannel(
-                NotificationChannelId.PAYLOAD_UPDATES,
-                getString(R.string.notification_channel_name_payload_updates),
-                NotificationManager.IMPORTANCE_HIGH,
+        ?.createNotificationChannels(
+            listOf(
+                NotificationChannel(
+                    NotificationChannelId.PAYLOAD_UPDATES,
+                    getString(R.string.notification_channel_name_payload_updates),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ),
+                NotificationChannel(
+                    NotificationChannelId.BROKER_CONNECTION,
+                    getString(R.string.notification_channel_name_broker_connection),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ),
             )
         )
 }
@@ -47,6 +54,8 @@ fun Context.notifyPayloadUpdate(tile: Tile): Boolean {
         .setContentTitle(tile.name)
         .setContentText(tile.payload)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setGroup("${tile.id}")
+        .setGroupSummary(true)
         .setContentIntent(
             PendingIntent.getActivity(
                 this,
@@ -70,7 +79,7 @@ fun Context.notifyPayloadUpdate(tile: Tile): Boolean {
 
     if (permissionGranted) {
         NotificationManagerCompat.from(this)
-            .notify(tile.id.toInt(), builder.build())
+            .notify(NotificationId.next(), builder.build())
 
         return true
     }

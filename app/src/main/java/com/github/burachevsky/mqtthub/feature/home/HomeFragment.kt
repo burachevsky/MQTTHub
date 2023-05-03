@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -44,6 +45,7 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
 import com.github.burachevsky.mqtthub.feature.homedrawer.HomeDrawerViewModel
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
@@ -163,7 +165,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.root.setOnApplyWindowInsetsListener { v, insets ->
+        binding.root.setOnApplyWindowInsetsListener { _, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
                 val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -258,6 +260,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             is ImportDashboard -> {
                 fileImporter.launch(ContentType.JSON)
+            }
+
+            is StartNewBrokerConnection -> {
+                requireActivity().startService(
+                    Intent(requireContext(), BrokerConnectionService::class.java).apply {
+                        putExtra(BrokerConnectionService.EXTRA_BROKER_ID, effect.brokerId)
+                    }
+                )
             }
         }
 

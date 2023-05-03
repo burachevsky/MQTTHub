@@ -18,17 +18,19 @@ import timber.log.Timber
 class BrokerConnection(
     val broker: Broker,
     val eventBus: EventBus,
+    connectionPool: BrokerConnectionPool,
 ) : MqttCallbackExtended {
 
     val connectionScope = CoroutineScope(Dispatchers.IO)
 
     private val subscriptionManager = SubscriptionManager(this)
 
-    internal val mqttClient: MqttClient = MqttClient(
-        broker.getServerAddress(),
-        broker.clientId,
-        MemoryPersistence()
-    )
+    internal val mqttClient: MqttClient =
+        MqttClient(
+            broker.getServerAddress(),
+            broker.clientId,
+            MemoryPersistence()
+        )
 
     private var state = State.DISCONNECTED
 
@@ -38,6 +40,7 @@ class BrokerConnection(
 
     init {
         mqttClient.setCallback(this)
+        connectionPool.setConnection(broker.id, this)
     }
 
     override fun connectionLost(cause: Throwable?) {
@@ -72,7 +75,11 @@ class BrokerConnection(
             Timber.i("BrokerConnection: connecting to $broker")
 
             execSafely(BrokerConnectionEvent::FailedToConnect) {
-                mqttClient.connect()
+                try {
+                    mqttClient.connect()
+                } catch (e: Throwable) {
+                    Timber.d(e)
+                }
             }
         }
     }
@@ -82,12 +89,15 @@ class BrokerConnection(
             Timber.i("BrokerConnection: reconnecting to $broker")
 
             execSafely(BrokerConnectionEvent::FailedToConnect) {
-                mqttClient.reconnect()
+                mqttClient.connect()
             }
         }
     }
 
-    fun stop() {
+    fun stop(event: BrokerConnectionEventGenerator? = null) {
+        if (isCanceled)
+            return
+
         Timber.i("BrokerConnection: canceling broker connection: $broker")
         state = State.CANCELED
         mqttClient.setCallback(null)
@@ -97,6 +107,12 @@ class BrokerConnection(
                 mqttClient.disconnect()
             } catch (_: Exception) {
             } finally {
+                eventBus.send(
+                    event?.invoke(this@BrokerConnection, null) ?: BrokerConnectionEvent.LostConnection(
+                        this@BrokerConnection,
+                        null
+                    )
+                )
                 cancel()
             }
         }

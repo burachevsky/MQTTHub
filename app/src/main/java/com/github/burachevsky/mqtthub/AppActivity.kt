@@ -83,6 +83,7 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventH
     }
 
 
+
     private fun findNavController(): NavController {
         return (supportFragmentManager.findFragmentById(R.id.appContainer) as NavHostFragment)
             .navController

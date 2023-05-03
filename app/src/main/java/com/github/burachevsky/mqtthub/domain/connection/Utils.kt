@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-typealias BrokerConnectionEventGenerator = (BrokerConnection, Throwable) -> BrokerConnectionEvent
+typealias BrokerConnectionEventGenerator = (BrokerConnection, Throwable?) -> BrokerConnectionEvent
 
 internal inline fun BrokerConnection.ifNotCanceled(block: () -> Unit) {
     if (!isCanceled) {

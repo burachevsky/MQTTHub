@@ -19,3 +19,5 @@ data class OpenTextTileDetails(
 data class ExportDashboard(val fileName: String) : AppEvent
 
 object ImportDashboard : AppEvent
+
+data class StartNewBrokerConnection(val brokerId: Long) : AppEvent

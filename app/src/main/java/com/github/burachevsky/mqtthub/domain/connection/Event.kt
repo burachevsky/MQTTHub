@@ -21,6 +21,11 @@ sealed class BrokerConnectionEvent : BrokerEvent {
         override val connection: BrokerConnection,
         val cause: Throwable?,
     ) : BrokerConnectionEvent()
+
+    data class Terminated(
+        override val connection: BrokerConnection,
+        val cause: Throwable?,
+    ) : BrokerConnectionEvent()
 }
 
 data class MqttMessageArrived(

@@ -12,6 +12,7 @@ import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
+import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.entertext.EnterTextComponent
 import com.github.burachevsky.mqtthub.feature.entertext.EnterTextModule
@@ -42,6 +43,7 @@ interface AppComponent {
     fun inject(activity: AppActivity)
     fun inject(fragment: BrokersFragment)
     fun inject(fragment: SettingsFragment)
+    fun inject(service: BrokerConnectionService)
 
     fun homeComponent(module: HomeModule): HomeComponent
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
