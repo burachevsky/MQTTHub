@@ -14,15 +14,22 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.data.entity.Tile
+import com.github.burachevsky.mqtthub.data.entity.SimpleTile
 
 fun Context.createNotificationChannels() {
     getSystemService<NotificationManager>()
-        ?.createNotificationChannel(
-            NotificationChannel(
-                NotificationChannelId.PAYLOAD_UPDATES,
-                getString(R.string.notification_channel_name_payload_updates),
-                NotificationManager.IMPORTANCE_HIGH,
+        ?.createNotificationChannels(
+            listOf(
+                NotificationChannel(
+                    NotificationChannelId.PAYLOAD_UPDATES,
+                    getString(R.string.notification_channel_name_payload_updates),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ),
+                NotificationChannel(
+                    NotificationChannelId.BROKER_CONNECTION,
+                    getString(R.string.notification_channel_name_broker_connection),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ),
             )
         )
 }
@@ -36,17 +43,19 @@ fun Context.isNotificationsPermissionEnabled(): Boolean {
     return true
 }
 
-fun Context.notifyPayloadUpdate(tile: Tile): Boolean {
-    if (!tile.notifyPayloadUpdate) {
-        return false
-    }
+fun Context.notifyPayloadUpdate(notifyList: List<SimpleTile>) {
+    notifyList.forEach(::notifyPayloadUpdate)
+}
 
+fun Context.notifyPayloadUpdate(tile: SimpleTile) {
     val builder = NotificationCompat
         .Builder(this, NotificationChannelId.PAYLOAD_UPDATES)
         .setSmallIcon(R.drawable.ic_notification_small)
         .setContentTitle(tile.name)
         .setContentText(tile.payload)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setGroup("${tile.id}")
+        .setGroupSummary(true)
         .setContentIntent(
             PendingIntent.getActivity(
                 this,
@@ -70,10 +79,6 @@ fun Context.notifyPayloadUpdate(tile: Tile): Boolean {
 
     if (permissionGranted) {
         NotificationManagerCompat.from(this)
-            .notify(tile.id.toInt(), builder.build())
-
-        return true
+            .notify(NotificationId.next(), builder.build())
     }
-
-    return false
 }

@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.home
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -44,6 +45,7 @@ import com.github.burachevsky.mqtthub.common.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.databinding.FragmentHomeBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
+import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
 import com.github.burachevsky.mqtthub.feature.homedrawer.HomeDrawerViewModel
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
@@ -163,7 +165,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.root.setOnApplyWindowInsetsListener { v, insets ->
+        binding.root.setOnApplyWindowInsetsListener { _, insets ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
                 val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -183,8 +185,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
         binding.toolbarLayout.setBackgroundColor(colorSurface)
         binding.bottomAppBar.setBackgroundColor(colorSurface2)
-
-        drawerManager.fillDrawer()
 
         setupListeners()
         observeViewModel()
@@ -258,6 +258,12 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             is ImportDashboard -> {
                 fileImporter.launch(ContentType.JSON)
+            }
+
+            is StartNewBrokerConnection -> {
+                requireActivity().startService(
+                    Intent(requireContext(), BrokerConnectionService::class.java)
+                )
             }
         }
 
@@ -346,7 +352,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
         collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
-        collectOnStarted(viewModel.title) {
+        collectOnStarted(viewModel.dashboardName) {
             if (!viewModel.editMode.value.isEditMode) {
                 binding.toolbar.title = it
             }
@@ -444,7 +450,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         } else {
             binding.toolbarLayout.setBackgroundColor(colorSurface)
 
-            binding.toolbar.title = viewModel.title.value
+            binding.toolbar.title = viewModel.dashboardName.value
             binding.toolbar.setNavigationIcon(R.drawable.ic_menu)
         }
 

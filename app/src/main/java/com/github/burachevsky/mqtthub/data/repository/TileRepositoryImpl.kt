@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.dao.TileDao
+import com.github.burachevsky.mqtthub.data.entity.SimpleTile
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -30,12 +31,23 @@ class TileRepositoryImpl @Inject constructor(
         tileDao.delete(tiles)
     }
 
-    override suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String) {
-        return tileDao.updatePayload(dashboardId, subscribeTopic, payload)
+    override suspend fun updatePayloadAndGetTilesToNotify(
+        subscribeTopic: String,
+        payload: String
+    ): List<SimpleTile> {
+        return tileDao.updatePayloadAndGetTilesToNotify(subscribeTopic, payload)
     }
 
     override suspend fun getTile(id: Long): Tile {
         return tileDao.getById(id)
+    }
+
+    override suspend fun getDashboardTiles(dashboardId: Long): List<Tile> {
+        return tileDao.getDashboardTiles(dashboardId)
+    }
+
+    override suspend fun getAllTiles(): List<Tile> {
+        return tileDao.getAllTiles()
     }
 
     override fun observeTile(id: Long): Flow<Tile> {

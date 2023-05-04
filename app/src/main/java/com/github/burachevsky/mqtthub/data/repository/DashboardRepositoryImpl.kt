@@ -1,13 +1,19 @@
 package com.github.burachevsky.mqtthub.data.repository
 
 import android.content.Context
-import androidx.room.Transaction
 import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.data.Converters
 import com.github.burachevsky.mqtthub.data.dao.DashboardDao
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.DashboardWithTiles
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DashboardRepositoryImpl @Inject constructor(
@@ -34,31 +40,45 @@ class DashboardRepositoryImpl @Inject constructor(
         return dashboardDao.getAll()
     }
 
+    override fun observeCurrentDashboard(): Flow<Dashboard> {
+        return channelFlow {
+            coroutineScope {
+                var job: Job? = null
+                var currentId: Long
+
+                currentIdsRepository
+                    .observeCurrentDashboardId()
+                    .distinctUntilChanged()
+                    .collect { id ->
+                        job?.cancel()
+
+                        currentId = id ?: insertDashboard(createFirstDashboard()).id
+
+                        job = launch {
+                            dashboardDao.observeDashboard(currentId)
+                                .collect { dashboard ->
+                                    if (isActive && id == currentId) {
+                                        send(dashboard)
+                                    }
+                                }
+                        }
+                    }
+            }
+        }
+    }
+
+    override suspend fun updateDashboardName(dashboardId: Long, name: String) {
+        return dashboardDao.updateDashboardName(dashboardId, name)
+    }
+
+    override fun observeDashboards(): Flow<List<Dashboard>> {
+        return dashboardDao.observeDashboards()
+    }
+
     override suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
         return dashboardDao.getDashboardWithTiles(id).run {
             copy(tiles = tiles.sortedBy { it.dashboardPosition })
         }
-    }
-
-    @Transaction
-    override suspend fun getCurrentDashboardWithTiles(): DashboardWithTiles {
-        var currentDashboardId = currentIdsRepository.getCurrentDashboardId()
-
-        if (currentDashboardId == null) {
-            currentIdsRepository.init()
-
-            val dashboard = insertDashboard(
-                Dashboard(
-                    name = applicationContext.getString(R.string.default_dashboard_name),
-                    position = 0
-                )
-            )
-
-            currentDashboardId = dashboard.id
-            currentIdsRepository.updateCurrentDashboard(currentDashboardId)
-        }
-
-        return getDashboardWithTiles(currentDashboardId)
     }
 
     override suspend fun packDashboardForExport(id: Long): String {
@@ -74,7 +94,6 @@ class DashboardRepositoryImpl @Inject constructor(
         return Gson().toJson(dashboardWithTiles)
     }
 
-    @Transaction
     override suspend fun importDashboardFromJson(json: String): Dashboard {
         val importedDashboardWithTiles = Converters.fromJson<DashboardWithTiles>(json)
 
@@ -85,5 +104,11 @@ class DashboardRepositoryImpl @Inject constructor(
         }
 
         return dashboard
+    }
+
+    private fun createFirstDashboard(): Dashboard {
+        return Dashboard(
+            name = applicationContext.getString(R.string.default_dashboard_name)
+        )
     }
 }

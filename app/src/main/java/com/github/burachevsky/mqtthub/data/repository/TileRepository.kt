@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.data.repository
 
+import com.github.burachevsky.mqtthub.data.entity.SimpleTile
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import kotlinx.coroutines.flow.Flow
 
@@ -15,9 +16,16 @@ interface TileRepository {
 
     suspend fun deleteTiles(tiles: List<Tile>)
 
-    suspend fun updatePayload(dashboardId: Long, subscribeTopic: String, payload: String)
+    suspend fun updatePayloadAndGetTilesToNotify(
+        subscribeTopic: String,
+        payload: String
+    ): List<SimpleTile>
 
     suspend fun getTile(id: Long): Tile
+
+    suspend fun getDashboardTiles(dashboardId: Long): List<Tile>
+
+    suspend fun getAllTiles(): List<Tile>
 
     fun observeTile(id: Long): Flow<Tile>
 }

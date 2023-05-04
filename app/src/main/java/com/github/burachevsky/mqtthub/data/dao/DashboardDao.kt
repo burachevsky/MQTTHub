@@ -8,12 +8,22 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.DashboardWithTiles
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DashboardDao {
 
     @Query("SELECT * FROM dashboards ORDER BY id DESC")
     suspend fun getAll(): List<Dashboard>
+
+    @Query("SELECT * FROM dashboards ORDER BY id DESC")
+    fun observeDashboards(): Flow<List<Dashboard>>
+
+    @Query("UPDATE dashboards SET name = :name WHERE id = :dashboardId")
+    suspend fun updateDashboardName(dashboardId: Long, name: String)
+
+    @Query("SELECT * FROM dashboards WHERE id = :id")
+    fun observeDashboard(id: Long): Flow<Dashboard>
 
     @Query("SELECT * FROM dashboards WHERE id = :id")
     suspend fun getById(id: Long): Dashboard

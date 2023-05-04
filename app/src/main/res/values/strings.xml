@@ -144,9 +144,13 @@
 
     <string name="notify_payload_update">Notify payload changes</string>
     <string name="notification_channel_name_payload_updates">Payload updates</string>
+    <string name="notification_channel_name_broker_connection">Broker connection</string>
 
     <string name="notification_required_dialog_title">Notifications permission is required to use this feature</string>
     <string name="notification_required_dialog_message">To be notified about payload updates you have to allow the app to use notifications.\n\nConsider enabling notifications for &appname; manually in settings.</string>
     <string name="notification_required_dialog_settings_button">Go to notification settings</string>
+
+    <string name="broker_connection_service_message">Connected</string>
+    <string name="broker_connection_service_button_disconnect">Disconnect</string>
 
 </resources>

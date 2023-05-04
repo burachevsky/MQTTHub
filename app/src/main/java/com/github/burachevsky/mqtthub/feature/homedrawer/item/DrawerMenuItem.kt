@@ -9,6 +9,9 @@ import com.github.burachevsky.mqtthub.common.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.common.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
 import com.github.burachevsky.mqtthub.common.text.Txt
+import com.github.burachevsky.mqtthub.common.text.of
+import com.github.burachevsky.mqtthub.data.entity.Broker
+import com.github.burachevsky.mqtthub.data.entity.Dashboard
 import com.github.burachevsky.mqtthub.data.entity.Dashboard as DashboardEntity
 import com.github.burachevsky.mqtthub.data.entity.Broker as BrokerEntity
 import com.github.burachevsky.mqtthub.databinding.ListItemDrawerMenuItemBinding
@@ -35,6 +38,22 @@ data class DrawerMenuItem(
 
     companion object {
         val LAYOUT get() = R.layout.list_item_drawer_menu_item
+
+        fun map(broker: Broker): DrawerMenuItem {
+            return DrawerMenuItem(
+                Txt.of(broker.name),
+                R.drawable.ic_broker,
+                type = Type.Broker(broker),
+            )
+        }
+
+        fun map(dashboard: Dashboard): DrawerMenuItem {
+            return DrawerMenuItem(
+                Txt.of(dashboard.name),
+                R.drawable.ic_dashboard,
+                type = Type.Dashboard(dashboard),
+            )
+        }
     }
 
     sealed class Type(val id: Long) {

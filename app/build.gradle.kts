@@ -125,7 +125,8 @@ dependencies {
 
     //Paho
     implementation(libs.paho)
-    implementation(libs.paho.android)
+    //implementation(libs.paho.android)
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     //Charts
     implementation(libs.mpandroidchart)

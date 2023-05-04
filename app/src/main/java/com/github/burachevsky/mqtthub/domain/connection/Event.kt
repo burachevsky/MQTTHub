@@ -1,5 +1,6 @@
 package com.github.burachevsky.mqtthub.domain.connection
 
+import com.github.burachevsky.mqtthub.data.entity.SimpleTile
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 
 interface BrokerEvent : AppEvent
@@ -21,6 +22,11 @@ sealed class BrokerConnectionEvent : BrokerEvent {
         override val connection: BrokerConnection,
         val cause: Throwable?,
     ) : BrokerConnectionEvent()
+
+    data class Terminated(
+        override val connection: BrokerConnection,
+        val cause: Throwable?,
+    ) : BrokerConnectionEvent()
 }
 
 data class MqttMessageArrived(
@@ -28,3 +34,5 @@ data class MqttMessageArrived(
     val topic: String,
     val message: String,
 ): BrokerEvent
+
+data class NotifyPayloadUpdate(val notifyList: List<SimpleTile>) : BrokerEvent
