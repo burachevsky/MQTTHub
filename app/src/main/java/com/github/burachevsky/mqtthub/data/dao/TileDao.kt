@@ -59,6 +59,12 @@ interface TileDao {
     @Query("SELECT * FROM tiles WHERE id = :id")
     suspend fun getById(id: Long): Tile
 
+    @Query("SELECT * FROM tiles WHERE dashboard_id = :dashboardId ORDER BY dashboard_position")
+    suspend fun getDashboardTiles(dashboardId: Long): List<Tile>
+
+    @Query("SELECT * FROM tiles")
+    suspend fun getAllTiles(): List<Tile>
+
     @Query("SELECT * FROM tiles WHERE id = :id")
     fun observeTile(id: Long): Flow<Tile>
 }

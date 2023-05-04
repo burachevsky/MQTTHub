@@ -1,161 +1,89 @@
 package com.github.burachevsky.mqtthub.feature.homedrawer
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.burachevsky.mqtthub.R
 import com.github.burachevsky.mqtthub.common.constant.Anim
 import com.github.burachevsky.mqtthub.common.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.common.ext.get
 import com.github.burachevsky.mqtthub.common.recycler.ListItem
-import com.github.burachevsky.mqtthub.common.text.Txt
-import com.github.burachevsky.mqtthub.common.text.of
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Dashboard
-import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetCurrentIds
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerAdded
-import com.github.burachevsky.mqtthub.feature.addbroker.BrokerEdited
-import com.github.burachevsky.mqtthub.feature.brokers.BrokerDeleted
-import com.github.burachevsky.mqtthub.feature.dashboards.DashboardCreated
-import com.github.burachevsky.mqtthub.feature.dashboards.DashboardDeleted
-import com.github.burachevsky.mqtthub.feature.dashboards.DashboardEdited
 import com.github.burachevsky.mqtthub.common.widget.DividerItem
-import com.github.burachevsky.mqtthub.feature.home.BrokerChanged
+import com.github.burachevsky.mqtthub.data.entity.CurrentIds
+import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveBrokers
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.ObserveCurrentIds
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentDashboard
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ObserveDashboards
 import com.github.burachevsky.mqtthub.feature.home.CloseHomeDrawer
-import com.github.burachevsky.mqtthub.feature.home.DashboardChanged
 import com.github.burachevsky.mqtthub.feature.home.HomeNavigator
 import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerHeaderItem
 import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerLabelItem
 import com.github.burachevsky.mqtthub.feature.homedrawer.item.DrawerMenuItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeDrawerViewModel @Inject constructor(
     val container: ViewModelContainer<HomeNavigator>,
-    private val eventBus: EventBus,
-    private val getBrokers: GetBrokers,
-    private val getDashboards: GetDashboards,
-    private val getCurrentIds: GetCurrentIds,
-) : ViewModel() {
+    private val updateCurrentDashboard: UpdateCurrentDashboard,
+    private val updateCurrentBroker: UpdateCurrentBroker,
+    observeCurrentIds: ObserveCurrentIds,
+    observeDashboards: ObserveDashboards,
+    observeBrokers: ObserveBrokers,
+) {
 
-    private val _items = MutableStateFlow<List<ListItem>>(emptyList())
-    val items: StateFlow<List<ListItem>> = _items
+    private val itemStore = HomeDrawerMenuItemStore()
 
-    init {
-        eventBus.apply {
-            subscribe<BrokerAdded>(viewModelScope) {
-                addBrokerToList(it.broker)
+    private val currentIds: Flow<CurrentIds> = observeCurrentIds()
+
+    private val currentDashboardId: Flow<Long?> = currentIds
+        .map { it.currentDashboardId }
+        .distinctUntilChanged()
+
+    private val currentBrokerId: Flow<Long?> = currentIds
+        .map { it.currentBrokerId }
+        .distinctUntilChanged()
+
+    val items: StateFlow<List<ListItem>> =
+        observeDashboards()
+            .map { dashboards ->
+                dashboards.map(DrawerMenuItem::map)
             }
-
-            subscribe<BrokerEdited>(viewModelScope) {
-                editBrokerInList(it.broker)
-            }
-
-            subscribe<BrokerDeleted>(viewModelScope) {
-                deleteBrokerFromList(it.brokerId)
-            }
-
-            subscribe<DashboardCreated>(viewModelScope) {
-                addDashboardToList(it.dashboard)
-            }
-
-            subscribe<DashboardEdited>(viewModelScope) {
-                editDashboardInList(it.dashboard)
-            }
-
-            subscribe<DashboardDeleted>(viewModelScope) {
-                deleteDashboardFromList(it.dashboardId)
-            }
-
-            subscribe<DashboardImported>(viewModelScope) {
-                addAndSwitchDashboard(it.dashboard)
-            }
-        }
-    }
-
-    fun fillDrawer() = container.launch(Dispatchers.Main) {
-        val brokers = getBrokers()
-        val dashboards = getDashboards()
-        val currentIds = getCurrentIds()
-
-        container.withContext(Dispatchers.Default) {
-
-            val list = mutableListOf(
-                DrawerHeaderItem,
-                DividerItem,
-                DrawerLabelItem(
-                    id = BUTTON_EDIT_DASHBOARDS,
-                    Txt.of(R.string.home_dashboards),
-                    buttonText = Txt.of(R.string.edit),
-                ),
-            ).apply {
-
-                addAll(
-                    dashboards.map {
-                        DrawerMenuItem(
-                            Txt.of(it.name),
-                            R.drawable.ic_dashboard,
-                            type = DrawerMenuItem.Type.Dashboard(it),
-                            isSelected = it.id == currentIds.currentDashboardId,
-                        )
+            .selectCurrentItem(currentDashboardId)
+            .combine(
+                observeBrokers()
+                    .map { brokers ->
+                        brokers.map(DrawerMenuItem::map)
                     }
-                )
+                    .selectCurrentItem(currentBrokerId),
+                ::makeItemList
+            )
+            .stateIn(container.scope, SharingStarted.Eagerly, listOf(DrawerHeaderItem))
 
-                addAll(
-                    listOf(
-                        DrawerMenuItem(
-                            Txt.of(R.string.home_create_new_dashboard),
-                            R.drawable.ic_add,
-                            type = DrawerMenuItem.Type.Button(BUTTON_CREATE_NEW_DASHBOARD),
-                        ),
-                        DividerItem,
-                        DrawerLabelItem(
-                            id = BUTTON_EDIT_BROKERS,
-                            Txt.of(R.string.home_brokers),
-                            buttonText = Txt.of(R.string.edit),
-                        ),
-                    )
-                )
-
-                addAll(
-                    brokers.map {
-                        DrawerMenuItem(
-                            Txt.of(it.name),
-                            R.drawable.ic_broker,
-                            type = DrawerMenuItem.Type.Broker(it),
-                            isSelected = it.id == currentIds.currentBrokerId,
-                        )
-                    }
-                )
-
-                addAll(
-                    listOf(
-                        DrawerMenuItem(
-                            Txt.of(R.string.home_add_new_broker),
-                            R.drawable.ic_add,
-                            type = DrawerMenuItem.Type.Button(BUTTON_ADD_NEW_BROKER),
-                        ),
-                        DividerItem,
-                        DrawerMenuItem(
-                            Txt.of(R.string.home_settings),
-                            R.drawable.ic_settings,
-                            type = DrawerMenuItem.Type.Button(BUTTON_SETTINGS),
-                        ),
-                        /*DrawerMenuItem(
-                            Txt.of(R.string.home_help_and_feedback),
-                            R.drawable.ic_help,
-                            type = DrawerMenuItem.Type.Button(BUTTON_HELP_AND_FEEDBACK),
-                        ),*/
-                    )
-                )
-            }
-
-            _items.value = list
+    private fun makeItemList(
+        dashboards: List<DrawerMenuItem>,
+        brokers: List<DrawerMenuItem>
+    ): List<ListItem> {
+        Timber.d("HomeDrawer: updating")
+        return ArrayList<ListItem>().apply {
+            add(DrawerHeaderItem)
+            add(DividerItem)
+            add(itemStore.dashboardsLabel)
+            addAll(dashboards)
+            add(itemStore.createDashboardButton)
+            add(DividerItem)
+            add(itemStore.brokersLabel)
+            addAll(brokers)
+            add(itemStore.addBrokerButton)
+            add(DividerItem)
+            add(itemStore.settingsButton)
         }
     }
 
@@ -178,6 +106,16 @@ class HomeDrawerViewModel @Inject constructor(
 
             is DrawerMenuItem.Type.Broker -> {
                 brokerClicked(position, item.type.broker)
+            }
+        }
+    }
+
+    private fun Flow<List<DrawerMenuItem>>.selectCurrentItem(
+        currentIdFlow: Flow<Long?>
+    ): Flow<List<DrawerMenuItem>> {
+        return combine(currentIdFlow) { list, currentId ->
+            list.map {
+                it.copy(isSelected = it.type.id == currentId)
             }
         }
     }
@@ -208,175 +146,25 @@ class HomeDrawerViewModel @Inject constructor(
         }
     }
 
-    private fun addDashboardToList(dashboard: Dashboard) {
-        val position = items.value.indexOfFirst {
-            it is DrawerLabelItem && it.id == BUTTON_EDIT_DASHBOARDS
-        } + 1
-
-        _items.value = _items.value.toMutableList().apply {
-            add(
-                position,
-                DrawerMenuItem(
-                    text = Txt.of(dashboard.name),
-                    icon = R.drawable.ic_dashboard,
-                    type = DrawerMenuItem.Type.Dashboard(dashboard)
-                )
-            )
-        }
-    }
-
-    private fun editDashboardInList(dashboard: Dashboard) {
-        val position = items.value.indexOfFirst {
-            it is DrawerMenuItem
-                    && it.type is DrawerMenuItem.Type.Dashboard
-                    && it.type.dashboard.id == dashboard.id
-        }
-
-        if (position < 0) return
-
-        val item = items.get<DrawerMenuItem>(position)
-
-        _items.value = _items.value.toMutableList().apply {
-            this[position] = item.copy(
-                text = Txt.of(dashboard.name),
-                type = DrawerMenuItem.Type.Dashboard(dashboard),
-            )
-        }
-    }
-
-    private fun deleteDashboardFromList(dashboardId: Long) {
-        val position = _items.value.indexOfFirst {
-            it is DrawerMenuItem
-                    && it.type is DrawerMenuItem.Type.Dashboard
-                    && it.type.dashboard.id == dashboardId
-        }
-
-        val item = items.get<DrawerMenuItem>(position)
-
-        _items.value = _items.value.toMutableList().apply {
-            removeAt(position)
-        }
-
-        if (item.isSelected) {
-            val newDashboardPosition = items.value.indexOfFirst {
-                it is DrawerMenuItem
-                        && it.type is DrawerMenuItem.Type.Dashboard
-            }
-
-            if (newDashboardPosition >= 0) {
-                dashboardClicked(
-                    newDashboardPosition,
-                    (items.get<DrawerMenuItem>(position).type as DrawerMenuItem.Type.Dashboard)
-                        .dashboard
-                )
-            }
-        }
-    }
-
-    private fun addAndSwitchDashboard(dashboard: Dashboard) {
-        container.launch(Dispatchers.Default) {
-            addDashboardToList(dashboard)
-            val position = items.value.indexOfFirst {
-                it is DrawerMenuItem &&
-                        it.type is DrawerMenuItem.Type.Dashboard &&
-                        it.type.dashboard.id == dashboard.id
-            }
-
-            if (position >= 0) {
-                dashboardClicked(position, dashboard)
-            }
-        }
-    }
-
     private fun dashboardClicked(position: Int, dashboard: Dashboard) {
-        container.raiseEffect(CloseHomeDrawer)
-
         container.launch(Dispatchers.Default) {
-            val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
+            container.raiseEffect(CloseHomeDrawer)
 
-            if (!alreadySelected) {
-                _items.emit(
-                    _items.value.mapIndexed { i, it ->
-                        if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard) {
-                            it.copy(isSelected = i == position)
-                        } else it
-                    }
-                )
+            delay(Anim.DEFAULT_DURATION)
 
-                eventBus.send(DashboardChanged(dashboard))
+            if (!items.get<DrawerMenuItem>(position).isSelected) {
+                updateCurrentDashboard(dashboard.id)
             }
         }
     }
 
     private fun brokerClicked(position: Int, broker: Broker) {
-        val alreadySelected = items.get<DrawerMenuItem>(position).isSelected
-
-        if (!alreadySelected) {
-            _items.value = _items.value.mapIndexed { i, it ->
-                if (it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Broker) {
-                    it.copy(isSelected = i == position)
-                } else it
+        container.launch(Dispatchers.Default) {
+            if (!items.get<DrawerMenuItem>(position).isSelected) {
+                updateCurrentBroker(broker.id)
             }
 
-            container.launch(Dispatchers.Main) {
-                eventBus.send(BrokerChanged(broker))
-            }
-        }
-
-        container.raiseEffect(CloseHomeDrawer)
-    }
-
-    private fun addBrokerToList(broker: Broker) {
-        val position = items.value.indexOfFirst {
-            it is DrawerLabelItem && it.id == BUTTON_EDIT_BROKERS
-        } + 1
-
-        _items.value = _items.value.toMutableList().apply {
-            add(
-                position,
-                DrawerMenuItem(
-                    text = Txt.of(broker.name),
-                    icon = R.drawable.ic_broker,
-                    type = DrawerMenuItem.Type.Broker(broker)
-                )
-            )
-        }
-
-        val brokersCount = items.value.count {
-            it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Broker
-        }
-
-        if (brokersCount == 1) {
-            container.launch(Dispatchers.Main) {
-                eventBus.send(BrokerChanged(broker))
-            }
-        }
-    }
-
-    private fun editBrokerInList(broker: Broker) {
-        val position = items.value.indexOfLast {
-            it is DrawerMenuItem
-                    && it.type is DrawerMenuItem.Type.Broker
-                    && it.type.broker.id == broker.id
-        }
-
-        if (position < 0) return
-
-        val item = items.get<DrawerMenuItem>(position)
-
-        _items.value = _items.value.toMutableList().apply {
-            this[position] = item.copy(
-                text = Txt.of(broker.name),
-                type = DrawerMenuItem.Type.Broker(broker)
-            )
-        }
-    }
-
-    private fun deleteBrokerFromList(brokerId: Long) {
-        _items.value = _items.value.filter {
-            !(it is DrawerMenuItem
-                    && it.type is DrawerMenuItem.Type.Broker
-                    && it.type.broker.id == brokerId)
+            container.raiseEffect(CloseHomeDrawer)
         }
     }
 

@@ -2,13 +2,14 @@ package com.github.burachevsky.mqtthub.domain.usecase.broker
 
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.repository.BrokerRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetCurrentBroker @Inject constructor(
-    private val brokerRepository: BrokerRepository,
+class ObserveBrokers @Inject constructor(
+    private val brokerRepository: BrokerRepository
 ) {
 
-    suspend operator fun invoke(): Broker? {
-        return brokerRepository.getCurrentBroker()
+    operator fun invoke(): Flow<List<Broker>> {
+        return brokerRepository.observeBrokers()
     }
 }

@@ -1,14 +1,17 @@
 package com.github.burachevsky.mqtthub.data.repository
 
 import com.github.burachevsky.mqtthub.data.entity.Broker
+import kotlinx.coroutines.flow.Flow
 
 interface BrokerRepository {
 
     suspend fun getBrokers(): List<Broker>
 
-    suspend fun getBroker(id: Long): Broker
+    fun observeBrokers(): Flow<List<Broker>>
 
-    suspend fun getCurrentBroker(): Broker?
+    fun observeCurrentBroker(): Flow<Broker?>
+
+    suspend fun getBroker(id: Long): Broker
 
     suspend fun insertBroker(broker: Broker): Broker
 

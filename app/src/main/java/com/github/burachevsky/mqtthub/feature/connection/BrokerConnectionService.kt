@@ -19,12 +19,13 @@ import com.github.burachevsky.mqtthub.domain.connection.BrokerConnectionPool
 import com.github.burachevsky.mqtthub.domain.connection.NotifyPayloadUpdate
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
+import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.tile.GetAllTiles
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -41,24 +42,69 @@ class BrokerConnectionService : Service() {
     lateinit var getBroker: GetBroker
 
     @Inject
+    lateinit var observeCurrentBroker: ObserveCurrentBroker
+
+    @Inject
     lateinit var connectionPool: BrokerConnectionPool
 
     @Inject
     lateinit var updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify
+
+    @Inject
+    lateinit var getAllTiles: GetAllTiles
 
     private var brokerConnection: BrokerConnection? = null
 
     override fun onCreate() {
         super.onCreate()
         (application as App).appComponent.inject(this)
+        initBrokerConnection()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Timber.d("BrokerConnectionService: onStartCommand")
-
-        val brokerId = intent.getLongExtra(EXTRA_BROKER_ID, 0)
-        initBrokerConnection(brokerId)
         return START_STICKY
+    }
+
+    private fun initBrokerConnection() {
+        scope.launch {
+            eventBus.subscribe<BrokerConnectionEvent>(this) { event ->
+                when (event) {
+                    is BrokerConnectionEvent.Connected -> {
+                        brokerConnection {
+                            launch {
+                                getAllTiles()
+                                    .map { it.subscribeTopic }
+                                    .let(::subscribe)
+
+                                val notification = createNotification(broker.name)
+                                startForeground(NotificationId.next(), notification)
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+
+            eventBus.subscribe<NotifyPayloadUpdate>(this) {
+                this@BrokerConnectionService.notifyPayloadUpdate(it.notifyList)
+            }
+
+            observeCurrentBroker().collect { broker ->
+                brokerConnection?.stop(BrokerConnectionEvent::Terminated)
+
+                broker ?: return@collect
+
+                brokerConnection = BrokerConnection(
+                    broker,
+                    eventBus,
+                    connectionPool,
+                    updatePayloadAndGetTilesToNotify,
+                )
+
+                brokerConnection { start() }
+            }
+        }
     }
 
     private fun createNotification(brokerName: String): Notification {
@@ -94,63 +140,6 @@ class BrokerConnectionService : Service() {
         return builder.build()
     }
 
-    private fun initBrokerConnection(brokerId: Long) {
-        scope.launch {
-            val broker = getBroker(brokerId)
-            brokerConnection = BrokerConnection(
-                broker,
-                eventBus,
-                connectionPool,
-                updatePayloadAndGetTilesToNotify,
-            )
-
-            brokerConnection {
-                start()
-            }
-
-            eventBus.subscribe<TerminateBrokerConnection>(this) { terminator ->
-                brokerConnection {
-                    if (broker.id == terminator.brokerId) {
-                        terminate()
-                    }
-                }
-            }
-
-            eventBus.subscribe<BrokerConnectionAction>(this) {
-                if (it.brokerId == brokerId) {
-                    val action = it.action
-
-                    brokerConnection {
-                        action()
-                    }
-                }
-            }
-
-            eventBus.subscribe<BrokerConnectionEvent>(this) {
-                when (it) {
-                    is BrokerConnectionEvent.Connected -> {
-                        launch(Dispatchers.Main) {
-                            val notification = createNotification(broker.name)
-                            startForeground(NotificationId.next(), notification)
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-
-            eventBus.subscribe<NotifyPayloadUpdate>(this) {
-                this@BrokerConnectionService.notifyPayloadUpdate(it.notifyList)
-            }
-        }
-    }
-
-    private fun terminate() {
-        Timber.d("BrokerConnectionService: Terminating")
-        brokerConnection?.stop(BrokerConnectionEvent::Terminated)
-        stopSelf()
-    }
-
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -163,9 +152,5 @@ class BrokerConnectionService : Service() {
 
     private inline fun brokerConnection(block: BrokerConnection.() -> Unit) {
         brokerConnection?.block()
-    }
-
-    companion object {
-        const val EXTRA_BROKER_ID = "EXTRA_BROKER_ID"
     }
 }

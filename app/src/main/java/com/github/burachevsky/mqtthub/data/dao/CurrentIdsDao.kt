@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.github.burachevsky.mqtthub.data.entity.CurrentIds
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrentIdsDao {
@@ -17,6 +18,15 @@ interface CurrentIdsDao {
 
     @Query("SELECT * FROM current_ids WHERE id = 0")
     suspend fun getCurrentIds(): CurrentIds
+
+    @Query("SELECT * FROM current_ids WHERE id = 0")
+    fun observeCurrentIds(): Flow<CurrentIds>
+
+    @Query("SELECT current_dashboard_id FROM current_ids WHERE id = 0")
+    fun observeCurrentDashboardId(): Flow<Long?>
+
+    @Query("SELECT current_broker_id FROM current_ids WHERE id = 0")
+    fun observeCurrentBrokerId(): Flow<Long?>
 
     @Query("UPDATE current_ids SET current_broker_id = :brokerId WHERE id = 0")
     suspend fun updateCurrentBrokerId(brokerId: Long?)

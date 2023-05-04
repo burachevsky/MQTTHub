@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub
 
 import android.app.UiModeManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -20,8 +21,8 @@ import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
 import com.github.burachevsky.mqtthub.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
+import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
 import com.google.android.material.color.DynamicColors
-import timber.log.Timber
 import javax.inject.Inject
 
 class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventHandler {
@@ -34,10 +35,10 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventH
     override val container by viewContainer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.d("AppActivity-SwitchTheme: onCreate, ${AppCompatDelegate.getDefaultNightMode()}")
         (application as App).appComponent.inject(this)
         setupActivityAppearance()
         super.onCreate(savedInstanceState)
+        startService(Intent(this, BrokerConnectionService::class.java))
         setContentView(R.layout.activity_app)
         findNavController().setGraph(R.navigation.app_graph)
     }

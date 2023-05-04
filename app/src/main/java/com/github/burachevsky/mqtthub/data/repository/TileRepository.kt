@@ -23,5 +23,9 @@ interface TileRepository {
 
     suspend fun getTile(id: Long): Tile
 
+    suspend fun getDashboardTiles(dashboardId: Long): List<Tile>
+
+    suspend fun getAllTiles(): List<Tile>
+
     fun observeTile(id: Long): Flow<Tile>
 }

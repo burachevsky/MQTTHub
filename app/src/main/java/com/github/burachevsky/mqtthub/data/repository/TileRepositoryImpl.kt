@@ -42,6 +42,14 @@ class TileRepositoryImpl @Inject constructor(
         return tileDao.getById(id)
     }
 
+    override suspend fun getDashboardTiles(dashboardId: Long): List<Tile> {
+        return tileDao.getDashboardTiles(dashboardId)
+    }
+
+    override suspend fun getAllTiles(): List<Tile> {
+        return tileDao.getAllTiles()
+    }
+
     override fun observeTile(id: Long): Flow<Tile> {
         return tileDao.observeTile(id)
     }

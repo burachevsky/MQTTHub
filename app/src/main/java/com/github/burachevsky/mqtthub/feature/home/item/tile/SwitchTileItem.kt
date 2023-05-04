@@ -70,6 +70,10 @@ class SwitchTileItemViewHolder(
             listener.onLongClick(adapterPosition)
         }
 
+        binding.tileSwitch.setOnLongClickListener {
+            listener.onLongClick(adapterPosition)
+        }
+
         binding.editModeOverlay.setOnClickListener {
             listener.onClick(adapterPosition)
         }

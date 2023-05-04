@@ -1,4 +1,4 @@
-package com.github.burachevsky.mqtthub.domain.usecase.dashboard
+package com.github.burachevsky.mqtthub.domain.usecase.currentids
 
 import com.github.burachevsky.mqtthub.data.entity.CurrentIds
 import com.github.burachevsky.mqtthub.data.repository.CurrentIdsRepository

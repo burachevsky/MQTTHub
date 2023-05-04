@@ -186,8 +186,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         binding.toolbarLayout.setBackgroundColor(colorSurface)
         binding.bottomAppBar.setBackgroundColor(colorSurface2)
 
-        drawerManager.fillDrawer()
-
         setupListeners()
         observeViewModel()
         setupRecyclerView()
@@ -264,9 +262,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
             is StartNewBrokerConnection -> {
                 requireActivity().startService(
-                    Intent(requireContext(), BrokerConnectionService::class.java).apply {
-                        putExtra(BrokerConnectionService.EXTRA_BROKER_ID, effect.brokerId)
-                    }
+                    Intent(requireContext(), BrokerConnectionService::class.java)
                 )
             }
         }
@@ -356,7 +352,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
         collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
-        collectOnStarted(viewModel.title) {
+        collectOnStarted(viewModel.dashboardName) {
             if (!viewModel.editMode.value.isEditMode) {
                 binding.toolbar.title = it
             }
@@ -454,7 +450,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         } else {
             binding.toolbarLayout.setBackgroundColor(colorSurface)
 
-            binding.toolbar.title = viewModel.title.value
+            binding.toolbar.title = viewModel.dashboardName.value
             binding.toolbar.setNavigationIcon(R.drawable.ic_menu)
         }
 
