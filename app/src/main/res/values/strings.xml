@@ -63,11 +63,12 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="duplicate">Duplicate</string>
-    <string name="change_dashboard_name">Change dashboard name</string>
+    <string name="change_dashboard_name">Change name</string>
     <string name="dashboard_name">Dashboard name</string>
-    <string name="import_dashboard">Import dashboard</string>
-    <string name="export_dashboard">Export dashboard</string>
-    <string name="delete_dashboard">Delete dashboard</string>
+    <string name="dashboard_actions">Dashboard actions</string>
+    <string name="import_dashboard">Import</string>
+    <string name="export_dashboard">Export</string>
+    <string name="delete_dashboard">Delete</string>
 
     <string name="add_tile">Add tile</string>
     <string name="tile_type_text">Text</string>
@@ -150,7 +151,11 @@
     <string name="notification_required_dialog_message">To be notified about payload updates you have to allow the app to use notifications.\n\nConsider enabling notifications for &appname; manually in settings.</string>
     <string name="notification_required_dialog_settings_button">Go to notification settings</string>
 
-    <string name="broker_connection_service_message">Connected</string>
+    <string name="broker_connection_service_message_connected">Connected</string>
+    <string name="broker_connection_service_message_connecting">Connecting…</string>
+    <string name="broker_connection_service_message_connection_failed">Connection failed</string>
     <string name="broker_connection_service_button_disconnect">Disconnect</string>
+    <string name="broker_connection_service_button_retry">Retry</string>
+    <string name="broker_connection_service_button_dismiss">Dismiss</string>
 
 </resources>

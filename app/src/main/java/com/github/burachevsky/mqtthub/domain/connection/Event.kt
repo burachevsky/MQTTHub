@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.domain.connection
 
-import com.github.burachevsky.mqtthub.data.entity.SimpleTile
+import com.github.burachevsky.mqtthub.data.entity.Tile
 import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
 
 interface BrokerEvent : AppEvent
@@ -35,4 +35,4 @@ data class MqttMessageArrived(
     val message: String,
 ): BrokerEvent
 
-data class NotifyPayloadUpdate(val notifyList: List<SimpleTile>) : BrokerEvent
+data class NotifyPayloadUpdate(val notifyList: List<Tile>) : BrokerEvent
