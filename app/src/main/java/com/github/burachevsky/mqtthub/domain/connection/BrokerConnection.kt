@@ -4,10 +4,11 @@ import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.common.ext.getServerAddress
 import com.github.burachevsky.mqtthub.data.entity.Broker
 import com.github.burachevsky.mqtthub.data.entity.Tile
+import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
@@ -21,13 +22,16 @@ class BrokerConnection(
     val eventBus: EventBus,
     connectionPool: BrokerConnectionPool,
     updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify,
+    observeTopicUpdates: ObserveTopicUpdates,
 ) : MqttCallbackExtended {
 
-    val connectionScope = CoroutineScope(Dispatchers.IO)
+    private val connectionJob = SupervisorJob()
+    val connectionScope = CoroutineScope(Dispatchers.IO + connectionJob)
 
     private val subscriptionManager = SubscriptionManager(
         this,
-        updatePayloadAndGetTilesToNotify
+        updatePayloadAndGetTilesToNotify,
+        observeTopicUpdates,
     )
 
     internal val mqttClient: MqttClient =
@@ -80,11 +84,7 @@ class BrokerConnection(
             Timber.i("BrokerConnection: connecting to $broker")
 
             execSafely(BrokerConnectionEvent::FailedToConnect) {
-                try {
-                    mqttClient.connect()
-                } catch (e: Throwable) {
-                    Timber.d(e)
-                }
+                mqttClient.connect()
             }
         }
     }
@@ -94,7 +94,7 @@ class BrokerConnection(
             Timber.i("BrokerConnection: reconnecting to $broker")
 
             execSafely(BrokerConnectionEvent::FailedToConnect) {
-                mqttClient.connect()
+                mqttClient.reconnect()
             }
         }
     }
@@ -118,32 +118,8 @@ class BrokerConnection(
                         null
                     )
                 )
-                cancel()
+                connectionJob.cancel()
             }
-        }
-    }
-
-    fun subscribe(topic: String) {
-        launchIfNotCanceled {
-            subscriptionManager.subscribeIfHaveNotAlready(topic)
-        }
-    }
-
-    fun subscribe(topics: List<String>) {
-        launchIfNotCanceled {
-            subscriptionManager.subscribeIfHaveNotAlready(topics)
-        }
-    }
-
-    fun unsubscribe(topic: String) {
-        launchIfNotCanceled {
-            subscriptionManager.unsubscribe(topic)
-        }
-    }
-
-    fun unsubscribe(topics: List<String>) {
-        launchIfNotCanceled {
-            subscriptionManager.unsubscribe(topics)
         }
     }
 

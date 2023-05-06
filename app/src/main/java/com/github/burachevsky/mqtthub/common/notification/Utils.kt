@@ -14,7 +14,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import com.github.burachevsky.mqtthub.AppActivity
 import com.github.burachevsky.mqtthub.R
-import com.github.burachevsky.mqtthub.data.entity.SimpleTile
+import com.github.burachevsky.mqtthub.data.entity.Tile
 
 fun Context.createNotificationChannels() {
     getSystemService<NotificationManager>()
@@ -43,11 +43,11 @@ fun Context.isNotificationsPermissionEnabled(): Boolean {
     return true
 }
 
-fun Context.notifyPayloadUpdate(notifyList: List<SimpleTile>) {
+fun Context.notifyPayloadUpdate(notifyList: List<Tile>) {
     notifyList.forEach(::notifyPayloadUpdate)
 }
 
-fun Context.notifyPayloadUpdate(tile: SimpleTile) {
+fun Context.notifyPayloadUpdate(tile: Tile) {
     val builder = NotificationCompat
         .Builder(this, NotificationChannelId.PAYLOAD_UPDATES)
         .setSmallIcon(R.drawable.ic_notification_small)

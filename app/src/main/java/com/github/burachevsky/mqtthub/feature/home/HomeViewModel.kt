@@ -215,6 +215,7 @@ class HomeViewModel @Inject constructor(
         container.navigator {
             navigateSelector(
                 SelectorConfig(
+                    title = Txt.of(R.string.dashboard_actions),
                     items = listOf(
                         SelectorItem(
                             id = OptionMenuId.EXPORT,
@@ -431,6 +432,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun brokerConnectionEventReceived(event: BrokerConnectionEvent) {
+        Timber.d("HomeViewModel: brokerConnectionEvent: $event")
         when (event) {
             is BrokerConnectionEvent.Connected -> {
                 _connectionState.tryEmit(ConnectionState.Connected)
@@ -599,18 +601,15 @@ class HomeViewModel @Inject constructor(
 
     private fun tileAdded(tile: Tile) {
         _items.update { it + tile.toListItem() }
-        container.launch(Dispatchers.Default) {
-            brokerConnection { subscribe(tile.subscribeTopic) } // todo
-        }
     }
 
     private fun tileEdited(tile: Tile) {
         val i = _items.value.indexOfFirst { it is TileItem && it.tile.id == tile.id }
         val oldItem = items.get<TileItem>(i)
 
-        _editMode.update {  editModeS ->
-            editModeS.copy(
-                selectedTiles = editModeS.selectedTiles
+        _editMode.update { editMode ->
+            editMode.copy(
+                selectedTiles = editMode.selectedTiles
                     .map { if (it.id == tile.id) tile else it }
                     .toHashSet()
             )
@@ -619,14 +618,6 @@ class HomeViewModel @Inject constructor(
         _items.update {
             it.toMutableList().apply {
                 this[i] = oldItem.copyTile(tile) as ListItem
-            }
-        }
-
-        val oldTopic = oldItem.tile.subscribeTopic
-
-        if (oldTopic != tile.subscribeTopic) {
-            container.launch(Dispatchers.Default) {
-                brokerConnection { subscribe(tile.subscribeTopic) } // todo
             }
         }
     }

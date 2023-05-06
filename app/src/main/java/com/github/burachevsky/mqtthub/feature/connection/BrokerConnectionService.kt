@@ -20,7 +20,7 @@ import com.github.burachevsky.mqtthub.domain.connection.NotifyPayloadUpdate
 import com.github.burachevsky.mqtthub.domain.eventbus.EventBus
 import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
 import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveCurrentBroker
-import com.github.burachevsky.mqtthub.domain.usecase.tile.GetAllTiles
+import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,55 +51,51 @@ class BrokerConnectionService : Service() {
     lateinit var updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify
 
     @Inject
-    lateinit var getAllTiles: GetAllTiles
+    lateinit var observeTopicUpdates: ObserveTopicUpdates
 
     private var brokerConnection: BrokerConnection? = null
+
+    private var notificationId = NotificationId.next()
 
     override fun onCreate() {
         super.onCreate()
         (application as App).appComponent.inject(this)
-        initBrokerConnection()
+        initConnectionService()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        when (intent.action) {
+            Action.DISCONNECT, Action.DISMISS -> {
+                stopSelf()
+            }
+
+            Action.RETRY -> {
+                brokerConnection {
+                    restart()
+                }
+            }
+        }
+
         return START_STICKY
     }
 
-    private fun initBrokerConnection() {
+    private fun initConnectionService() {
         scope.launch {
-            eventBus.subscribe<BrokerConnectionEvent>(this) { event ->
-                when (event) {
-                    is BrokerConnectionEvent.Connected -> {
-                        brokerConnection {
-                            launch {
-                                getAllTiles()
-                                    .map { it.subscribeTopic }
-                                    .let(::subscribe)
-
-                                val notification = createNotification(broker.name)
-                                startForeground(NotificationId.next(), notification)
-                            }
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-
-            eventBus.subscribe<NotifyPayloadUpdate>(this) {
-                this@BrokerConnectionService.notifyPayloadUpdate(it.notifyList)
-            }
+            subscribeOnAppEvents()
 
             observeCurrentBroker().collect { broker ->
                 brokerConnection?.stop(BrokerConnectionEvent::Terminated)
 
                 broker ?: return@collect
 
+                startForeground(broker.name, NotificationConfig.Connecting())
+
                 brokerConnection = BrokerConnection(
                     broker,
                     eventBus,
                     connectionPool,
                     updatePayloadAndGetTilesToNotify,
+                    observeTopicUpdates,
                 )
 
                 brokerConnection { start() }
@@ -107,14 +103,50 @@ class BrokerConnectionService : Service() {
         }
     }
 
-    private fun createNotification(brokerName: String): Notification {
+    private fun subscribeOnAppEvents() {
+        eventBus.subscribe<BrokerConnectionEvent>(scope) { event ->
+            when (event) {
+                is BrokerConnectionEvent.Connected -> {
+                    brokerConnection {
+                        startForeground(broker.name, NotificationConfig.Connected())
+                    }
+                }
+
+                is BrokerConnectionEvent.FailedToConnect,
+                is BrokerConnectionEvent.LostConnection -> {
+                    startForeground(
+                        event.connection.broker.name,
+                        NotificationConfig.ConnectionFailed()
+                    )
+                }
+
+                else -> {}
+            }
+        }
+
+        eventBus.subscribe<NotifyPayloadUpdate>(scope) {
+            notifyPayloadUpdate(it.notifyList)
+        }
+    }
+
+    private fun startForeground(brokerName: String, config: NotificationConfig) {
+        startForeground(
+            notificationId,
+            createNotification(
+                brokerName,
+                config,
+            )
+        )
+    }
+
+    private fun createNotification(brokerName: String, config: NotificationConfig): Notification {
         val builder = NotificationCompat.Builder(
             this,
             NotificationChannelId.BROKER_CONNECTION
         )
             .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(brokerName)
-            .setContentText(getString(R.string.broker_connection_service_message))
+            .setContentText(getString(config.textRes))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(
                 PendingIntent.getActivity(
@@ -124,19 +156,10 @@ class BrokerConnectionService : Service() {
                     PendingIntent.FLAG_IMMUTABLE
                 )
             )
-            .addAction(
-                NotificationCompat.Action(
-                    null,
-                    getString(R.string.broker_connection_service_button_disconnect),
-                    PendingIntent.getBroadcast(
-                        this,
-                        0,
-                        Intent(this, BrokerConnectionBroadcastReceiver::class.java)
-                            .apply { action = Action.DISCONNECT },
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-                    )
-                )
-            )
+            .apply {
+                config.action?.invoke(this@BrokerConnectionService)
+                    ?.forEach(::addAction)
+            }
         return builder.build()
     }
 

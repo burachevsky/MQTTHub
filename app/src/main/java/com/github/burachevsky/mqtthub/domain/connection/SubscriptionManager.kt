@@ -1,69 +1,113 @@
 package com.github.burachevsky.mqtthub.domain.connection
 
 import com.github.burachevsky.mqtthub.common.ext.throttle
+import com.github.burachevsky.mqtthub.data.entity.TopicUpdate
+import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager(
     private val connection: BrokerConnection,
-    private val savePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify
+    private val savePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify,
+    private val observeTopicUpdates: ObserveTopicUpdates,
 ) {
+    private val subscriptions = ConcurrentHashMap<String, TopicSubscription>()
 
-    private val subscriptions = ConcurrentHashMap<String, MutableSharedFlow<MqttMessage>>()
+    private var topicObserverJob: Job? = null
 
-    fun subscribeIfHaveNotAlready(topics: List<String>) {
-        val newTopics = topics.filter { it.isNotEmpty() && !subscriptions.containsKey(it) }
-            .distinct()
+    init {
+        connection.launchIfNotCanceled {
+            connection.eventBus.subscribe<BrokerConnectionEvent>(this) {
+                when (it) {
+                    is BrokerConnectionEvent.Connected -> {
+                        launchTopicObserver()
+                    }
 
-        if (newTopics.isEmpty()) return
-
-        val topicsString = newTopics.joinToString(", ")
-        Timber.i("BrokerConnection: subscribing to topics [$topicsString]")
-
-        newTopics.forEach { topic ->
-            subscriptions[topic] = createMessageFlow()
-            launchMessageCollecting(topic)
-        }
-
-        if (newTopics.isNotEmpty()) {
-            connection.mqttClient.subscribe(
-                newTopics.toTypedArray(),
-                IntArray(newTopics.size) { 0 }
-            )
+                    else -> {}
+                }
+            }
         }
     }
 
-    fun subscribeIfHaveNotAlready(topic: String) {
-        subscribeIfHaveNotAlready(listOf(topic))
-    }
+    private fun launchTopicObserver() {
+        topicObserverJob = connection.connectionScope.launch(Dispatchers.Default) {
+            observeTopicUpdates().collect { update ->
+                when (update) {
+                    is TopicUpdate.TopicsAdded -> {
+                        subscribe(update.set)
+                    }
 
-    fun unsubscribe(topics: List<String>) {
-        val distinctTopics = topics.filter { it.isNotEmpty() }
-            .distinct()
-
-        val topicsString = distinctTopics.joinToString(", ")
-        Timber.i("BrokerConnection: unsubscribing from topics [$topicsString]")
-
-        distinctTopics.forEach(subscriptions::remove)
-
-        if (distinctTopics.isNotEmpty()) {
-            connection.mqttClient.unsubscribe(distinctTopics.toTypedArray())
+                    is TopicUpdate.TopicsRemoved -> {
+                        unsubscribe(update.set)
+                    }
+                }
+            }
         }
     }
 
-    fun unsubscribe(topic: String) {
-        unsubscribe(listOf(topic))
+    private suspend fun subscribe(topicsSet: Set<String>) {
+        connection.execSafely {
+            val topics = topicsSet
+                .filter { it.isNotEmpty() }
+                .toTypedArray()
+
+            if (topics.isEmpty()) return@execSafely
+
+            val topicsString = topics.joinToString(", ")
+            Timber.i("SubscriptionManager: subscribing to topics [$topicsString]")
+
+            mqttClient.subscribe(topics)
+
+            topics.forEach { topic ->
+                val messageFlow = createMessageFlow()
+
+                subscriptions[topic] = TopicSubscription(
+                    job = messageFlow.collectFromTopic(topic),
+                    flow = messageFlow
+                )
+            }
+        }
+    }
+
+    private suspend fun unsubscribe(topicsSet: Set<String>) {
+        connection.execSafely {
+            val topics = topicsSet
+                .filter { it.isNotEmpty() }
+                .toTypedArray()
+
+            if (topics.isEmpty()) return@execSafely
+
+            val topicsString = topics.joinToString(", ")
+            Timber.i("SubscriptionManager: unsubscribing from topics [$topicsString]")
+
+            mqttClient.unsubscribe(topics)
+
+            topics.forEach { topic ->
+                subscriptions.remove(topic)?.job?.cancel()
+            }
+        }
     }
 
     suspend fun messageArrived(topic: String, message: MqttMessage) {
-        subscriptions[topic]?.emit(message)
+        subscriptions[topic]?.flow?.emit(message)
     }
 
     fun clear() {
+        Timber.i("SubscriptionManager: clear")
+        topicObserverJob?.cancel()
+
+        subscriptions.forEach { (_, subscription) ->
+            subscription.job.cancel()
+        }
+
         subscriptions.clear()
     }
 
@@ -75,21 +119,22 @@ internal class SubscriptionManager(
         )
     }
 
-    private fun launchMessageCollecting(topic: String) = with(connection) {
-        launchIfNotCanceled {
-            subscriptions[topic]
-                ?.throttle(periodMillis = 16)
-                ?.collect { message ->
+    private suspend fun SharedFlow<MqttMessage>.collectFromTopic(
+        topic: String
+    ): Job {
+        return connection.connectionScope.launch(Dispatchers.Default) {
+            throttle(periodMillis = 16)
+                .collect { message ->
                     val payload = String(message.payload)
                     val notifyList = savePayloadAndGetTilesToNotify(topic, payload)
 
                     if (notifyList.isNotEmpty()) {
-                        reportIfNotCanceled {
+                        connection.reportIfNotCanceled {
                             NotifyPayloadUpdate(notifyList)
                         }
                     }
 
-                    reportIfNotCanceled {
+                    connection.reportIfNotCanceled {
                         MqttMessageArrived(connection, topic, payload)
                     }
                 }

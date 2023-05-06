@@ -38,8 +38,6 @@
 
         <service android:name=".feature.connection.BrokerConnectionService" />
 
-        <receiver android:name=".feature.connection.BrokerConnectionBroadcastReceiver" />
-
     </application>
 
 </manifest>

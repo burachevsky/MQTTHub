@@ -4,9 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.github.burachevsky.mqtthub.data.entity.SimpleTile
 import com.github.burachevsky.mqtthub.data.entity.Tile
 import kotlinx.coroutines.flow.Flow
 
@@ -20,7 +18,7 @@ interface TileDao {
     suspend fun update(tile: Tile)
 
     @Update
-    fun update(tiles: List<Tile>)
+    suspend fun update(tiles: List<Tile>)
 
     @Query("DELETE FROM tiles WHERE id = :id")
     suspend fun delete(id: Long)
@@ -35,26 +33,6 @@ interface TileDao {
         WHERE subscribe_topic = :subscribeTopic"""
     )
     suspend fun updatePayload(subscribeTopic: String, payload: String)
-
-    @Query(
-        """SELECT id, name, last_payload 
-        FROM tiles 
-        WHERE notify_payload_update = :notify
-        AND subscribe_topic = :subscribeTopic """
-    )
-    suspend fun getTilesToNotify(
-        subscribeTopic: String,
-        notify: Boolean = true
-    ): List<SimpleTile>
-
-    @Transaction
-    suspend fun updatePayloadAndGetTilesToNotify(
-        subscribeTopic: String,
-        payload: String,
-    ): List<SimpleTile> {
-        updatePayload(subscribeTopic, payload)
-        return getTilesToNotify(subscribeTopic)
-    }
 
     @Query("SELECT * FROM tiles WHERE id = :id")
     suspend fun getById(id: Long): Tile
