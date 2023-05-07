@@ -1,0 +1,62 @@
+package com.github.burachevsky.mqtthub.core.data.mapper
+
+import com.github.burachevsky.mqtthub.core.common.Converter
+import com.github.burachevsky.mqtthub.core.database.entity.TileEntity
+import com.github.burachevsky.mqtthub.core.model.ChartPayload
+import com.github.burachevsky.mqtthub.core.model.Payload
+import com.github.burachevsky.mqtthub.core.model.Tile
+
+fun Tile.asEntity(): TileEntity {
+    return TileEntity(
+        id = id,
+        name = name,
+        subscribeTopic = subscribeTopic,
+        publishTopic = publishTopic,
+        qos = qos,
+        retained = retained,
+        type = type.name,
+        payload = payload.asEntity(),
+        notifyPayloadUpdate = notifyPayloadUpdate,
+        stateList = Converter.toJson(stateList),
+        dashboardId = dashboardId,
+        dashboardPosition = dashboardPosition,
+        styleId = design.styleId,
+        sizeId = design.sizeId,
+        isFullSpan = design.isFullSpan,
+    )
+}
+
+fun Payload.asEntity(): String {
+    return when (this) {
+        is ChartPayload -> Converter.toJson(this)
+        else -> stringValue
+    }
+}
+
+fun TileEntity.asModel(): Tile {
+    val tileType = Tile.Type.valueOf(type)
+
+    return Tile(
+        id = id,
+        name = name,
+        subscribeTopic = subscribeTopic,
+        publishTopic = publishTopic,
+        qos = qos,
+        retained = retained,
+        type = tileType,
+        payload = payload.asPayloadModel(tileType),
+        notifyPayloadUpdate = notifyPayloadUpdate,
+        stateList = Converter.fromJson(stateList),
+        dashboardId = dashboardId,
+        dashboardPosition = dashboardPosition,
+        design = Tile.Design(
+            styleId = styleId,
+            sizeId = sizeId,
+            isFullSpan = isFullSpan
+        ),
+    )
+}
+
+fun String.asPayloadModel(type: Tile.Type): Payload {
+    return Payload.map(this, type)
+}

@@ -6,10 +6,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
-kapt {
-    /*generateStubs = true*/
-}
-
 android {
     namespace = "com.github.burachevsky.mqtthub"
     compileSdk = Versions.COMPILE_SDK
@@ -20,15 +16,8 @@ android {
         targetSdk = Versions.TARGET_SDK
         versionCode = Versions.VERSION_CODE
         versionName = Versions.VERSION_NAME
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
-            }
-        }
     }
 
     buildTypes {
@@ -73,68 +62,31 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(project(":core:common"))
+    implementation(project(":core:data"))
+    implementation(project(":core:database"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:eventbus"))
+    implementation(project(":core:model"))
+    implementation(project(":core:mqtt"))
+    implementation(project(":core:preferences"))
+    implementation(project(":core:ui"))
 
+    implementation(project(":feature:addbroker"))
+    implementation(project(":feature:addtile"))
+    implementation(project(":feature:brokers"))
+    implementation(project(":feature:connection"))
+    implementation(project(":feature:dashboards"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:settings"))
+    implementation(project(":feature:tiledetails"))
 
     implementation(libs.core.ktx)
-    implementation(libs.startup)
     implementation(libs.timber)
-
-    // UI
-    implementation(libs.activity.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.fragment.ktx)
-    //implementation(libs.cardview)
-    implementation(libs.constraintlayout)
     implementation(libs.material)
-    //implementation(libs.flexbox)
-    implementation(libs.drawerlayout)
-
-    // Architecture Components
-    implementation(libs.lifecycle.livedata.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.compiler)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    kapt(libs.room.compiler)
-
-    // Dagger
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-
-    // Glide
-    implementation(libs.glide)
-    kapt(libs.glide.compiler)
-
-    // Kotlin
-    implementation(libs.kotlin.stdlib)
-    implementation(kotlin("reflect"))
-
-    // Instrumentation tests
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.espresso.contrib)
-    //androidTestImplementation(libs.junit.ext)
-
-    // Local unit tests
-    testImplementation(libs.junit)
-
-    // Gson
-    implementation(libs.gson)
-
-    //Paho
-    implementation(libs.paho)
-    //implementation(libs.paho.android)
-    implementation("androidx.work:work-runtime-ktx:2.7.1")
-
-    //Charts
-    implementation(libs.mpandroidchart)
-
-
-    //RotateLayout
-    implementation(libs.rotatelayout)
-
-    //by viewBinding()
     implementation(libs.viewbindingpropertydelegate.noreflection)
 }

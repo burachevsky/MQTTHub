@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home" />
+
+    <action
+        android:id="@+id/navigateEnterText"
+        app:destination="@id/enter_text" />
+
+    <action
+        android:id="@+id/navigateTextTileDetails"
+        app:destination="@id/text_tile_details" />
+
+    <action
+        android:id="@+id/navigateAddTextTile"
+        app:destination="@id/add_text_tile"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
+
+    <action
+        android:id="@+id/navigateAddButtonTile"
+        app:destination="@id/add_button_tile"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
+        android:id="@+id/navigateAddSwitchTile"
+        app:destination="@id/add_switch_tile"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
+        android:id="@+id/navigateAddChartTile"
+        app:destination="@id/add_chart_tile"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
+        android:id="@+id/navigateAddSliderTile"
+        app:destination="@id/add_slider_tile"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
+
+    <action
+        android:id="@+id/navigateDashboards"
+        app:destination="@id/dashboards"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
+        android:id="@+id/navigateAddBroker"
+        app:destination="@id/add_broker"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+    <action
+        android:id="@+id/navigateBrokers"
+        app:destination="@id/brokers"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left"/>
+
+    <action
+        android:id="@+id/navigateSelector"
+        app:destination="@id/selector" />
+
+    <action
+        android:id="@+id/navigateSettings"
+        app:destination="@id/settings"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/slide_out_left" />
+
+</navigation>
