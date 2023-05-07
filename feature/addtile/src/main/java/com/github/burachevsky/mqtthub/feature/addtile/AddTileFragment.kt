@@ -88,8 +88,8 @@ abstract class AddTileFragment<VM : AddTileViewModel> : Fragment(R.layout.fragme
         )
     }
 
-    override fun handleEvent(effect: AppEvent): Boolean {
-        when (effect) {
+    override fun handleEvent(event: AppEvent): Boolean {
+        when (event) {
             is RequestNotificationsPermissionIfNeeded -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
                     val status = ActivityCompat.checkSelfPermission(

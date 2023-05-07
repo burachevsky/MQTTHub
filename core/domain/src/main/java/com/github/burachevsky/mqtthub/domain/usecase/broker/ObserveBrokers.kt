@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.domain.usecase.broker
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
 import com.github.burachevsky.mqtthub.core.data.repository.BrokerRepository
+import com.github.burachevsky.mqtthub.core.model.Broker
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

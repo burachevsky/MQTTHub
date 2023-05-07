@@ -8,8 +8,8 @@ import com.github.burachevsky.mqtthub.core.ui.constant.NavDestination
 import com.github.burachevsky.mqtthub.core.ui.container.NavDestinationMapper
 
 open class Navigator(
-    protected val navController: NavController,
-    protected val action: NavDestinationMapper,
+    private val navController: NavController,
+    private val action: NavDestinationMapper,
 ) {
 
     fun navigate(

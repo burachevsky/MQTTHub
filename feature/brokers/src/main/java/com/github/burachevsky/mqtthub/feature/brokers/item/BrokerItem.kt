@@ -2,7 +2,7 @@ package com.github.burachevsky.mqtthub.feature.brokers.item
 
 import android.view.View
 import android.view.ViewGroup
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
+import com.github.burachevsky.mqtthub.core.model.Broker
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.ext.showPopupMenu
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter

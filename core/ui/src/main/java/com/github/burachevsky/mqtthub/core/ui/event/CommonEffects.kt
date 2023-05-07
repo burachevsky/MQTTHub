@@ -1,9 +1,9 @@
 package com.github.burachevsky.mqtthub.core.ui.event
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.AppEvent
+import com.github.burachevsky.mqtthub.core.model.Broker
+import com.github.burachevsky.mqtthub.core.model.Dashboard
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.navigation.Navigator
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 

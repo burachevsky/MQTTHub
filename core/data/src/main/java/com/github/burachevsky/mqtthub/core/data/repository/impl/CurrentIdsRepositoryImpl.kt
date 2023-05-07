@@ -1,9 +1,11 @@
 package com.github.burachevsky.mqtthub.core.data.repository.impl
 
+import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
 import com.github.burachevsky.mqtthub.core.database.dao.CurrentIdsDao
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
+import com.github.burachevsky.mqtthub.core.model.CurrentIds
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 
 class CurrentIdsRepositoryImpl @Inject constructor(
@@ -15,11 +17,17 @@ class CurrentIdsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCurrentIds(): CurrentIds {
-        return currentIdsDao.getCurrentIds()
+        return currentIdsDao.getCurrentIds().asModel()
     }
 
     override fun observeCurrentIds(): Flow<CurrentIds> {
         return currentIdsDao.observeCurrentIds()
+            .transform { ids ->
+                when {
+                    ids != null -> emit(ids.asModel())
+                    else -> init()
+                }
+            }
     }
 
     override fun observeCurrentDashboardId(): Flow<Long?> {

@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.domain.usecase.tile
 
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.core.data.repository
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TopicUpdate
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.flow.Flow
 
 interface TileRepository {

@@ -26,7 +26,7 @@ android {
 dependencies {
     implementation(project(":core:eventbus"))
     implementation(project(":core:common"))
-    implementation(project(":core:database"))
+    implementation(project(":core:model"))
 
     implementation(libs.core.ktx)
     implementation(libs.timber)

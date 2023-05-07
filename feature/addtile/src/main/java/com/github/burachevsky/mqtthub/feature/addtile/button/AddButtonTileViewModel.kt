@@ -1,9 +1,12 @@
 package com.github.burachevsky.mqtthub.feature.addtile.button
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TileStyleId
+import com.github.burachevsky.mqtthub.core.model.BUTTON
+import com.github.burachevsky.mqtthub.core.model.StringPayload
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TileStyleId
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.constant.NavArg
+import com.github.burachevsky.mqtthub.core.ui.ext.getPayload
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
@@ -60,7 +63,7 @@ class AddButtonTileViewModel @Inject constructor(
     override fun initFields(tile: Tile) {
         name.text = tile.name
         publishTopic.text = tile.publishTopic
-        payload.text = tile.payload
+        payload.text = tile.stateList.getPayload(BUTTON).orEmpty()
         retain.isChecked = tile.retained
         qos.selectedValue = tile.qos
         style.selectedValue = tile.design.styleId
@@ -72,12 +75,12 @@ class AddButtonTileViewModel @Inject constructor(
             name = name.text,
             subscribeTopic = "",
             publishTopic = publishTopic.text,
-            payload = payload.text,
+            payload = StringPayload(),
             qos = qos.selectedValue,
             retained = retain.isChecked,
             dashboardId = dashboardId,
             type = Tile.Type.BUTTON,
-            stateList = emptyList(),
+            stateList = listOf(Tile.State(BUTTON, payload.text)),
             dashboardPosition = dashboardPosition,
             design = Tile.Design(
                 styleId = style.selectedValue,

@@ -62,21 +62,24 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:eventbus"))
-    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
+    implementation(project(":core:eventbus"))
+    implementation(project(":core:model"))
     implementation(project(":core:mqtt"))
+    implementation(project(":core:preferences"))
+    implementation(project(":core:ui"))
 
+    implementation(project(":feature:addbroker"))
+    implementation(project(":feature:addtile"))
+    implementation(project(":feature:brokers"))
+    implementation(project(":feature:connection"))
+    implementation(project(":feature:dashboards"))
     implementation(project(":feature:home"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:tiledetails"))
-    implementation(project(":feature:addtile"))
-    implementation(project(":feature:connection"))
-    implementation(project(":feature:dashboards"))
-    implementation(project(":feature:brokers"))
-    implementation(project(":feature:addbroker"))
 
     implementation(libs.core.ktx)
     implementation(libs.timber)

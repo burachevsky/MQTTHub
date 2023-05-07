@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.home.drawer
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
+import com.github.burachevsky.mqtthub.core.model.Broker
+import com.github.burachevsky.mqtthub.core.model.CurrentIds
+import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.constant.Anim
 import com.github.burachevsky.mqtthub.core.ui.container.ViewModelContainer
 import com.github.burachevsky.mqtthub.core.ui.ext.get

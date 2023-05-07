@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.addbroker
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Broker
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer

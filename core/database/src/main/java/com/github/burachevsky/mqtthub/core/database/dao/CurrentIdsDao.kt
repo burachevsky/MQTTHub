@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
+import com.github.burachevsky.mqtthub.core.database.entity.CurrentIdsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,10 +17,10 @@ interface CurrentIdsDao {
     suspend fun getCurrentDashboardId(): Long?
 
     @Query("SELECT * FROM current_ids WHERE id = 0")
-    suspend fun getCurrentIds(): CurrentIds
+    suspend fun getCurrentIds(): CurrentIdsEntity
 
     @Query("SELECT * FROM current_ids WHERE id = 0")
-    fun observeCurrentIds(): Flow<CurrentIds>
+    fun observeCurrentIds(): Flow<CurrentIdsEntity?>
 
     @Query("SELECT current_dashboard_id FROM current_ids WHERE id = 0")
     fun observeCurrentDashboardId(): Flow<Long?>
@@ -35,5 +35,5 @@ interface CurrentIdsDao {
     suspend fun updateCurrentDashboardId(dashboardId: Long)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun init(currentIds: CurrentIds = CurrentIds())
+    suspend fun init(currentIds: CurrentIdsEntity = CurrentIdsEntity())
 }

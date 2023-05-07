@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.core.connection
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Broker
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
@@ -18,14 +18,14 @@ import timber.log.Timber
 
 class BrokerConnection(
     val broker: Broker,
-    val eventBus: EventBus,
+    internal val eventBus: EventBus,
     connectionPool: BrokerConnectionPool,
     updatePayloadAndGetTilesToNotify: UpdatePayloadAndGetTilesToNotify,
     observeTopicUpdates: ObserveTopicUpdates,
 ) {
 
     private val connectionJob = SupervisorJob()
-    val connectionScope = CoroutineScope(Dispatchers.IO + connectionJob)
+    internal val connectionScope = CoroutineScope(Dispatchers.IO + connectionJob)
 
     private val subscriptionManager = SubscriptionManager(
         this,

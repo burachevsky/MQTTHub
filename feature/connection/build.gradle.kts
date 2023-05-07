@@ -21,7 +21,7 @@ android {
 dependencies {
     implementation(project(":core:eventbus"))
     implementation(project(":core:mqtt"))
-    implementation(project(":core:database"))
+    implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
 

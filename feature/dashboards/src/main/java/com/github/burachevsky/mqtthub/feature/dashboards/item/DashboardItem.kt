@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
+import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.ext.clearFocusAndHideKeyboard
 import com.github.burachevsky.mqtthub.core.ui.ext.requestFocusAndShowKeyboard

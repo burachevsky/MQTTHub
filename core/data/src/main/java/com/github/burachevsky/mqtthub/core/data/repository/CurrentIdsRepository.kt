@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.core.data.repository
 
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
+import com.github.burachevsky.mqtthub.core.model.CurrentIds
 import kotlinx.coroutines.flow.Flow
 
 interface CurrentIdsRepository {

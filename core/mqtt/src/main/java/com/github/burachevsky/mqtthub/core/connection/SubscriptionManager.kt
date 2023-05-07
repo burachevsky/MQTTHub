@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.core.connection
 
 import com.github.burachevsky.mqtthub.core.common.throttle
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TopicUpdate
+import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
 import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.Dispatchers

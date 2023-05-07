@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.R
 
 fun Context.createNotificationChannels() {
@@ -51,7 +51,7 @@ fun Context.notifyPayloadUpdate(tile: Tile) {
         .Builder(this, NotificationChannelId.PAYLOAD_UPDATES)
         .setSmallIcon(R.drawable.ic_notification_small)
         .setContentTitle(tile.name)
-        .setContentText(tile.payload)
+        .setContentText(tile.payload.stringValue)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setGroup("${tile.id}")
         .setGroupSummary(true)

@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.CompoundButton
 import androidx.core.view.updateLayoutParams
+import com.github.burachevsky.mqtthub.core.ui.R
+import com.github.burachevsky.mqtthub.core.ui.databinding.ListItemSwitchBinding
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
-import com.github.burachevsky.mqtthub.core.ui.R
-import com.github.burachevsky.mqtthub.core.ui.databinding.ListItemSwitchBinding
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 
 data class SwitchItem(
@@ -57,7 +57,7 @@ class SwitchItemViewHolder(
     }
 }
 
-class SwitchItemAdapter() : ItemAdapter {
+class SwitchItemAdapter : ItemAdapter {
 
     override fun viewType() = SwitchItem.LAYOUT
 

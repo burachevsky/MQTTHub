@@ -1,26 +1,27 @@
 package com.github.burachevsky.mqtthub.core.database
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.github.burachevsky.mqtthub.core.database.dao.BrokerDao
 import com.github.burachevsky.mqtthub.core.database.dao.CurrentIdsDao
 import com.github.burachevsky.mqtthub.core.database.dao.DashboardDao
 import com.github.burachevsky.mqtthub.core.database.dao.TileDao
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.database.entity.BrokerEntity
+import com.github.burachevsky.mqtthub.core.database.entity.CurrentIdsEntity
+import com.github.burachevsky.mqtthub.core.database.entity.DashboardEntity
+import com.github.burachevsky.mqtthub.core.database.entity.TileEntity
 
 @Database(
-    version = 12,
+    version = 1,
     entities = [
-        Broker::class,
-        Tile::class,
-        Dashboard::class,
-        CurrentIds::class,
+        BrokerEntity::class,
+        TileEntity::class,
+        DashboardEntity::class,
+        CurrentIdsEntity::class,
     ],
 )
-@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun brokerDao(): BrokerDao
@@ -36,19 +37,15 @@ abstract class AppDatabase : RoomDatabase() {
         fun getInstance(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
                 instance
-                    ?: buildDatabase(
-                        context
-                    )
+                    ?: buildDatabase(context)
                         .also { instance = it }
             }
         }
 
         private fun buildDatabase(context: Context): AppDatabase {
             return Room
-                .databaseBuilder(context, AppDatabase::class.java,
-                    APP_DB_NAME
-                )
-                .addMigrations(MIGRATION_11_12)
+                .databaseBuilder(context, AppDatabase::class.java, APP_DB_NAME)
+                .fallbackToDestructiveMigrationOnDowngrade()
                 .build()
         }
     }

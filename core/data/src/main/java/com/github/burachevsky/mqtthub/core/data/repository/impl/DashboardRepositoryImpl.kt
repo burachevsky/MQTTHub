@@ -1,12 +1,15 @@
 package com.github.burachevsky.mqtthub.core.data.repository.impl
 
+import com.github.burachevsky.mqtthub.core.common.Converter
+import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
+import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
 import com.github.burachevsky.mqtthub.core.data.repository.DashboardRepository
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
-import com.github.burachevsky.mqtthub.core.database.Converters
 import com.github.burachevsky.mqtthub.core.database.dao.DashboardDao
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.DashboardWithTiles
+import com.github.burachevsky.mqtthub.core.database.entity.DashboardEntity
+import com.github.burachevsky.mqtthub.core.database.entity.DashboardWithTiles
+import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -25,8 +29,13 @@ class DashboardRepositoryImpl @Inject constructor(
     private val tileRepository: TileRepository,
 ): DashboardRepository {
 
-    override suspend fun insertDashboard(dashboard: Dashboard): Dashboard {
+    private suspend fun insertDashboard(dashboard: DashboardEntity): DashboardEntity {
         val id = dashboardDao.insert(dashboard)
+        return dashboard.copy(id = id)
+    }
+
+    override suspend fun insertDashboard(dashboard: Dashboard): Dashboard {
+        val id = dashboardDao.insert(dashboard.asEntity())
         return dashboard.copy(id = id)
     }
 
@@ -35,11 +44,11 @@ class DashboardRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateDashboard(dashboard: Dashboard) {
-        return dashboardDao.update(dashboard)
+        return dashboardDao.update(dashboard.asEntity())
     }
 
     override suspend fun getDashboards(): List<Dashboard> {
-        return dashboardDao.getAll()
+        return dashboardDao.getAll().map { it.asModel() }
     }
 
     override fun observeCurrentDashboard(): Flow<Dashboard> {
@@ -60,7 +69,7 @@ class DashboardRepositoryImpl @Inject constructor(
                             dashboardDao.observeDashboard(currentId)
                                 .onEach { dashboard ->
                                     if (isActive && id == currentId) {
-                                        send(dashboard)
+                                        send(dashboard.asModel())
                                     }
                                 }
                                 .collect()
@@ -75,10 +84,12 @@ class DashboardRepositoryImpl @Inject constructor(
     }
 
     override fun observeDashboards(): Flow<List<Dashboard>> {
-        return dashboardDao.observeDashboards()
+        return dashboardDao.observeDashboards().map { entities ->
+            entities.map { it.asModel() }
+        }
     }
 
-    override suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
+    private suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
         return dashboardDao.getDashboardWithTiles(id).run {
             copy(tiles = tiles.sortedBy { it.dashboardPosition })
         }
@@ -98,18 +109,18 @@ class DashboardRepositoryImpl @Inject constructor(
     }
 
     override suspend fun importDashboardFromJson(json: String): Dashboard {
-        val importedDashboardWithTiles = Converters.fromJson<DashboardWithTiles>(json)
+        val importedDashboardWithTiles = Converter.fromJson<DashboardWithTiles>(json)
 
         val dashboard = insertDashboard(importedDashboardWithTiles.dashboard)
 
         importedDashboardWithTiles.tiles.forEach { tile ->
-            tileRepository.insertTile(tile.copy(dashboardId = dashboard.id))
+            tileRepository.insertTile(tile.copy(dashboardId = dashboard.id).asModel())
         }
 
-        return dashboard
+        return dashboard.asModel()
     }
 
-    private fun createFirstDashboard(): Dashboard {
-        return Dashboard(name = "Dashboard")
+    private fun createFirstDashboard(): DashboardEntity {
+        return DashboardEntity(name = "Dashboard")
     }
 }

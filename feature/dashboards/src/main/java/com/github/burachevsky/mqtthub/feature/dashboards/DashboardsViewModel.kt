@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.dashboards
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer

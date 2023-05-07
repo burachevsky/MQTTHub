@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.postDelayed
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
@@ -164,7 +164,7 @@ class SliderTileItemViewHolder(
     }
 
     private fun bindPayload(item: SliderTileItem) {
-        val payload = item.tile.payload.toFloatOrNull() ?: return
+        val payload = item.tile.payload.stringValue.toFloatOrNull() ?: return
 
         binding.slider.apply {
             if (payload in valueFrom..valueTo) {

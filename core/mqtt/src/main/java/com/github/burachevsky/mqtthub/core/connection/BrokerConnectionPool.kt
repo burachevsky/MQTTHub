@@ -13,7 +13,7 @@ class BrokerConnectionPool @Inject constructor() {
         return connections[brokerId]
     }
 
-    fun setConnection(brokerId: Long, connection: BrokerConnection?) {
+    internal fun setConnection(brokerId: Long, connection: BrokerConnection?) {
         if (connection != null) {
             connections[brokerId] = connection
         } else {

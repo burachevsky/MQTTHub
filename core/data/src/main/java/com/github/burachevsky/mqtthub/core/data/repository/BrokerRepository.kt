@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.core.data.repository
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
+import com.github.burachevsky.mqtthub.core.model.Broker
 import kotlinx.coroutines.flow.Flow
 
 interface BrokerRepository {

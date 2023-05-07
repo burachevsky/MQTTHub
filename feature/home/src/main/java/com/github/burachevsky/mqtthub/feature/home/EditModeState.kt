@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub.feature.home
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
+
 
 data class EditModeState(
     val isEditMode: Boolean = false,

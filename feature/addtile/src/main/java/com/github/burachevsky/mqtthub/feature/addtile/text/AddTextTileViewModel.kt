@@ -1,9 +1,9 @@
 package com.github.burachevsky.mqtthub.feature.addtile.text
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TextTileSizeId
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TileStyleId
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.TextTileSizeId
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TileStyleId
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.constant.NavArg
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem

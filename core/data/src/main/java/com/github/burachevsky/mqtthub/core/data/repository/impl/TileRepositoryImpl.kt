@@ -1,11 +1,14 @@
 package com.github.burachevsky.mqtthub.core.data.repository.impl
 
+import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
+import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.core.data.repository.impl.cache.TileMemoryCache
 import com.github.burachevsky.mqtthub.core.database.dao.TileDao
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TopicUpdate
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TileRepositoryImpl @Inject constructor(
@@ -15,13 +18,17 @@ class TileRepositoryImpl @Inject constructor(
 
     private suspend fun <T> withMemoryCache(action: suspend (TileMemoryCache).() -> T): T {
         return memoryCache.apply(
-            initializer = tileDao::getAllTiles,
+            initializer = {
+                tileDao.getAllTiles().map {
+                    it.asModel()
+                }
+            },
             action = action
         )
     }
 
     override suspend fun insertTile(tile: Tile): Tile {
-        val id = tileDao.insert(tile)
+        val id = tileDao.insert(tile.asEntity())
         val inserted = tile.copy(id = id)
         withMemoryCache {
             insert(inserted)
@@ -30,14 +37,14 @@ class TileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTile(tile: Tile) {
-        tileDao.update(tile)
+        tileDao.update(tile.asEntity())
         withMemoryCache {
             update(tile)
         }
     }
 
     override suspend fun updateTiles(tiles: List<Tile>) {
-        tileDao.update(tiles)
+        tileDao.update(tiles.map { it.asEntity() })
         withMemoryCache {
             update(tiles)
         }
@@ -51,7 +58,7 @@ class TileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteTiles(tiles: List<Tile>) {
-        tileDao.delete(tiles)
+        tileDao.delete(tiles.map { it.asEntity() })
         withMemoryCache {
             delete(tiles.map { it.id })
         }
@@ -86,7 +93,7 @@ class TileRepositoryImpl @Inject constructor(
     }
 
     override fun observeTile(id: Long): Flow<Tile> {
-        return tileDao.observeTile(id)
+        return tileDao.observeTile(id).map { it.asModel() }
     }
 
     override fun observeTopicUpdates(): Flow<TopicUpdate> {

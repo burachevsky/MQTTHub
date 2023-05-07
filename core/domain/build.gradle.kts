@@ -20,7 +20,7 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(project(":core:database"))
+    implementation(project(":core:model"))
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

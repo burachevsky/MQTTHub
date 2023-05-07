@@ -1,11 +1,12 @@
 package com.github.burachevsky.mqtthub.feature.settings
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.data.settings.Settings
-import com.github.burachevsky.mqtthub.core.data.settings.Theme
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Theme
+import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
+import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
 import com.github.burachevsky.mqtthub.core.ui.ext.get
 import com.github.burachevsky.mqtthub.core.ui.navigation.Navigator
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
@@ -15,8 +16,7 @@ import com.github.burachevsky.mqtthub.core.ui.widget.SubtitleItem
 import com.github.burachevsky.mqtthub.core.ui.widget.SwitchItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleOption
-import com.github.burachevsky.mqtthub.core.ui.R
-import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
+import com.github.burachevsky.mqtthub.domain.usecase.settings.GetSettings
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
-    private val settings: Settings,
+    getSettings: GetSettings,
     private val eventBus: EventBus,
 ) : ViewModel(), VM<Navigator> {
 
@@ -33,6 +33,8 @@ class SettingsViewModel @Inject constructor(
 
     private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ListItem>> = _items
+
+    private val settings = getSettings()
 
     fun toggleGroupSelectionChanged(position: Int) {
         val item = items.get<ToggleGroupItem>(position)

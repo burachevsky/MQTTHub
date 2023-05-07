@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItem
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItem

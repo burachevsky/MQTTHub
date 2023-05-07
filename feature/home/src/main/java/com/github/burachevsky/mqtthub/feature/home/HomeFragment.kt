@@ -193,8 +193,8 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         backPressedCallback.isEnabled = false
     }
 
-    override fun handleEvent(effect: AppEvent): Boolean {
-        when (effect) {
+    override fun handleEvent(event: AppEvent): Boolean {
+        when (event) {
             is CloseHomeDrawer -> {
                 binding.drawerLayout.close()
                 return true
@@ -212,12 +212,12 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
 
             is OpenTextTileDetails -> {
                  val viewHolder = binding.recyclerView
-                     .findViewHolderForAdapterPosition(effect.position)
+                     .findViewHolderForAdapterPosition(event.position)
                     as TextTileItemViewHolder
 
                 container.navigator().navigate(
                     NavDestination.TextTileDetails,
-                    args = bundleOf(NavArg.TILE_ID to effect.tileId),
+                    args = bundleOf(NavArg.TILE_ID to event.tileId),
                     extras = FragmentNavigatorExtras(
                         viewHolder.binding.tile to "detailsTile",
                         viewHolder.binding.tileName to "detailsTileName",
@@ -227,7 +227,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
             }
 
             is ExportDashboard -> {
-                fileExporter.launch(effect.fileName)
+                fileExporter.launch(event.fileName)
             }
 
             is ImportDashboard -> {

@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.domain.usecase.currentids
 
-import com.github.burachevsky.mqtthub.core.database.entity.current.CurrentIds
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
+import com.github.burachevsky.mqtthub.core.model.CurrentIds
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

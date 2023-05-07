@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem

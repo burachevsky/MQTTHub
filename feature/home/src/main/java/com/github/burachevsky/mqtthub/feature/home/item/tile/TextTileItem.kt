@@ -3,8 +3,8 @@ package com.github.burachevsky.mqtthub.feature.home.item.tile
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TextTileSizeId
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.TextTileSizeId
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
@@ -142,7 +142,7 @@ class TextTileItemViewHolder(
     }
 
     private fun bindTilePayload(item: TextTileItem) {
-        binding.tilePayload.text = item.tile.payload
+        binding.tilePayload.text = item.tile.payload.stringValue
     }
 }
 

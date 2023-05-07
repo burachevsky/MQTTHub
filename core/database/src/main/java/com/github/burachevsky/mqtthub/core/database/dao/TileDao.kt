@@ -5,26 +5,26 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.database.entity.TileEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TileDao {
 
     @Insert
-    suspend fun insert(tile: Tile): Long
+    suspend fun insert(tile: TileEntity): Long
 
     @Update
-    suspend fun update(tile: Tile)
+    suspend fun update(tile: TileEntity)
 
     @Update
-    suspend fun update(tiles: List<Tile>)
+    suspend fun update(tiles: List<TileEntity>)
 
     @Query("DELETE FROM tiles WHERE id = :id")
     suspend fun delete(id: Long)
 
     @Delete
-    suspend fun delete(ids: List<Tile>)
+    suspend fun delete(ids: List<TileEntity>)
 
     @Query(
         """
@@ -35,14 +35,14 @@ interface TileDao {
     suspend fun updatePayload(subscribeTopic: String, payload: String)
 
     @Query("SELECT * FROM tiles WHERE id = :id")
-    suspend fun getById(id: Long): Tile
+    suspend fun getById(id: Long): TileEntity
 
     @Query("SELECT * FROM tiles WHERE dashboard_id = :dashboardId ORDER BY dashboard_position")
-    suspend fun getDashboardTiles(dashboardId: Long): List<Tile>
+    suspend fun getDashboardTiles(dashboardId: Long): List<TileEntity>
 
     @Query("SELECT * FROM tiles")
-    suspend fun getAllTiles(): List<Tile>
+    suspend fun getAllTiles(): List<TileEntity>
 
     @Query("SELECT * FROM tiles WHERE id = :id")
-    fun observeTile(id: Long): Flow<Tile>
+    fun observeTile(id: Long): Flow<TileEntity>
 }

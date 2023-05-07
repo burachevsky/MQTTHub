@@ -2,11 +2,11 @@ package com.github.burachevsky.mqtthub.feature.home.item
 
 import android.view.View
 import androidx.core.view.isVisible
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SLIDER_MAX
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SLIDER_MIN
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SLIDER_STEP
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SWITCH_ON
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TileStyleId
+import com.github.burachevsky.mqtthub.core.model.SLIDER_MAX
+import com.github.burachevsky.mqtthub.core.model.SLIDER_MIN
+import com.github.burachevsky.mqtthub.core.model.SLIDER_STEP
+import com.github.burachevsky.mqtthub.core.model.SWITCH_ON
+import com.github.burachevsky.mqtthub.core.model.TileStyleId
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.ext.getPayload
 import com.github.burachevsky.mqtthub.core.ui.ext.isState

@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.core.connection
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.AppEvent
+import com.github.burachevsky.mqtthub.core.model.Tile
 
 interface BrokerEvent : AppEvent
 

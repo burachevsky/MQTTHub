@@ -1,7 +1,8 @@
 package com.github.burachevsky.mqtthub.core.data.repository.impl.cache
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TopicUpdate
+import com.github.burachevsky.mqtthub.core.data.mapper.asPayloadModel
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -107,7 +108,9 @@ class TileMemoryCache @Inject constructor() {
             val current = cache[i]
 
             if (current.subscribeTopic == subscribeTopic) {
-                val updated = current.copy(payload = payload)
+                val updated = current.copy(
+                    payload = payload.asPayloadModel(current.type)
+                )
                 cache[i] = updated
 
                 if (updated.notifyPayloadUpdate) {

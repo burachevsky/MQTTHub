@@ -3,7 +3,8 @@ package com.github.burachevsky.mqtthub.feature.home.item.tile
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.ChartPayload
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.ext.getValueFromAttribute
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
@@ -118,7 +119,8 @@ class ChartTileItemViewHolder(
     }
 
     private fun bindTilePayload(item: ChartTileItem) {
-        val payload = item.tile.chartPayload ?: return
+        val payload = item.tile.payload
+        if (payload !is ChartPayload) return
 
         binding.yAxisTitle.text = payload.yTitle
 

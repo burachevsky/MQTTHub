@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.feature.home.item
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 
 interface TileItem : ListItem {

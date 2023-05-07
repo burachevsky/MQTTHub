@@ -7,11 +7,12 @@ import com.github.burachevsky.mqtthub.core.connection.BrokerConnection
 import com.github.burachevsky.mqtthub.core.connection.BrokerConnectionEvent
 import com.github.burachevsky.mqtthub.core.connection.BrokerConnectionPool
 import com.github.burachevsky.mqtthub.core.connection.MqttMessageArrived
-import com.github.burachevsky.mqtthub.core.connection.getServerAddress
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.eventbus.MQTT_EVENT_BUS
+import com.github.burachevsky.mqtthub.core.model.BUTTON
+import com.github.burachevsky.mqtthub.core.model.Dashboard
+import com.github.burachevsky.mqtthub.core.model.Payload
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
@@ -28,6 +29,7 @@ import com.github.burachevsky.mqtthub.core.ui.event.TileAdded
 import com.github.burachevsky.mqtthub.core.ui.event.TileEdited
 import com.github.burachevsky.mqtthub.core.ui.event.ToastMessage
 import com.github.burachevsky.mqtthub.core.ui.ext.get
+import com.github.burachevsky.mqtthub.core.ui.ext.getPayload
 import com.github.burachevsky.mqtthub.core.ui.ext.getSwitchOppositeStatePayload
 import com.github.burachevsky.mqtthub.core.ui.ext.toast
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
@@ -190,7 +192,8 @@ class HomeViewModel @Inject constructor(
             when (tile.type) {
                 Tile.Type.BUTTON -> container.launch(Dispatchers.Default) {
                     brokerConnection {
-                        publish(tile, tile.payload)
+                        val payload = tile.stateList.getPayload(BUTTON) ?: return@brokerConnection
+                        publish(tile, payload)
                     }
                 }
 
@@ -247,7 +250,7 @@ class HomeViewModel @Inject constructor(
     fun sliderValueChanged(position: Int, value: Float) {
         val item = items.get<SliderTileItem>(position)
         val newPayload = "$value"
-        if (item.tile.payload != newPayload) {
+        if (item.tile.payload.stringValue != newPayload) {
             publish(item.tile.id, "$value")
         }
     }
@@ -638,7 +641,8 @@ class HomeViewModel @Inject constructor(
         _items.update { items ->
             items.map { item ->
                 if (item is TileItem && item.tile.subscribeTopic == topic) {
-                    item.copyTile(item.tile.copy(payload = payload).initPayload())
+                    val tile = item.tile
+                    item.copyTile(item.tile.copy(payload = Payload.map(payload, tile.type)))
                 } else item
             }
         }

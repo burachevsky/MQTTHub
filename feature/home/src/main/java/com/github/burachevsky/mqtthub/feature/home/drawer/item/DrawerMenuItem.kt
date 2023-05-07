@@ -3,8 +3,6 @@ package com.github.burachevsky.mqtthub.feature.home.drawer.item
 import android.content.res.ColorStateList
 import android.view.View
 import android.view.ViewGroup
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.ext.getValueFromAttribute
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
@@ -13,8 +11,8 @@ import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.feature.home.databinding.ListItemDrawerMenuItemBinding
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker as BrokerEntity
-import com.github.burachevsky.mqtthub.core.database.entity.dashboard.Dashboard as DashboardEntity
+import com.github.burachevsky.mqtthub.core.model.Broker as BrokerModel
+import com.github.burachevsky.mqtthub.core.model.Dashboard as DashboardModel
 import com.github.burachevsky.mqtthub.feature.home.R as featureR
 
 data class DrawerMenuItem(
@@ -40,7 +38,7 @@ data class DrawerMenuItem(
     companion object {
         val LAYOUT get() = featureR.layout.list_item_drawer_menu_item
 
-        fun map(broker: Broker): DrawerMenuItem {
+        fun map(broker: BrokerModel): DrawerMenuItem {
             return DrawerMenuItem(
                 Txt.of(broker.name),
                 R.drawable.ic_broker,
@@ -48,7 +46,7 @@ data class DrawerMenuItem(
             )
         }
 
-        fun map(dashboard: Dashboard): DrawerMenuItem {
+        fun map(dashboard: DashboardModel): DrawerMenuItem {
             return DrawerMenuItem(
                 Txt.of(dashboard.name),
                 R.drawable.ic_dashboard,
@@ -61,9 +59,9 @@ data class DrawerMenuItem(
 
         data class Button(val buttonId: Int) : Type(buttonId.toLong())
 
-        class Dashboard(val dashboard: DashboardEntity) : Type(dashboard.id)
+        class Dashboard(val dashboard: DashboardModel) : Type(dashboard.id)
 
-        data class Broker(val broker: BrokerEntity) : Type(broker.id)
+        data class Broker(val broker: BrokerModel) : Type(broker.id)
     }
 
     interface Listener {

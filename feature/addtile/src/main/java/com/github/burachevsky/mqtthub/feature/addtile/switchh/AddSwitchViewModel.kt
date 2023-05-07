@@ -1,10 +1,10 @@
 package com.github.burachevsky.mqtthub.feature.addtile.switchh
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SWITCH_OFF
-import com.github.burachevsky.mqtthub.core.database.entity.tile.SWITCH_ON
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TileStyleId
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.SWITCH_OFF
+import com.github.burachevsky.mqtthub.core.model.SWITCH_ON
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TileStyleId
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.constant.NavArg
 import com.github.burachevsky.mqtthub.core.ui.ext.getPayload

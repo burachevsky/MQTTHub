@@ -23,9 +23,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:eventbus"))
-    implementation(project(":core:database"))
+    implementation(project(":core:model"))
     implementation(project(":core:domain"))
+    implementation(project(":core:eventbus"))
     implementation(project(":core:ui"))
 
     implementation(libs.material)

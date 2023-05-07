@@ -1,15 +1,10 @@
 package com.github.burachevsky.mqtthub.core.connection
 
-import com.github.burachevsky.mqtthub.core.database.entity.broker.Broker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 typealias BrokerConnectionEventGenerator = (BrokerConnection, Throwable?) -> BrokerConnectionEvent
-
-fun Broker.getServerAddress(): String {
-    return "tcp://$address:$port"
-}
 
 internal inline fun BrokerConnection.ifNotCanceled(block: () -> Unit) {
     if (!isCanceled) {

@@ -13,9 +13,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.github.burachevsky.mqtthub.core.data.settings.Theme
 import com.github.burachevsky.mqtthub.core.eventbus.AppEvent
 import com.github.burachevsky.mqtthub.core.eventbus.AppEventHandler
+import com.github.burachevsky.mqtthub.core.model.Theme
 import com.github.burachevsky.mqtthub.core.ui.container.NavDestinationMapper
 import com.github.burachevsky.mqtthub.core.ui.container.SystemBarsSizeProvider
 import com.github.burachevsky.mqtthub.core.ui.container.ViewController
@@ -79,8 +79,8 @@ class AppActivity : AppCompatActivity(),
         provideNavController().setGraph(R.navigation.app_graph)
     }
 
-    override fun handleEvent(effect: AppEvent): Boolean {
-        when (effect) {
+    override fun handleEvent(event: AppEvent): Boolean {
+        when (event) {
             is SwitchTheme -> {
                 viewModel.themeIsInitialized = false
                 recreate()

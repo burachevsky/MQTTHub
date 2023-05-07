@@ -2,9 +2,8 @@ package com.github.burachevsky.mqtthub.feature.tiledetails.text
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
@@ -13,6 +12,7 @@ import com.github.burachevsky.mqtthub.core.ui.dialog.entertext.TextEntered
 import com.github.burachevsky.mqtthub.core.ui.event.PublishTextEntered
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
+import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,7 +30,7 @@ class TextTileDetailsViewModel @Inject constructor(
     private val tile: Flow<Tile> = observeTile(tileId)
 
     val tileName: Flow<String> = tile.map { it.name }
-    val tilePayload: Flow<String> = tile.map { it.payload }
+    val tilePayload: Flow<String> = tile.map { it.payload.stringValue }
     val isSendEnabled: Flow<Boolean> = tile.map { it.publishTopic.isNotEmpty() }
         .distinctUntilChanged()
 

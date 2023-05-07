@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/core/database" />
             <option value="$PROJECT_DIR$/core/domain" />
             <option value="$PROJECT_DIR$/core/eventbus" />
+            <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/mqtt" />
             <option value="$PROJECT_DIR$/core/preferences" />
             <option value="$PROJECT_DIR$/core/ui" />

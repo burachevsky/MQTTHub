@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.addtile
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.constant.Anim
 import com.github.burachevsky.mqtthub.core.ui.container.VM

@@ -1,8 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.addtile.chart
 
-import com.github.burachevsky.mqtthub.core.database.entity.tile.Tile
-import com.github.burachevsky.mqtthub.core.database.entity.tile.TileStyleId
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.model.TileStyleId
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.constant.NavArg.DASHBOARD_ID
 import com.github.burachevsky.mqtthub.core.ui.constant.NavArg.DASHBOARD_POSITION

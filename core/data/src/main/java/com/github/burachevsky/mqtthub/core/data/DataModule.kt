@@ -10,8 +10,6 @@ import com.github.burachevsky.mqtthub.core.data.repository.impl.CurrentIdsReposi
 import com.github.burachevsky.mqtthub.core.data.repository.impl.DashboardRepositoryImpl
 import com.github.burachevsky.mqtthub.core.data.repository.impl.FileRepositoryImpl
 import com.github.burachevsky.mqtthub.core.data.repository.impl.TileRepositoryImpl
-import com.github.burachevsky.mqtthub.core.data.settings.Settings
-import com.github.burachevsky.mqtthub.core.data.settings.SettingsImpl
 import com.github.burachevsky.mqtthub.core.database.DaoModule
 import com.github.burachevsky.mqtthub.core.database.DatabaseModule
 import dagger.Binds
@@ -36,9 +34,6 @@ abstract class DataModule {
 
     @Binds
     abstract fun bindCurrentIdsRepository(impl: CurrentIdsRepositoryImpl): CurrentIdsRepository
-
-    @Binds
-    abstract fun bindSettings(impl: SettingsImpl): Settings
 
     @Binds
     abstract fun bindFileRepository(impl: FileRepositoryImpl): FileRepository
