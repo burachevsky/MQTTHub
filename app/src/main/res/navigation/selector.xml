@@ -7,13 +7,13 @@
 
     <dialog
         android:id="@+id/selectorDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.selector.SelectorDialogFragment"
-        android:label="SlectorDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.core.ui.dialog.selector.SelectorDialogFragment"
+        android:label="SelectorDialogFragment"
         tools:layout="@layout/fragment_selector">
 
         <argument
             android:name="config"
-            app:argType="com.github.burachevsky.mqtthub.feature.selector.SelectorConfig" />
+            app:argType="com.github.burachevsky.mqtthub.core.ui.dialog.selector.SelectorConfig" />
 
     </dialog>
 

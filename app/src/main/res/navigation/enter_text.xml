@@ -7,23 +7,13 @@
 
     <dialog
         android:id="@+id/enterTextDialogFragment"
-        android:name="com.github.burachevsky.mqtthub.feature.entertext.EnterTextDialogFragment"
+        android:name="com.github.burachevsky.mqtthub.core.ui.dialog.entertext.EnterTextDialogFragment"
         android:label="EnterTextDialogFragment"
         tools:layout="@layout/fragment_enter_text">
 
         <argument
-            android:name="actionId"
-            app:argType="integer" />
-
-        <argument
-            android:name="title"
-            app:argType="com.github.burachevsky.mqtthub.common.text.ParcelableTxt"/>
-
-        <argument
-            android:name="initText"
-            app:argType="com.github.burachevsky.mqtthub.common.text.ParcelableTxt"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            android:name="config"
+            app:argType="com.github.burachevsky.mqtthub.core.ui.dialog.entertext.EnterTextConfig"/>
 
     </dialog>
 

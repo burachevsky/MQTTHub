@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_chart_tile"
+    app:startDestination="@id/addChartFragment">
+
+    <fragment
+        android:id="@+id/addChartFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.addtile.chart.AddChartTileFragment"
+        android:label="AddChartFragment"
+        tools:layout="@layout/fragment_add_tile" />
+
+</navigation>

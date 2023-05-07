@@ -21,6 +21,4 @@
 
     </fragment>
 
-    <include app:graph="@navigation/add_broker" />
-
 </navigation>

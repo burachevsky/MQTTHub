@@ -9,38 +9,99 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.viewbinding.ViewBinding
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.github.burachevsky.mqtthub.common.container.ViewController
-import com.github.burachevsky.mqtthub.common.container.viewContainer
-import com.github.burachevsky.mqtthub.common.event.SwitchTheme
-import com.github.burachevsky.mqtthub.data.settings.Theme
+import com.github.burachevsky.mqtthub.core.data.settings.Theme
+import com.github.burachevsky.mqtthub.core.eventbus.AppEvent
+import com.github.burachevsky.mqtthub.core.eventbus.AppEventHandler
+import com.github.burachevsky.mqtthub.core.ui.container.NavDestinationMapper
+import com.github.burachevsky.mqtthub.core.ui.container.SystemBarsSizeProvider
+import com.github.burachevsky.mqtthub.core.ui.container.ViewController
+import com.github.burachevsky.mqtthub.core.ui.container.viewContainer
+import com.github.burachevsky.mqtthub.core.ui.di.ViewModelFactory
+import com.github.burachevsky.mqtthub.core.ui.event.StartNewBrokerConnection
+import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
+import com.github.burachevsky.mqtthub.core.ui.ext.getNavigationBarHeightFromSystemAttribute
+import com.github.burachevsky.mqtthub.core.ui.ext.getStatusBarHeightFromSystemAttribute
+import com.github.burachevsky.mqtthub.core.ui.navigation.NavControllerProvider
 import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
-import com.github.burachevsky.mqtthub.di.ViewModelFactory
-import com.github.burachevsky.mqtthub.domain.eventbus.AppEvent
-import com.github.burachevsky.mqtthub.domain.eventbus.AppEventHandler
 import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
 import com.google.android.material.color.DynamicColors
 import javax.inject.Inject
 
-class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventHandler {
+class AppActivity : AppCompatActivity(),
+    ViewController<AppViewModel>, AppEventHandler,
+    SystemBarsSizeProvider, NavControllerProvider, NavDestinationMapper.Provider {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AppViewModel>
 
-    override val binding: ViewBinding by viewBinding(ActivityAppBinding::bind, R.id.appContainer)
+    override val binding by viewBinding(ActivityAppBinding::bind, R.id.appContainer)
     override val viewModel: AppViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
+
+    override var statusBarHeight = 0
+    override var navigationBarHeight = 0
+
+    private var contentIsSet = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (application as App).appComponent.inject(this)
         setupActivityAppearance()
         super.onCreate(savedInstanceState)
-        startService(Intent(this, BrokerConnectionService::class.java))
+        startBrokerConnectionService()
         setContentView(R.layout.activity_app)
-        findNavController().setGraph(R.navigation.app_graph)
+
+        binding.root.rootView.setOnApplyWindowInsetsListener { _, insets ->
+            if (contentIsSet)
+                return@setOnApplyWindowInsetsListener insets
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                statusBarHeight = statusBarInsets.top
+                navigationBarHeight = navigationBarInsets.bottom
+            } else {
+                statusBarHeight = getStatusBarHeightFromSystemAttribute()
+                navigationBarHeight = getNavigationBarHeightFromSystemAttribute()
+            }
+
+            setContent()
+
+            insets
+        }
+    }
+
+    private fun setContent() {
+        contentIsSet = true
+        provideNavController().setGraph(R.navigation.app_graph)
+    }
+
+    override fun handleEvent(effect: AppEvent): Boolean {
+        when (effect) {
+            is SwitchTheme -> {
+                viewModel.themeIsInitialized = false
+                recreate()
+                return true
+            }
+
+            is StartNewBrokerConnection -> {
+                startBrokerConnectionService()
+            }
+        }
+
+        return false
+    }
+
+    override fun provideNavController(): NavController {
+        return (supportFragmentManager.findFragmentById(R.id.appContainer) as NavHostFragment)
+            .navController
+    }
+
+    override fun provideNavDestinationMapper(): NavDestinationMapper {
+        return AppNavDestinationMapper
     }
 
     private fun setupActivityAppearance() {
@@ -83,27 +144,7 @@ class AppActivity : AppCompatActivity(), ViewController<AppViewModel>, AppEventH
         }
     }
 
-
-
-    private fun findNavController(): NavController {
-        return (supportFragmentManager.findFragmentById(R.id.appContainer) as NavHostFragment)
-            .navController
-    }
-
-    override fun handleEffect(effect: AppEvent): Boolean {
-        when (effect) {
-            is SwitchTheme -> {
-                viewModel.themeIsInitialized = false
-                recreate()
-                return true
-            }
-        }
-
-        return false
-    }
-
-    companion object {
-        var statusBarHeight: Int = 0
-        var navigationBarHeight: Int = 0
+    private fun startBrokerConnectionService() {
+        startService(Intent(this, BrokerConnectionService::class.java))
     }
 }
