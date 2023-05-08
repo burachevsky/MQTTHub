@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
@@ -64,9 +65,11 @@ class DashboardRepositoryImpl @Inject constructor(
                         job?.cancel()
 
                         currentId = id ?: insertDashboard(createFirstDashboard()).id
+                        currentIdsRepository.updateCurrentDashboard(currentId)
 
                         job = launch {
                             dashboardDao.observeDashboard(currentId)
+                                .filterNotNull()
                                 .onEach { dashboard ->
                                     if (isActive && id == currentId) {
                                         send(dashboard.asModel())
@@ -113,8 +116,14 @@ class DashboardRepositoryImpl @Inject constructor(
 
         val dashboard = insertDashboard(importedDashboardWithTiles.dashboard)
 
-        importedDashboardWithTiles.tiles.forEach { tile ->
-            tileRepository.insertTile(tile.copy(dashboardId = dashboard.id).asModel())
+        try {
+            importedDashboardWithTiles.tiles.forEach { tile ->
+                val tileModel = tile.copy(dashboardId =  dashboard.id).asModel()
+
+                tileRepository.insertTile(tileModel)
+            }
+        } finally {
+            currentIdsRepository.updateCurrentDashboard(dashboard.id)
         }
 
         return dashboard.asModel()

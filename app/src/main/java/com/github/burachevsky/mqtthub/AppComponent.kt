@@ -12,8 +12,8 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersComponent
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersFragment
-import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
-import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionServiceComponent
+import com.github.burachevsky.mqtthub.feature.mqttservice.MqttService
+import com.github.burachevsky.mqtthub.feature.mqttservice.MqttServiceComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsModule
 import com.github.burachevsky.mqtthub.feature.home.HomeComponent
@@ -43,7 +43,7 @@ interface AppComponent {
     fun inject(activity: AppActivity)
     fun inject(fragment: BrokersFragment)
     fun inject(fragment: SettingsFragment)
-    fun inject(service: BrokerConnectionService)
+    fun inject(service: MqttService)
 
     fun homeComponent(module: HomeModule): HomeComponent
     fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent
@@ -54,5 +54,5 @@ interface AppComponent {
     fun brokersComponent(): BrokersComponent
     fun textTileDetailsComponent(module: TextTileDetailsModule): TextTileDetailsComponent
     fun selectorComponent(module: SelectorModule): SelectorComponent
-    fun brokerConnectionServiceComponent(): BrokerConnectionServiceComponent
+    fun mqttServiceComponent(): MqttServiceComponent
 }

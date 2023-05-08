@@ -3,17 +3,20 @@ package com.github.burachevsky.mqtthub.feature.home
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.burachevsky.mqtthub.core.connection.BrokerConnection
-import com.github.burachevsky.mqtthub.core.connection.BrokerConnectionEvent
-import com.github.burachevsky.mqtthub.core.connection.BrokerConnectionPool
-import com.github.burachevsky.mqtthub.core.connection.MqttMessageArrived
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.eventbus.MQTT_EVENT_BUS
 import com.github.burachevsky.mqtthub.core.model.BUTTON
+import com.github.burachevsky.mqtthub.core.model.Broker
+import com.github.burachevsky.mqtthub.core.model.CurrentIds
 import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.model.Payload
 import com.github.burachevsky.mqtthub.core.model.Tile
+import com.github.burachevsky.mqtthub.core.mqtt.MqttConnection
+import com.github.burachevsky.mqtthub.core.mqtt.MqttConnectionEvent
+import com.github.burachevsky.mqtthub.core.mqtt.MqttConnectionPool
+import com.github.burachevsky.mqtthub.core.mqtt.MqttMessageArrived
 import com.github.burachevsky.mqtthub.core.ui.R
+import com.github.burachevsky.mqtthub.core.ui.constant.Anim
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
 import com.github.burachevsky.mqtthub.core.ui.dialog.entertext.EnterTextActionId
@@ -24,7 +27,7 @@ import com.github.burachevsky.mqtthub.core.ui.event.AlertDialog
 import com.github.burachevsky.mqtthub.core.ui.event.DashboardDeleted
 import com.github.burachevsky.mqtthub.core.ui.event.ItemSelected
 import com.github.burachevsky.mqtthub.core.ui.event.PublishTextEntered
-import com.github.burachevsky.mqtthub.core.ui.event.StartNewBrokerConnection
+import com.github.burachevsky.mqtthub.core.ui.event.StartNewMqttConnection
 import com.github.burachevsky.mqtthub.core.ui.event.TileAdded
 import com.github.burachevsky.mqtthub.core.ui.event.TileEdited
 import com.github.burachevsky.mqtthub.core.ui.event.ToastMessage
@@ -37,15 +40,22 @@ import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
 import com.github.burachevsky.mqtthub.core.ui.widget.ConnectionState
+import com.github.burachevsky.mqtthub.core.ui.widget.DividerItem
+import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveBrokers
 import com.github.burachevsky.mqtthub.domain.usecase.currentids.ObserveCurrentIds
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentBroker
+import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentDashboard
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.DeleteDashboard
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ExportDashboardToFile
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ImportDashboardFromFile
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ObserveCurrentDashboard
+import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ObserveDashboards
 import com.github.burachevsky.mqtthub.domain.usecase.dashboard.UpdateDashboardName
 import com.github.burachevsky.mqtthub.domain.usecase.tile.*
-import com.github.burachevsky.mqtthub.feature.home.drawer.DashboardImported
 import com.github.burachevsky.mqtthub.feature.home.item.*
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerHeaderItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -65,15 +75,18 @@ class HomeViewModel @Inject constructor(
     private val getDashboardTiles: GetDashboardTiles,
     private val eventBus: EventBus,
     @Named(MQTT_EVENT_BUS) private val mqttEventBus: EventBus,
-    private val connectionPool: BrokerConnectionPool,
+    private val connectionPool: MqttConnectionPool,
+    private val updateCurrentDashboard: UpdateCurrentDashboard,
+    private val updateCurrentBroker: UpdateCurrentBroker,
     observeCurrentIds: ObserveCurrentIds,
     observeCurrentDashboard: ObserveCurrentDashboard,
+    observeDashboards: ObserveDashboards,
+    observeBrokers: ObserveBrokers,
 ) : ViewModel(), VM<HomeNavigator> {
 
     override val container = viewModelContainer()
 
-    private val _connectionState = MutableStateFlow<ConnectionState>(
-        ConnectionState.Empty)
+    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Empty)
     val connectionState: StateFlow<ConnectionState> = _connectionState
 
     private val _items = MutableStateFlow<List<ListItem>>(emptyList())
@@ -84,13 +97,25 @@ class HomeViewModel @Inject constructor(
 
     private val payloadsReceivedWhileEditing = ConcurrentHashMap<String, String>()
 
-    private val brokerId: StateFlow<Long?> = observeCurrentIds()
+    private val currentIds: Flow<CurrentIds> = observeCurrentIds()
+
+    private val brokerId: StateFlow<Long?> = currentIds
         .map { it.currentBrokerId }
         .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
     private val dashboard: StateFlow<Dashboard?> = observeCurrentDashboard()
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private val itemStore = HomeDrawerMenuItemStore()
+
+    private val currentDashboardId: Flow<Long?> = currentIds
+        .map { it.currentDashboardId }
+        .distinctUntilChanged()
+
+    private val currentBrokerId: Flow<Long?> = currentIds
+        .map { it.currentBrokerId }
+        .distinctUntilChanged()
 
     val dashboardName: StateFlow<String> = dashboard
         .map { it?.name.orEmpty() }
@@ -104,6 +129,25 @@ class HomeViewModel @Inject constructor(
         .combine(noBrokersYet) { items, noBrokersYet ->
             !noBrokersYet && items.isEmpty()
         }
+
+    val drawerItems: StateFlow<List<ListItem>> =
+        observeDashboards()
+            .map { dashboards ->
+                dashboards.map(DrawerMenuItem::map)
+            }
+            .selectCurrentItem(currentDashboardId, updateCurrentDashboard::invoke)
+            .combine(
+                observeBrokers()
+                    .map { brokers ->
+                        if (brokers.size == 1) {
+                            updateCurrentBroker(brokers.single().id)
+                        }
+                        brokers.map(DrawerMenuItem::map)
+                    }
+                    .selectCurrentItem(currentBrokerId, updateCurrentBroker::invoke),
+                ::makeItemList
+            )
+            .stateIn(container.scope, SharingStarted.Eagerly, listOf(DrawerHeaderItem))
 
     init {
         container.launch(Dispatchers.Default) {
@@ -140,7 +184,7 @@ class HomeViewModel @Inject constructor(
         }
 
         mqttEventBus.apply {
-            subscribe(viewModelScope, ::brokerConnectionEventReceived)
+            subscribe(viewModelScope, ::mqttConnectionEventReceived)
             subscribe(viewModelScope, ::mqttMessageReceived)
         }
     }
@@ -191,14 +235,14 @@ class HomeViewModel @Inject constructor(
         } else {
             when (tile.type) {
                 Tile.Type.BUTTON -> container.launch(Dispatchers.Default) {
-                    brokerConnection {
-                        val payload = tile.stateList.getPayload(BUTTON) ?: return@brokerConnection
+                    mqttConnection {
+                        val payload = tile.stateList.getPayload(BUTTON) ?: return@mqttConnection
                         publish(tile, payload)
                     }
                 }
 
                 Tile.Type.SWITCH -> container.launch(Dispatchers.Default) {
-                    brokerConnection {
+                    mqttConnection {
                         val newPayload = tile.getSwitchOppositeStatePayload()
                         publish(tile, newPayload)
                     }
@@ -375,12 +419,34 @@ class HomeViewModel @Inject constructor(
     fun importDashboard(uri: Uri) {
         container.launch(Dispatchers.IO) {
             try {
-                val importedDashboard = importDashboardFromFile(uri)
-                eventBus.send(DashboardImported(importedDashboard))
+                importDashboardFromFile(uri)
                 toast(R.string.dashboard_imported_successfully)
             } catch (e: Exception) {
                 Timber.e(e)
                 toast(R.string.failed_to_import_dashboard)
+            }
+        }
+    }
+
+    fun onDrawerLabelButtonClick(position: Int) {
+        val item = drawerItems.get<DrawerLabelItem>(position)
+        buttonClicked(item.id)
+    }
+
+    fun onDrawerMenuItemClick(position: Int) {
+        val item = drawerItems.get<DrawerMenuItem>(position)
+
+        when (item.type) {
+            is DrawerMenuItem.Type.Dashboard -> {
+                dashboardClicked(position, item.type.dashboard)
+            }
+
+            is DrawerMenuItem.Type.Button -> {
+                buttonClicked(item.type.buttonId)
+            }
+
+            is DrawerMenuItem.Type.Broker -> {
+                brokerClicked(position, item.type.broker)
             }
         }
     }
@@ -435,14 +501,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun brokerConnectionEventReceived(event: BrokerConnectionEvent) {
-        Timber.d("HomeViewModel: brokerConnectionEvent: $event")
+    private fun mqttConnectionEventReceived(event: MqttConnectionEvent) {
+        Timber.d("HomeViewModel: mqttConnectionEvent: $event")
         when (event) {
-            is BrokerConnectionEvent.Connected -> {
+            is MqttConnectionEvent.Connected -> {
                 _connectionState.tryEmit(ConnectionState.Connected)
             }
 
-            is BrokerConnectionEvent.FailedToConnect -> {
+            is MqttConnectionEvent.FailedToConnect -> {
                 _connectionState.tryEmit(ConnectionState.Disconnected)
 
                 val broker = event.connection.broker
@@ -455,7 +521,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            is BrokerConnectionEvent.LostConnection -> {
+            is MqttConnectionEvent.LostConnection -> {
                 _connectionState.tryEmit(ConnectionState.Disconnected)
 
                 val broker = event.connection.broker
@@ -468,7 +534,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            is BrokerConnectionEvent.Terminated -> {}
+            is MqttConnectionEvent.Terminated -> {}
         }
     }
 
@@ -495,7 +561,7 @@ class HomeViewModel @Inject constructor(
                 val connection = connectionPool.getConnection(brokerId)
 
                 if (connection == null || connection.isCanceled) {
-                    eventBus.send(StartNewBrokerConnection)
+                    eventBus.send(StartNewMqttConnection)
                 } else if (connection.isDisconnected || force) {
                     _connectionState.tryEmit(ConnectionState.Connecting)
                     connection.restart()
@@ -535,24 +601,41 @@ class HomeViewModel @Inject constructor(
                     container.raiseEffect(ImportDashboard)
                 }
 
-                OptionMenuId.DELETE -> container.raiseEffect {
-                    AlertDialog(
-                        title = Txt.of(R.string.remove_dashboard_title),
-                        message = Txt.of(R.string.remove_dashboard_dialog_message),
-                        yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
-                            container.launch(Dispatchers.Default) {
-                                dashboard.value?.id?.let { dashboardId ->
-                                    deleteDashboard(dashboardId)
-                                    eventBus.send(DashboardDeleted(dashboardId))
-                                    toast(R.string.dashboard_deleted)
-                                }
-                            }
-                        },
-                        no = AlertDialog.Button(Txt.of(R.string.remove_dashboard_export_button)) {
-                            exportDashboardClicked()
-                        },
-                        cancel = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
-                    )
+                OptionMenuId.DELETE -> {
+                    val dashboardsCount = drawerItems.value.count {
+                        it is DrawerMenuItem && it.type is DrawerMenuItem.Type.Dashboard
+                    }
+
+                    if (dashboardsCount == 1) {
+                        container.raiseEffect {
+                            AlertDialog(
+                                message = Txt.of(R.string.dashboards_min_items_dialog_message),
+                                yes = AlertDialog.Button(
+                                    text = Txt.of(R.string.dashboards_min_items_dialog_button)
+                                )
+                            )
+                        }
+                    } else {
+                        container.raiseEffect {
+                            AlertDialog(
+                                title = Txt.of(R.string.remove_dashboard_title),
+                                message = Txt.of(R.string.remove_dashboard_dialog_message),
+                                yes = AlertDialog.Button(Txt.of(R.string.remove_dialog_yes)) {
+                                    container.launch(Dispatchers.Default) {
+                                        dashboard.value?.id?.let { dashboardId ->
+                                            deleteDashboard(dashboardId)
+                                            eventBus.send(DashboardDeleted(dashboardId))
+                                            toast(R.string.dashboard_deleted)
+                                        }
+                                    }
+                                },
+                                no = AlertDialog.Button(Txt.of(R.string.remove_dashboard_export_button)) {
+                                    exportDashboardClicked()
+                                },
+                                cancel = AlertDialog.Button(Txt.of(R.string.remove_dialog_cancel))
+                            )
+                        }
+                    }
                 }
 
                 OptionMenuId.EDIT_NAME -> container.navigator {
@@ -650,7 +733,7 @@ class HomeViewModel @Inject constructor(
 
     private fun publish(tileId: Long, payload: String) {
         container.launch(Dispatchers.Default) {
-            brokerConnection {
+            mqttConnection {
                 items.value
                     .find { it is TileItem && it.tile.id == tileId }
                     .let { publish((it as TileItem).tile, payload) }
@@ -658,11 +741,87 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun brokerConnection(action: suspend BrokerConnection.() -> Unit) {
+    private suspend fun mqttConnection(action: suspend MqttConnection.() -> Unit) {
         brokerId.value?.let { brokerId ->
             withContext(Dispatchers.Default) {
                 connectionPool.getConnection(brokerId)?.action()
             }
+        }
+    }
+
+    private fun makeItemList(
+        dashboards: List<DrawerMenuItem>,
+        brokers: List<DrawerMenuItem>
+    ): List<ListItem> {
+        Timber.d("HomeDrawer: updating")
+        return ArrayList<ListItem>().apply {
+            add(DrawerHeaderItem)
+            add(DividerItem)
+            add(itemStore.dashboardsLabel)
+            addAll(dashboards)
+            add(itemStore.createDashboardButton)
+            add(DividerItem)
+            add(itemStore.brokersLabel)
+            addAll(brokers)
+            add(itemStore.addBrokerButton)
+            add(DividerItem)
+            add(itemStore.settingsButton)
+        }
+    }
+
+    private fun buttonClicked(buttonId: Int) {
+        when (buttonId) {
+            DrawerMenuId.DRAWER_BUTTON_CREATE_NEW_DASHBOARD -> closeDrawerAndNavigate {
+                navigateEditDashboards(addNew = true)
+            }
+
+            DrawerMenuId.DRAWER_BUTTON_ADD_NEW_BROKER -> closeDrawerAndNavigate {
+                navigateAddBroker()
+            }
+
+            DrawerMenuId.DRAWER_BUTTON_SETTINGS -> closeDrawerAndNavigate {
+                navigateSettings()
+            }
+
+            DrawerMenuId.DRAWER_BUTTON_HELP_AND_FEEDBACK -> {}
+
+            DrawerMenuId.DRAWER_BUTTON_EDIT_BROKERS -> closeDrawerAndNavigate {
+                navigateEditBrokers()
+            }
+
+            DrawerMenuId.DRAWER_BUTTON_EDIT_DASHBOARDS -> closeDrawerAndNavigate {
+                navigateEditDashboards()
+            }
+        }
+    }
+
+    private fun dashboardClicked(position: Int, dashboard: Dashboard) {
+        container.launch(Dispatchers.Default) {
+            container.raiseEffect(CloseHomeDrawer)
+
+            delay(Anim.DEFAULT_DURATION)
+
+            if (!drawerItems.get<DrawerMenuItem>(position).isSelected) {
+                updateCurrentDashboard(dashboard.id)
+            }
+        }
+    }
+
+    private fun brokerClicked(position: Int, broker: Broker) {
+        container.launch(Dispatchers.Default) {
+            if (!drawerItems.get<DrawerMenuItem>(position).isSelected) {
+                updateCurrentBroker(broker.id)
+            }
+
+            container.raiseEffect(CloseHomeDrawer)
+        }
+    }
+
+    private fun closeDrawerAndNavigate(navigate: HomeNavigator.() -> Unit) {
+        container.launch(Dispatchers.Main) {
+            container.raiseEffect(CloseHomeDrawer)
+            delay(Anim.DEFAULT_DURATION)
+            container.navigator { navigate() }
         }
     }
 }

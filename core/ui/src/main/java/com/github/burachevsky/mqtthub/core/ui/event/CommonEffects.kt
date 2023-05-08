@@ -36,7 +36,7 @@ object RequestNotificationsPermissionIfNeeded : AppEvent
 
 object GoToNotificationSettings : AppEvent
 
-object StartNewBrokerConnection : AppEvent
+object StartNewMqttConnection : AppEvent
 
 data class TileAdded(
     val tile: Tile

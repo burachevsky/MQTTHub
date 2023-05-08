@@ -20,13 +20,10 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
-    implementation(project(":core:model"))
-    implementation(project(":core:eventbus"))
-    implementation(project(":core:common"))
+    api(project(":core:common"))
+    api(project(":core:event-bus"))
 
-    implementation(libs.paho)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.timber)
-    implementation(libs.dagger)
+    implementation(libs.paho)
     kapt(libs.dagger.compiler)
 }

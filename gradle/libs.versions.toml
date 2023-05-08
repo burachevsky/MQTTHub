@@ -1,23 +1,23 @@
 [versions]
 kotlin = "1.8.20"
 android-gradle-plugin = "8.0.0"
-navigation = "2.5.2"
-appcompat = "1.5.1"
+navigation = "2.5.3"
+appcompat = "1.6.1"
 activity = "1.6.0"
 appstartup = "1.1.1"
 by-view-binding = "1.5.9"
 cardview = "1.0.0"
 constraint-layout = "2.1.4"
 core = "1.10.0"
-coroutines = "1.6.4"
+coroutines = "1.7.0"
 coroutines-test = "1.6.4"
 drawer-layout-version = "1.2.0"
 espresso = "3.1.1"
 flexbox = "3.0.0"
 fragment = "1.5.3"
-dagger = "2.44"
+dagger = "2.45"
 glide = "4.13.2"
-gson = "2.9.1"
+gson = "2.10.1"
 junit = "4.13.2"
 ext-junit = "1.1.2"
 junitext = "1.1.1"
@@ -26,7 +26,7 @@ material = "1.8.0-alpha01"
 mp-android-chart = "v3.1.0"
 okhttp = "4.10.0"
 paho = "1.1.1"
-room = "2.4.3"
+room = "2.5.1"
 rotate-layout = "3.0.0"
 timber = "5.0.1"
 viewpager2 = "1.0.0"
@@ -37,48 +37,44 @@ compile-sdk = "33"
 target-sdk = "33"
 min-sdk = "26"
 
-
 [libraries]
-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "appstartup" }
-viewbindingpropertydelegate-noreflection = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-noreflection", version.ref = "by-view-binding" }
-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint-layout" }
-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
+androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawer-layout-version" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+androidx-lifecycle-compiler = { group = "androidx.lifecycle", name = "lifecycle-compiler", version.ref = "lifecycle" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawer-layout-version" }
-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+viewbindingdelegate = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-noreflection", version.ref = "by-view-binding" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint-layout" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk7", version.ref = "kotlin" }
-lifecycle-compiler = { group = "androidx.lifecycle", name = "lifecycle-compiler", version.ref = "lifecycle" }
-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
+
+
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mp-android-chart" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 paho = { group = "org.eclipse.paho", name = "org.eclipse.paho.client.mqttv3", version.ref = "paho" }
 paho-android = { group = "org.eclipse.paho", name = "org.eclipse.paho.android.service", version.ref = "paho" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 rotatelayout = { group = "rongi.rotate-layout", name = "rotate-layout", version.ref = "rotate-layout" }
-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+
+
 
 
 [plugins]

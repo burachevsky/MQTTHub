@@ -6,7 +6,7 @@ import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.model.Settings
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
-import com.github.burachevsky.mqtthub.core.ui.event.StartNewBrokerConnection
+import com.github.burachevsky.mqtthub.core.ui.event.StartNewMqttConnection
 import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
 import com.github.burachevsky.mqtthub.core.ui.event.ToastMessage
 import com.github.burachevsky.mqtthub.core.ui.navigation.Navigator
@@ -28,7 +28,7 @@ class AppViewModel @Inject constructor(
         eventBus.apply {
             subscribe<ToastMessage>(viewModelScope, container::raiseEffect)
             subscribe<SwitchTheme>(viewModelScope, container::raiseEffect)
-            subscribe<StartNewBrokerConnection>(viewModelScope, container::raiseEffect)
+            subscribe<StartNewMqttConnection>(viewModelScope, container::raiseEffect)
         }
     }
 

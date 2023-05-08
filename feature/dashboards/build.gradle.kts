@@ -23,14 +23,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:eventbus"))
-    implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
 
-    implementation(libs.material)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-    implementation(libs.viewbindingpropertydelegate.noreflection)
 }

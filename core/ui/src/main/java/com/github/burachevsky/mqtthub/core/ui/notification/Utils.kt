@@ -25,15 +25,15 @@ fun Context.createNotificationChannels() {
                     NotificationManager.IMPORTANCE_HIGH,
                 ),
                 NotificationChannel(
-                    NotificationChannelId.BROKER_CONNECTION,
-                    getString(R.string.notification_channel_name_broker_connection),
+                    NotificationChannelId.MQTT_CONNECTION,
+                    getString(R.string.notification_channel_name_mqtt_connection),
                     NotificationManager.IMPORTANCE_HIGH,
                 ),
             )
         )
 }
 
-fun Context.isNotificationsPermissionEnabled(): Boolean {
+fun Context.isNotificationsPermissionGranted(): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
         val status = ActivityCompat.checkSelfPermission(this, POST_NOTIFICATIONS)
         return status == PERMISSION_GRANTED

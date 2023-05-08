@@ -36,7 +36,7 @@
 
         </activity>
 
-        <service android:name=".feature.connection.BrokerConnectionService" />
+        <service android:name=".feature.mqttservice.MqttService" />
 
     </application>
 

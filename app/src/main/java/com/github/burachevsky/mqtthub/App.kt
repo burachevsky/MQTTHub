@@ -11,11 +11,11 @@ import com.github.burachevsky.mqtthub.feature.addbroker.AddBrokerModule
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileComponent
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersComponent
-import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionServiceComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsModule
 import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
+import com.github.burachevsky.mqtthub.feature.mqttservice.MqttServiceComponent
 import com.github.burachevsky.mqtthub.feature.settings.SettingsComponent
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsComponent
 import com.github.burachevsky.mqtthub.feature.tiledetails.text.TextTileDetailsModule
@@ -29,7 +29,7 @@ class App : Application(),
     SettingsComponent.Provider,
     TextTileDetailsComponent.Provider,
     AddTileComponent.Provider,
-    BrokerConnectionServiceComponent.Provider,
+    MqttServiceComponent.Provider,
     DashboardsComponent.Provider,
     BrokersComponent.Provider,
     AddBrokerComponent.Provider {
@@ -67,8 +67,8 @@ class App : Application(),
         return appComponent.addTileComponent(module)
     }
 
-    override fun brokerConnectionServiceComponent(): BrokerConnectionServiceComponent {
-        return appComponent.brokerConnectionServiceComponent()
+    override fun mqttServiceComponent(): MqttServiceComponent {
+        return appComponent.mqttServiceComponent()
     }
 
     override fun dashboardsComponent(module: DashboardsModule): DashboardsComponent {

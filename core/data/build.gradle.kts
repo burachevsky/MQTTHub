@@ -20,12 +20,9 @@ android {
 
 dependencies {
     implementation(project(":core:preferences"))
-    implementation(project(":core:database"))
+    implementation(project(":core:db"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
 
-    implementation(libs.gson)
-    implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-    implementation(libs.kotlinx.coroutines.core)
 }
