@@ -63,6 +63,7 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="duplicate">Duplicate</string>
+    <string name="select_all">Select all</string>
     <string name="change_dashboard_name">Change name</string>
     <string name="dashboard_name">Dashboard name</string>
     <string name="dashboard_actions">Dashboard actions</string>

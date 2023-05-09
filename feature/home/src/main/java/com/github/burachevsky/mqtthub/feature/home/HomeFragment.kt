@@ -369,6 +369,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
             R.id.delete -> viewModel.deleteTilesClicked()
             R.id.duplicate -> viewModel.duplicateTileClicked()
             R.id.newTile -> viewModel.addTileClicked()
+            R.id.selectAll -> viewModel.selectAllClicked()
             else -> return false
         }
         return true

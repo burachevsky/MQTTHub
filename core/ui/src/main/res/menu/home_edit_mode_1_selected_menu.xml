@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/selectAll"
+        android:icon="@drawable/ic_select_all"
+        android:title="@string/select_all"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/duplicate"
         android:icon="@drawable/ic_duplicate"
         android:title="@string/duplicate"

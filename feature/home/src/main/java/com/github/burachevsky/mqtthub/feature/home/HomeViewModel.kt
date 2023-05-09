@@ -188,6 +188,36 @@ class HomeViewModel @Inject constructor(
         container.navigator { navigateSelectTileType() }
     }
 
+    fun selectAllClicked() {
+        container.launch(Dispatchers.Default) {
+            val allItemsSelected = items.value.all {
+                it is TileItem && it.editMode?.isSelected == true || it !is TileItem
+            }
+
+            _items.update {
+                it.map { item ->
+                    when (item) {
+                        is TileItem -> {
+                            if (!allItemsSelected) {
+                                editMode.value.selectedTiles.add(item.tile)
+                            } else {
+                                editMode.value.selectedTiles.remove(item.tile)
+                            }
+
+                            item.withEditMode(EditMode(!allItemsSelected))
+                        }
+                        else -> item
+                    }
+                }
+            }
+
+            _editMode.update {
+                it.copy(selectedCount = it.selectedTiles.size)
+            }
+        }
+    }
+
+
     fun addFirstBroker() {
         container.navigator { navigateAddBroker() }
     }
