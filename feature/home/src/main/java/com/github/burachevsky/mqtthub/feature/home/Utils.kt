@@ -38,6 +38,8 @@ object OptionMenuId {
     const val IMPORT = 6
     const val DELETE = 7
     const val EDIT_NAME = 8
+    const val EDIT = 9
+    const val ADD_TILE = 10
 }
 
 object DrawerMenuId {

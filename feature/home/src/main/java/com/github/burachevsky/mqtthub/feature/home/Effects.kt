@@ -11,3 +11,5 @@ data class OpenTextTileDetails(val position: Int, val tileId: Long) : AppEvent
 data class ExportDashboard(val fileName: String) : AppEvent
 
 object ImportDashboard : AppEvent
+
+object EditModeVibrate : AppEvent

@@ -111,7 +111,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            vibrateAsEditModeChanged()
+            vibrate()
             viewModel.navigateUp()
         }
     }
@@ -229,6 +229,10 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
             is ImportDashboard -> {
                 fileImporter.launch(ContentType.JSON)
             }
+
+            is EditModeVibrate -> {
+                vibrate()
+            }
         }
 
         return false
@@ -276,7 +280,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
 
         binding.toolbar.setNavigationOnClickListener {
             if (viewModel.editMode.value.isEditMode) {
-                vibrateAsEditModeChanged()
+                vibrate()
                 viewModel.navigateUp()
             } else {
                 binding.drawerLayout.open()
@@ -363,7 +367,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         when (id) {
             R.id.edit -> viewModel.editTileClicked()
             R.id.edit_mode -> {
-                vibrateAsEditModeChanged()
+                vibrate()
                 viewModel.editModeClicked()
             }
             R.id.delete -> viewModel.deleteTilesClicked()
@@ -448,7 +452,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         uri?.let(viewModel::importDashboard)
     }
 
-    private fun vibrateAsEditModeChanged() {
+    private fun vibrate() {
         requireContext().getSystemService<Vibrator>()
             ?.vibrate(VibrationEffect.createOneShot(10, 255))
     }

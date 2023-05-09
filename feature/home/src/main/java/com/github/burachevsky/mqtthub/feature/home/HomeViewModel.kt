@@ -291,6 +291,21 @@ class HomeViewModel @Inject constructor(
                     title = Txt.of(R.string.dashboard_actions),
                     items = listOf(
                         SelectorItem(
+                            id = OptionMenuId.ADD_TILE,
+                            text = Txt.of(R.string.add_tile),
+                            icon = R.drawable.ic_add_box
+                        ),
+                        SelectorItem(
+                            id = OptionMenuId.EDIT_NAME,
+                            text = Txt.of(R.string.change_dashboard_name),
+                            icon = R.drawable.ic_edit_text
+                        ),
+                        SelectorItem(
+                            id = OptionMenuId.EDIT,
+                            text = Txt.of(R.string.edit),
+                            icon = R.drawable.ic_edit
+                        ),
+                        SelectorItem(
                             id = OptionMenuId.EXPORT,
                             text = Txt.of(R.string.export_dashboard),
                             icon = R.drawable.ic_export
@@ -299,11 +314,6 @@ class HomeViewModel @Inject constructor(
                             id = OptionMenuId.IMPORT,
                             text = Txt.of(R.string.import_dashboard),
                             icon = R.drawable.ic_import
-                        ),
-                        SelectorItem(
-                            id = OptionMenuId.EDIT_NAME,
-                            text = Txt.of(R.string.change_dashboard_name),
-                            icon = R.drawable.ic_edit
                         ),
                         SelectorItem(
                             id = OptionMenuId.DELETE,
@@ -671,6 +681,15 @@ class HomeViewModel @Inject constructor(
                         title = Txt.of(R.string.dashboard_name),
                         initText = Txt.of(dashboardName.value)
                     )
+                }
+
+                OptionMenuId.ADD_TILE -> container.navigator {
+                    navigateSelectTileType()
+                }
+
+                OptionMenuId.EDIT -> {
+                    container.raiseEffect(EditModeVibrate)
+                    showEditMode(true)
                 }
             }
         }
