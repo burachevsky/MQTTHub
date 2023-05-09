@@ -1,24 +1,20 @@
 package com.github.burachevsky.mqtthub.feature.dashboards
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.AddDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.GetDashboards
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
 import com.github.burachevsky.mqtthub.core.ui.event.AlertDialog
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardCreated
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardDeleted
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardEdited
 import com.github.burachevsky.mqtthub.core.ui.ext.get
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
-import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.AddDashboard
-import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
-import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.GetDashboards
-import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.feature.dashboards.item.DashboardItem
 import com.github.burachevsky.mqtthub.feature.dashboards.item.ItemConfig
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +25,6 @@ import javax.inject.Inject
 class DashboardsViewModel @Inject constructor(
     addNew: Boolean,
     private val getDashboards: GetDashboards,
-    private val eventBus: EventBus,
     private val addDashboard: AddDashboard,
     private val updateDashboard: UpdateDashboard,
     private val deleteDashboard: DeleteDashboard,
@@ -81,8 +76,6 @@ class DashboardsViewModel @Inject constructor(
                                 )
                             )
                         }
-
-                        eventBus.send(DashboardCreated(dashboard))
                     }
                 }
             }
@@ -100,8 +93,6 @@ class DashboardsViewModel @Inject constructor(
                                 dashboard = editedDashboard
                             )
                         }
-
-                        eventBus.send(DashboardEdited(editedDashboard))
                     }
                 }
             }
@@ -126,8 +117,6 @@ class DashboardsViewModel @Inject constructor(
                         _items.value = _items.value.toMutableList().apply {
                             removeAt(position)
                         }
-
-                        eventBus.send(DashboardDeleted(dashboardId))
                     }
                 }
             }

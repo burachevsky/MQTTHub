@@ -35,7 +35,7 @@ import com.github.burachevsky.mqtthub.core.ui.dialog.entertext.TextEntered
 import com.github.burachevsky.mqtthub.core.ui.dialog.selector.SelectorConfig
 import com.github.burachevsky.mqtthub.core.ui.dialog.selector.SelectorItem
 import com.github.burachevsky.mqtthub.core.ui.event.AlertDialog
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardDeleted
+import com.github.burachevsky.mqtthub.core.ui.event.DashboardFileOpened
 import com.github.burachevsky.mqtthub.core.ui.event.ItemSelected
 import com.github.burachevsky.mqtthub.core.ui.event.PublishTextEntered
 import com.github.burachevsky.mqtthub.core.ui.event.StartNewMqttConnection
@@ -172,6 +172,10 @@ class HomeViewModel @Inject constructor(
             }
 
             subscribe(viewModelScope, ::textEntered)
+
+            subscribe<DashboardFileOpened>(viewModelScope) {
+                importDashboard(it.uri)
+            }
         }
 
         mqttEventBus.apply {
@@ -618,7 +622,6 @@ class HomeViewModel @Inject constructor(
                                     container.launch(Dispatchers.Default) {
                                         dashboard.value?.id?.let { dashboardId ->
                                             deleteDashboard(dashboardId)
-                                            eventBus.send(DashboardDeleted(dashboardId))
                                             toast(R.string.dashboard_deleted)
                                         }
                                     }

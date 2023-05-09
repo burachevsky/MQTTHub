@@ -32,6 +32,7 @@ import com.github.burachevsky.mqtthub.core.ui.notification.isNotificationsPermis
 import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
 import com.github.burachevsky.mqtthub.feature.mqttservice.MqttService
 import com.google.android.material.color.DynamicColors
+import timber.log.Timber
 import javax.inject.Inject
 
 class AppActivity : AppCompatActivity(),
@@ -71,6 +72,24 @@ class AppActivity : AppCompatActivity(),
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermission.launch(POST_NOTIFICATIONS)
+            }
+        }
+
+        Timber.d("oncreate intent: $intent")
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Timber.d("new intent: $intent")
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        when (intent?.action) {
+            Intent.ACTION_VIEW -> {
+                this.intent = null
+                intent.data?.let(viewModel::importDashboard)
             }
         }
     }

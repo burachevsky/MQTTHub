@@ -50,7 +50,7 @@ class MqttConnection(
         override fun connectionLost(cause: Throwable?) {
             Timber.e(cause)
             reportIfNotCanceled {
-                Timber.i("MqttConnection: lost connection: $cause")
+                Timber.d("MqttConnection: lost connection: $cause")
                 state = State.DISCONNECTED
                 MqttConnectionEvent.LostConnection(this@MqttConnection, cause)
             }
@@ -58,7 +58,7 @@ class MqttConnection(
 
         override fun messageArrived(topic: String, message: MqttMessage) {
             launchIfNotCanceled {
-                Timber.i("MqttConnection: receiving message from topic $topic: $message")
+                Timber.d("MqttConnection: receiving message from topic $topic: $message")
 
                 subscriptionManager.messageArrived(topic, message)
             }
@@ -68,7 +68,7 @@ class MqttConnection(
 
         override fun connectComplete(reconnect: Boolean, serverURI: String?) {
             reportIfNotCanceled {
-                Timber.i("MqttConnection: connected to $serverURI (reconnect=$reconnect)")
+                Timber.d("MqttConnection: connected to $serverURI (reconnect=$reconnect)")
                 state = State.RUNNING
                 MqttConnectionEvent.Connected(this@MqttConnection, reconnect)
             }
@@ -82,7 +82,7 @@ class MqttConnection(
 
     fun start() {
         launchIfNotCanceled {
-            Timber.i("MqttConnection: connecting to $broker")
+            Timber.d("MqttConnection: connecting to $broker")
 
             execSafely(MqttConnectionEvent::FailedToConnect) {
                 mqttClient.connect()
@@ -92,7 +92,7 @@ class MqttConnection(
 
     fun restart() {
         launchIfNotCanceled {
-            Timber.i("MqttConnection: reconnecting to $broker")
+            Timber.d("MqttConnection: reconnecting to $broker")
 
             execSafely(MqttConnectionEvent::FailedToConnect) {
                 mqttClient.reconnect()
@@ -104,7 +104,7 @@ class MqttConnection(
         if (isCanceled)
             return
 
-        Timber.i("MqttConnection: canceling broker connection: $broker")
+        Timber.d("MqttConnection: canceling broker connection: $broker")
         state = State.CANCELED
         mqttClient.setCallback(null)
         subscriptionManager.clear()
@@ -128,7 +128,7 @@ class MqttConnection(
     fun publish(tile: Tile, payload: String) {
         launchIfNotCanceled {
             if (tile.publishTopic.isNotEmpty()) {
-                Timber.i("MqttConnection: publishing payload to topic ${tile.publishTopic}: $payload")
+                Timber.d("MqttConnection: publishing payload to topic ${tile.publishTopic}: $payload")
                 mqttClient.publish(
                     tile.publishTopic,
                     payload.toByteArray(),

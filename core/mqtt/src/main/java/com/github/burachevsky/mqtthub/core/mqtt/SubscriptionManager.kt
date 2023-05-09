@@ -62,7 +62,7 @@ internal class SubscriptionManager(
             if (topics.isEmpty()) return@execSafely
 
             val topicsString = topics.joinToString(", ")
-            Timber.i("SubscriptionManager: subscribing to topics [$topicsString]")
+            Timber.d("SubscriptionManager: subscribing to topics [$topicsString]")
 
             mqttClient.subscribe(topics)
 
@@ -86,7 +86,7 @@ internal class SubscriptionManager(
             if (topics.isEmpty()) return@execSafely
 
             val topicsString = topics.joinToString(", ")
-            Timber.i("SubscriptionManager: unsubscribing from topics [$topicsString]")
+            Timber.d("SubscriptionManager: unsubscribing from topics [$topicsString]")
 
             mqttClient.unsubscribe(topics)
 
@@ -101,7 +101,7 @@ internal class SubscriptionManager(
     }
 
     fun clear() {
-        Timber.i("SubscriptionManager: clear")
+        Timber.d("SubscriptionManager: clear")
         topicObserverJob?.cancel()
 
         subscriptions.forEach { (_, subscription) ->

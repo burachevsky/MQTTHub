@@ -1,6 +1,5 @@
 package com.github.burachevsky.mqtthub.core.data.mapper
 
-import android.util.Log
 import com.github.burachevsky.mqtthub.core.common.Converter
 import com.github.burachevsky.mqtthub.core.db.entity.TileEntity
 import com.github.burachevsky.mqtthub.core.model.ChartPayload
@@ -39,8 +38,6 @@ fun TileEntity.asModel(): Tile {
 
     val stateList = stateList.asStateListModel()
     val payload = payload.asPayloadModel(tileType)
-
-    Log.d("TileMapperDebug", "$payload")
 
     return Tile(
         id = id,
