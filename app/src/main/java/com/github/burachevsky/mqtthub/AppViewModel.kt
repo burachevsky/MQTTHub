@@ -10,7 +10,7 @@ import com.github.burachevsky.mqtthub.core.ui.event.StartNewMqttConnection
 import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
 import com.github.burachevsky.mqtthub.core.ui.event.ToastMessage
 import com.github.burachevsky.mqtthub.core.ui.navigation.Navigator
-import com.github.burachevsky.mqtthub.domain.usecase.settings.GetSettings
+import com.github.burachevsky.mqtthub.core.domain.usecase.settings.GetSettings
 import javax.inject.Inject
 
 class AppViewModel @Inject constructor(

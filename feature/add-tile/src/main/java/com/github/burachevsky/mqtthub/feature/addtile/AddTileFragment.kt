@@ -67,6 +67,7 @@ abstract class AddTileFragment<VM : AddTileViewModel> : Fragment(R.layout.fragme
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            setHasFixedSize(true)
             adapter = listAdapter
         }
 

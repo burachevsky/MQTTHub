@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.burachevsky.mqtthub.feature.connection"
+    namespace = "com.github.burachevsky.mqtthub.feature.mqttservice"
     compileSdk = Versions.COMPILE_SDK
 
     defaultConfig {

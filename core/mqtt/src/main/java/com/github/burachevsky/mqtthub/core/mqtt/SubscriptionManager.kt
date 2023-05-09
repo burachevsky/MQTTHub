@@ -2,8 +2,8 @@ package com.github.burachevsky.mqtthub.core.mqtt
 
 import com.github.burachevsky.mqtthub.core.common.throttle
 import com.github.burachevsky.mqtthub.core.model.TopicUpdate
-import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
-import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.ObserveTopicUpdates
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow

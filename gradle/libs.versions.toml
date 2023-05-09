@@ -62,19 +62,14 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 viewbindingdelegate = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-noreflection", version.ref = "by-view-binding" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint-layout" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 
-
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mp-android-chart" }
 paho = { group = "org.eclipse.paho", name = "org.eclipse.paho.client.mqttv3", version.ref = "paho" }
 paho-android = { group = "org.eclipse.paho", name = "org.eclipse.paho.android.service", version.ref = "paho" }
 rotatelayout = { group = "rongi.rotate-layout", name = "rotate-layout", version.ref = "rotate-layout" }
-
-
-
 
 [plugins]

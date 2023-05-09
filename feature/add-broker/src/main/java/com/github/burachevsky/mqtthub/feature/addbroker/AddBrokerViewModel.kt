@@ -17,9 +17,9 @@ import com.github.burachevsky.mqtthub.core.ui.text.withArgs
 import com.github.burachevsky.mqtthub.core.ui.widget.ButtonItem
 import com.github.burachevsky.mqtthub.core.ui.widget.FieldType
 import com.github.burachevsky.mqtthub.core.ui.widget.InputFieldItem
-import com.github.burachevsky.mqtthub.domain.usecase.broker.AddBroker
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBroker
-import com.github.burachevsky.mqtthub.domain.usecase.broker.UpdateBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.AddBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.GetBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.UpdateBroker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -15,10 +15,10 @@ import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.AddDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.DeleteDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.UpdateDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.AddDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.GetDashboards
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.feature.dashboards.item.DashboardItem
 import com.github.burachevsky.mqtthub.feature.dashboards.item.ItemConfig
 import kotlinx.coroutines.Dispatchers

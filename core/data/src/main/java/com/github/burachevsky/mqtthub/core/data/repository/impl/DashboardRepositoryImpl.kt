@@ -6,9 +6,9 @@ import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
 import com.github.burachevsky.mqtthub.core.data.repository.DashboardRepository
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
-import com.github.burachevsky.mqtthub.core.database.dao.DashboardDao
-import com.github.burachevsky.mqtthub.core.database.entity.DashboardEntity
-import com.github.burachevsky.mqtthub.core.database.entity.DashboardWithTiles
+import com.github.burachevsky.mqtthub.core.db.dao.DashboardDao
+import com.github.burachevsky.mqtthub.core.db.entity.DashboardEntity
+import com.github.burachevsky.mqtthub.core.db.entity.DashboardWithTiles
 import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.google.gson.Gson
 import kotlinx.coroutines.Job

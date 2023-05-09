@@ -4,7 +4,7 @@ import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
 import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.BrokerRepository
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
-import com.github.burachevsky.mqtthub.core.database.dao.BrokerDao
+import com.github.burachevsky.mqtthub.core.db.dao.BrokerDao
 import com.github.burachevsky.mqtthub.core.model.Broker
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope

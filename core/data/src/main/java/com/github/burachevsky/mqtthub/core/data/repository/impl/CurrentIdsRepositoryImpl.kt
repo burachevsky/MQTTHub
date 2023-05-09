@@ -2,7 +2,7 @@ package com.github.burachevsky.mqtthub.core.data.repository.impl
 
 import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
-import com.github.burachevsky.mqtthub.core.database.dao.CurrentIdsDao
+import com.github.burachevsky.mqtthub.core.db.dao.CurrentIdsDao
 import com.github.burachevsky.mqtthub.core.model.CurrentIds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform

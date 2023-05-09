@@ -6,6 +6,9 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.ObserveCurrentBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.ObserveTopicUpdates
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.eventbus.MQTT_EVENT_BUS
 import com.github.burachevsky.mqtthub.core.mqtt.MqttConnection
@@ -17,9 +20,6 @@ import com.github.burachevsky.mqtthub.core.ui.ext.applicationAs
 import com.github.burachevsky.mqtthub.core.ui.notification.NotificationChannelId
 import com.github.burachevsky.mqtthub.core.ui.notification.NotificationId
 import com.github.burachevsky.mqtthub.core.ui.notification.notifyPayloadUpdate
-import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveCurrentBroker
-import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTopicUpdates
-import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdatePayloadAndGetTilesToNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

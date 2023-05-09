@@ -12,7 +12,7 @@ import com.github.burachevsky.mqtthub.core.ui.dialog.entertext.TextEntered
 import com.github.burachevsky.mqtthub.core.ui.event.PublishTextEntered
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
-import com.github.burachevsky.mqtthub.domain.usecase.tile.ObserveTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.ObserveTile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

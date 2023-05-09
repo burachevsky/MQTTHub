@@ -3,6 +3,17 @@ package com.github.burachevsky.mqtthub.feature.home
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.ObserveBrokers
+import com.github.burachevsky.mqtthub.core.domain.usecase.currentids.ObserveCurrentIds
+import com.github.burachevsky.mqtthub.core.domain.usecase.currentids.UpdateCurrentBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.currentids.UpdateCurrentDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ExportDashboardToFile
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ImportDashboardFromFile
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ObserveCurrentDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ObserveDashboards
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.UpdateDashboardName
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.eventbus.MQTT_EVENT_BUS
 import com.github.burachevsky.mqtthub.core.model.BUTTON
@@ -41,17 +52,6 @@ import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
 import com.github.burachevsky.mqtthub.core.ui.widget.ConnectionState
 import com.github.burachevsky.mqtthub.core.ui.widget.DividerItem
-import com.github.burachevsky.mqtthub.domain.usecase.broker.ObserveBrokers
-import com.github.burachevsky.mqtthub.domain.usecase.currentids.ObserveCurrentIds
-import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentBroker
-import com.github.burachevsky.mqtthub.domain.usecase.currentids.UpdateCurrentDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.DeleteDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ExportDashboardToFile
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ImportDashboardFromFile
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ObserveCurrentDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.ObserveDashboards
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.UpdateDashboardName
-import com.github.burachevsky.mqtthub.domain.usecase.tile.*
 import com.github.burachevsky.mqtthub.feature.home.item.*
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerHeaderItem
 import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
@@ -126,24 +126,15 @@ class HomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val noTilesYet: Flow<Boolean> = items
-        .combine(noBrokersYet) { items, noBrokersYet ->
-            !noBrokersYet && items.isEmpty()
-        }
+        .combine(noBrokersYet) { items, noBrokersYet -> !noBrokersYet && items.isEmpty() }
 
     val drawerItems: StateFlow<List<ListItem>> =
         observeDashboards()
-            .map { dashboards ->
-                dashboards.map(DrawerMenuItem::map)
-            }
+            .map { dashboards -> dashboards.map(DrawerMenuItem::map) }
             .selectCurrentItem(currentDashboardId, updateCurrentDashboard::invoke)
             .combine(
                 observeBrokers()
-                    .map { brokers ->
-                        if (brokers.size == 1) {
-                            updateCurrentBroker(brokers.single().id)
-                        }
-                        brokers.map(DrawerMenuItem::map)
-                    }
+                    .map { brokers -> brokers.map(DrawerMenuItem::map) }
                     .selectCurrentItem(currentBrokerId, updateCurrentBroker::invoke),
                 ::makeItemList
             )
@@ -325,6 +316,8 @@ class HomeViewModel @Inject constructor(
             }
 
             addedTiles.forEach(::tileAdded)
+
+            showEditMode(false)
 
             if (positions.size == 1) {
                 toast(R.string.toast_tile_duplicated)
@@ -561,6 +554,7 @@ class HomeViewModel @Inject constructor(
                 val connection = connectionPool.getConnection(brokerId)
 
                 if (connection == null || connection.isCanceled) {
+                    _connectionState.tryEmit(ConnectionState.Connecting)
                     eventBus.send(StartNewMqttConnection)
                 } else if (connection.isDisconnected || force) {
                     _connectionState.tryEmit(ConnectionState.Connecting)
@@ -671,9 +665,6 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun tilesRemoved() {
         val tiles = editMode.value.selectedTiles
-        _editMode.update {
-            it.copy(selectedTiles = hashSetOf(), selectedCount = 0)
-        }
 
         _items.update { list ->
             list.filter { it is TileItem && !tiles.contains(it.tile) }
@@ -682,6 +673,8 @@ class HomeViewModel @Inject constructor(
         container.launch(Dispatchers.Default) {
             deleteTiles(tiles.toList())
         }
+
+        showEditMode(false)
     }
 
     private fun tileAdded(tile: Tile) {
@@ -692,19 +685,13 @@ class HomeViewModel @Inject constructor(
         val i = _items.value.indexOfFirst { it is TileItem && it.tile.id == tile.id }
         val oldItem = items.get<TileItem>(i)
 
-        _editMode.update { editMode ->
-            editMode.copy(
-                selectedTiles = editMode.selectedTiles
-                    .map { if (it.id == tile.id) tile else it }
-                    .toHashSet()
-            )
-        }
-
         _items.update {
             it.toMutableList().apply {
                 this[i] = oldItem.copyTile(tile) as ListItem
             }
         }
+
+        showEditMode(false)
     }
 
     private suspend fun mqttMessageReceived(messageEvent: MqttMessageArrived) {

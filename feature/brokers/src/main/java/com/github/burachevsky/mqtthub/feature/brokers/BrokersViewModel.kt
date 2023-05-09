@@ -15,8 +15,8 @@ import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
-import com.github.burachevsky.mqtthub.domain.usecase.broker.DeleteBroker
-import com.github.burachevsky.mqtthub.domain.usecase.broker.GetBrokers
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.DeleteBroker
+import com.github.burachevsky.mqtthub.core.domain.usecase.broker.GetBrokers
 import com.github.burachevsky.mqtthub.feature.brokers.item.BrokerItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

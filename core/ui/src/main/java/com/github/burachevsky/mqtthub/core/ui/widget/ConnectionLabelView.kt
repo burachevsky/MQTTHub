@@ -107,7 +107,7 @@ sealed class ConnectionState(
         false
     ) {
         override fun getLabelColor(context: Context): Int {
-            return context.getColor(R.color.light_green)
+            return context.getValueFromAttribute(com.google.android.material.R.attr.colorOnPrimary)
         }
     }
 
@@ -118,7 +118,7 @@ sealed class ConnectionState(
         false
     ) {
         override fun getLabelColor(context: Context): Int {
-            return context.getValueFromAttribute(com.google.android.material.R.attr.colorError)
+            return context.getValueFromAttribute(com.google.android.material.R.attr.colorOnErrorContainer)
         }
     }
 
@@ -129,7 +129,7 @@ sealed class ConnectionState(
         true
     ) {
         override fun getLabelColor(context: Context): Int {
-            return context.getValueFromAttribute(com.google.android.material.R.attr.colorSecondary)
+            return context.getValueFromAttribute(com.google.android.material.R.attr.colorOnSecondaryContainer)
         }
     }
 

@@ -13,6 +13,9 @@ import com.github.burachevsky.mqtthub.core.ui.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.core.ui.ext.applicationAs
 import com.github.burachevsky.mqtthub.core.ui.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.core.ui.ext.verticalLinearLayoutManager
+import com.github.burachevsky.mqtthub.core.ui.recycler.CompositeAdapter
+import com.github.burachevsky.mqtthub.core.ui.widget.ButtonItemAdapter
+import com.github.burachevsky.mqtthub.core.ui.widget.InputFieldItemAdapter
 import com.github.burachevsky.mqtthub.feature.addbroker.databinding.FragmentAddBrokerBinding
 import javax.inject.Inject
 
@@ -26,9 +29,9 @@ class AddBrokerFragment : Fragment(R.layout.fragment_add_broker),
     override val viewModel: AddBrokerViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
-    private val listAdapter = com.github.burachevsky.mqtthub.core.ui.recycler.CompositeAdapter(
-        com.github.burachevsky.mqtthub.core.ui.widget.InputFieldItemAdapter(),
-        com.github.burachevsky.mqtthub.core.ui.widget.ButtonItemAdapter(
+    private val listAdapter = CompositeAdapter(
+        InputFieldItemAdapter(),
+        ButtonItemAdapter(
             listener = {
                 viewModel.saveResult()
             }

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.burachevsky.mqtthub.core.database"
+    namespace = "com.github.burachevsky.mqtthub.core.db"
     compileSdk = Versions.COMPILE_SDK
 
     defaultConfig {

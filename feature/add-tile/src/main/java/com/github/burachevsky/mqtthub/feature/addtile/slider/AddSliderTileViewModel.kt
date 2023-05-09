@@ -17,9 +17,9 @@ import com.github.burachevsky.mqtthub.core.ui.widget.InputFieldItem
 import com.github.burachevsky.mqtthub.core.ui.widget.SwitchItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleOption
-import com.github.burachevsky.mqtthub.domain.usecase.tile.AddTile
-import com.github.burachevsky.mqtthub.domain.usecase.tile.GetTile
-import com.github.burachevsky.mqtthub.domain.usecase.tile.UpdateTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.AddTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.GetTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileViewModel
 import javax.inject.Inject
 import javax.inject.Named

@@ -4,7 +4,7 @@ import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
 import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.core.data.repository.impl.cache.TileMemoryCache
-import com.github.burachevsky.mqtthub.core.database.dao.TileDao
+import com.github.burachevsky.mqtthub.core.db.dao.TileDao
 import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.flow.Flow

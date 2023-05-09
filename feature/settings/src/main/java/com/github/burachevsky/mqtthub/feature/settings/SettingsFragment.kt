@@ -53,6 +53,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter
+            setHasFixedSize(true)
         }
 
         collectOnStarted(viewModel.items, listAdapter::submitList)
