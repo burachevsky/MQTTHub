@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 abstract class AddTileViewModel(
     protected val eventBus: EventBus,
@@ -49,7 +50,7 @@ abstract class AddTileViewModel(
     protected val itemStore = AddTileItemStore()
 
     protected val tile: LiveData<Tile?> = when {
-        isEditMode -> observeTile(tileId).asLiveData()
+        isEditMode -> observeTile(tileId).distinctUntilChanged().asLiveData()
         else -> MutableLiveData(null)
     }
 
@@ -137,13 +138,13 @@ abstract class AddTileViewModel(
     abstract fun collectTile(): Tile
 
     fun saveResult() {
-        container.launch(Dispatchers.Main) {
+        container.launch(Dispatchers.IO) {
             val tile = collectTile()
 
             if (isEditMode) {
                 updateTile(tile)
-                toast(R.string.toast_changes_saved)
                 eventBus.send(TileEdited(tile))
+                toast(R.string.toast_changes_saved)
             } else {
                 eventBus.send(TileAdded(addTile(tile)))
             }

@@ -496,6 +496,8 @@ class HomeViewModel @Inject constructor(
                 payloadsReceivedWhileEditing.forEach { (topic, payload) ->
                     updatePayload(topic = topic, payload = payload)
                 }
+
+                payloadsReceivedWhileEditing.clear()
             }
         } else {
             val selected = selectedPosition >= 0
