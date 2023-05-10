@@ -1,6 +1,5 @@
 package com.github.burachevsky.mqtthub.feature.addbroker
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -8,10 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.burachevsky.mqtthub.core.ui.container.ViewController
 import com.github.burachevsky.mqtthub.core.ui.container.viewContainer
 import com.github.burachevsky.mqtthub.core.ui.di.ViewModelFactory
 import com.github.burachevsky.mqtthub.core.ui.ext.applicationAs
-import com.github.burachevsky.mqtthub.core.ui.ext.collectOnStarted
 import com.github.burachevsky.mqtthub.core.ui.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.core.ui.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.core.ui.widget.ButtonItemAdapter
@@ -20,7 +19,7 @@ import com.github.burachevsky.mqtthub.feature.addbroker.databinding.FragmentAddB
 import javax.inject.Inject
 
 class AddBrokerFragment : Fragment(R.layout.fragment_add_broker),
-    com.github.burachevsky.mqtthub.core.ui.container.ViewController<AddBrokerViewModel> {
+    ViewController<AddBrokerViewModel> {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AddBrokerViewModel>
@@ -45,7 +44,6 @@ class AddBrokerFragment : Fragment(R.layout.fragment_add_broker),
             .inject(this)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.toolbar.setTitle(viewModel.title)
         binding.toolbar.setNavigationOnClickListener {
@@ -55,12 +53,9 @@ class AddBrokerFragment : Fragment(R.layout.fragment_add_broker),
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter
+            setHasFixedSize(true)
         }
 
-        collectOnStarted(viewModel.items, listAdapter::submitList)
-
-        collectOnStarted(viewModel.itemsChanged) {
-            listAdapter.notifyDataSetChanged()
-        }
+        viewModel.items.observe(viewLifecycleOwner, listAdapter::submitList)
     }
 }

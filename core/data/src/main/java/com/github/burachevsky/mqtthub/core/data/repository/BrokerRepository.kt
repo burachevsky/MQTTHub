@@ -9,6 +9,8 @@ interface BrokerRepository {
 
     fun observeBrokers(): Flow<List<Broker>>
 
+    fun observeBroker(id: Long): Flow<Broker>
+
     fun observeCurrentBroker(): Flow<Broker?>
 
     suspend fun getBroker(id: Long): Broker

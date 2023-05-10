@@ -136,7 +136,7 @@ class HomeViewModel @Inject constructor(
                 observeBrokers()
                     .map { brokers -> brokers.map(DrawerMenuItem::map) }
                     .selectCurrentItem(currentBrokerId, updateCurrentBroker::invoke),
-                ::makeItemList
+                ::makeItemsList
             )
             .stateIn(container.scope, SharingStarted.Eagerly, listOf(DrawerHeaderItem))
 
@@ -788,7 +788,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun makeItemList(
+    private fun makeItemsList(
         dashboards: List<DrawerMenuItem>,
         brokers: List<DrawerMenuItem>
     ): List<ListItem> {

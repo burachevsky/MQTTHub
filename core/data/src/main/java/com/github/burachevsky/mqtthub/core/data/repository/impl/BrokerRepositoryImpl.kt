@@ -33,6 +33,10 @@ class BrokerRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun observeBroker(id: Long): Flow<Broker> {
+        return brokerDao.observeBroker(id).map { it.asModel() }
+    }
+
     override fun observeCurrentBroker(): Flow<Broker?> {
         return channelFlow {
             coroutineScope {
