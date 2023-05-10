@@ -13,32 +13,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DashboardDao {
 
-    @Query("SELECT * FROM dashboards ORDER BY id DESC")
-    suspend fun getAll(): List<DashboardEntity>
-
-    @Query("SELECT * FROM dashboards ORDER BY id DESC")
-    fun observeDashboards(): Flow<List<DashboardEntity>>
-
-    @Query("UPDATE dashboards SET name = :name WHERE id = :dashboardId")
-    suspend fun updateDashboardName(dashboardId: Long, name: String)
-
-    @Query("SELECT * FROM dashboards WHERE id = :id")
-    fun observeDashboard(id: Long): Flow<DashboardEntity?>
-
-    @Query("SELECT * FROM dashboards WHERE id = :id")
-    suspend fun getById(id: Long): DashboardEntity
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(dashboard: DashboardEntity): Long
 
     @Update
     suspend fun update(dashboard: DashboardEntity)
 
+    @Query("UPDATE dashboards SET name = :name WHERE id = :dashboardId")
+    suspend fun updateDashboardName(dashboardId: Long, name: String)
+
     @Query("DELETE FROM dashboards WHERE id = :id")
     suspend fun delete(id: Long)
 
-    @Query("SELECT COUNT(*) FROM dashboards")
-    suspend fun count(): Int
+    @Query("SELECT * FROM dashboards WHERE id = :id")
+    fun observe(id: Long): Flow<DashboardEntity?>
+
+    @Query("SELECT * FROM dashboards ORDER BY id DESC")
+    fun observeAll(): Flow<List<DashboardEntity>>
 
     @Transaction
     @Query("SELECT * FROM dashboards WHERE id = :id")

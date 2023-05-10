@@ -5,15 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface BrokerRepository {
 
-    suspend fun getBrokers(): List<Broker>
-
     fun observeBrokers(): Flow<List<Broker>>
 
     fun observeBroker(id: Long): Flow<Broker>
-
-    fun observeCurrentBroker(): Flow<Broker?>
-
-    suspend fun getBroker(id: Long): Broker
 
     suspend fun insertBroker(broker: Broker): Broker
 

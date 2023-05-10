@@ -3,31 +3,18 @@ package com.github.burachevsky.mqtthub.core.data.repository.impl
 import com.github.burachevsky.mqtthub.core.common.Converter
 import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
 import com.github.burachevsky.mqtthub.core.data.mapper.asModel
-import com.github.burachevsky.mqtthub.core.data.repository.CurrentIdsRepository
 import com.github.burachevsky.mqtthub.core.data.repository.DashboardRepository
-import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.core.db.dao.DashboardDao
 import com.github.burachevsky.mqtthub.core.db.entity.DashboardEntity
 import com.github.burachevsky.mqtthub.core.db.entity.DashboardWithTiles
 import com.github.burachevsky.mqtthub.core.model.Dashboard
-import com.google.gson.Gson
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
+import com.github.burachevsky.mqtthub.core.model.Tile
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DashboardRepositoryImpl @Inject constructor(
     private val dashboardDao: DashboardDao,
-    private val currentIdsRepository: CurrentIdsRepository,
-    private val tileRepository: TileRepository,
 ): DashboardRepository {
 
     private suspend fun insertDashboard(dashboard: DashboardEntity): DashboardEntity {
@@ -48,54 +35,8 @@ class DashboardRepositoryImpl @Inject constructor(
         return dashboardDao.update(dashboard.asEntity())
     }
 
-    override suspend fun getDashboards(): List<Dashboard> {
-        return dashboardDao.getAll().map { it.asModel() }
-    }
-
-    override fun observeCurrentDashboard(): Flow<Dashboard> {
-        return channelFlow {
-            coroutineScope {
-                var job: Job? = null
-                var currentId: Long
-
-                currentIdsRepository
-                    .observeCurrentDashboardId()
-                    .distinctUntilChanged()
-                    .collect { id ->
-                        job?.cancel()
-
-                        currentId = id ?: insertDashboard(createFirstDashboard()).id
-                        currentIdsRepository.updateCurrentDashboard(currentId)
-
-                        job = launch {
-                            dashboardDao.observeDashboard(currentId)
-                                .filterNotNull()
-                                .onEach { dashboard ->
-                                    if (isActive && id == currentId) {
-                                        send(dashboard.asModel())
-                                    }
-                                }
-                                .collect()
-                        }
-                    }
-            }
-        }
-    }
-
     override suspend fun updateDashboardName(dashboardId: Long, name: String) {
         return dashboardDao.updateDashboardName(dashboardId, name)
-    }
-
-    override fun observeDashboards(): Flow<List<Dashboard>> {
-        return dashboardDao.observeDashboards().map { entities ->
-            entities.map { it.asModel() }
-        }
-    }
-
-    private suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
-        return dashboardDao.getDashboardWithTiles(id).run {
-            copy(tiles = tiles.sortedBy { it.dashboardPosition })
-        }
     }
 
     override suspend fun packDashboardForExport(id: Long): String {
@@ -108,28 +49,33 @@ class DashboardRepositoryImpl @Inject constructor(
             )
         }
 
-        return Gson().toJson(dashboardWithTiles)
+        return Converter.toJson(dashboardWithTiles)
     }
 
-    override suspend fun importDashboardFromJson(json: String): Dashboard {
+    override suspend fun importDashboardFromJson(json: String): Pair<Long, List<Tile>> {
         val importedDashboardWithTiles = Converter.fromJson<DashboardWithTiles>(json)
-
         val dashboard = insertDashboard(importedDashboardWithTiles.dashboard)
 
-        try {
-            importedDashboardWithTiles.tiles.forEach { tile ->
-                val tileModel = tile.copy(dashboardId =  dashboard.id).asModel()
-
-                tileRepository.insertTile(tileModel)
-            }
-        } finally {
-            currentIdsRepository.updateCurrentDashboard(dashboard.id)
+        val importedTiles = importedDashboardWithTiles.tiles.map {
+            it.copy(dashboardId =  dashboard.id).asModel()
         }
 
-        return dashboard.asModel()
+        return dashboard.id to importedTiles
     }
 
-    private fun createFirstDashboard(): DashboardEntity {
-        return DashboardEntity(name = "Dashboard")
+    override fun observeDashboards(): Flow<List<Dashboard>> {
+        return dashboardDao.observeAll().map { entities ->
+            entities.map { it.asModel() }
+        }
+    }
+
+    override fun observeDashboard(id: Long): Flow<Dashboard?> {
+        return dashboardDao.observe(id).map { it?.asModel() }
+    }
+
+    private suspend fun getDashboardWithTiles(id: Long): DashboardWithTiles {
+        return dashboardDao.getDashboardWithTiles(id).run {
+            copy(tiles = tiles.sortedBy { it.dashboardPosition })
+        }
     }
 }

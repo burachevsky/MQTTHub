@@ -26,6 +26,9 @@ interface TileDao {
     @Delete
     suspend fun delete(ids: List<TileEntity>)
 
+    @Query("SELECT * FROM tiles")
+    suspend fun getAll(): List<TileEntity>
+
     @Query(
         """
         UPDATE tiles 
@@ -35,14 +38,5 @@ interface TileDao {
     suspend fun updatePayload(subscribeTopic: String, payload: String)
 
     @Query("SELECT * FROM tiles WHERE id = :id")
-    suspend fun getById(id: Long): TileEntity
-
-    @Query("SELECT * FROM tiles WHERE dashboard_id = :dashboardId ORDER BY dashboard_position")
-    suspend fun getDashboardTiles(dashboardId: Long): List<TileEntity>
-
-    @Query("SELECT * FROM tiles")
-    suspend fun getAllTiles(): List<TileEntity>
-
-    @Query("SELECT * FROM tiles WHERE id = :id")
-    fun observeTile(id: Long): Flow<TileEntity>
+    fun observe(id: Long): Flow<TileEntity>
 }

@@ -2,11 +2,9 @@ package com.github.burachevsky.mqtthub.core.data.repository.impl.cache
 
 import com.github.burachevsky.mqtthub.core.data.mapper.asPayloadModel
 import com.github.burachevsky.mqtthub.core.model.Tile
-import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -22,24 +20,8 @@ class TileMemoryCache @Inject constructor() {
 
     private val subscriptionTopicsSet = MutableSharedFlow<Set<String>>(replay = 1)
 
-    fun observeTopicUpdates(): Flow<TopicUpdate> {
-        return flow {
-            var previousSet = emptySet<String>()
-
-            subscriptionTopicsSet.collect { set ->
-                val addedTopics = set.minus(previousSet)
-                if (addedTopics.isNotEmpty()) {
-                    emit(TopicUpdate.TopicsAdded(addedTopics))
-                }
-
-                val removedTopics = previousSet.minus(set)
-                if (removedTopics.isNotEmpty()) {
-                    emit(TopicUpdate.TopicsRemoved(removedTopics))
-                }
-
-                previousSet = set
-            }
-        }
+    fun observeTopicUpdates(): Flow<Set<String>> {
+        return subscriptionTopicsSet
     }
 
     private var isInitialized = false
@@ -69,7 +51,11 @@ class TileMemoryCache @Inject constructor() {
     }
 
     suspend fun insert(tile: Tile) {
-        cache.add(tile)
+        insert(listOf(tile))
+    }
+
+    suspend fun insert(tiles: List<Tile>) {
+        cache.addAll(tiles)
         updateSubscriptionList()
     }
 
@@ -125,14 +111,6 @@ class TileMemoryCache @Inject constructor() {
     fun getDashboardTiles(dashboardId: Long): List<Tile> {
         return cache.filter { it.dashboardId == dashboardId }
             .sortedBy { it.dashboardPosition }
-    }
-
-    fun getById(id: Long): Tile {
-        return cache.find { it.id == id }!!
-    }
-
-    fun getAll(): List<Tile> {
-        return cache.toList()
     }
 
     private suspend fun updateSubscriptionList() {

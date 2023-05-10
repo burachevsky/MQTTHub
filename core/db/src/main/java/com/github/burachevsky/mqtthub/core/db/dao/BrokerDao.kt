@@ -11,18 +11,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BrokerDao {
 
-    @Query("SELECT * FROM brokers ORDER BY id DESC")
-    suspend fun getAll(): List<BrokerEntity>
-
-    @Query("SELECT * FROM brokers ORDER BY id DESC")
-    fun observeBrokers(): Flow<List<BrokerEntity>>
-
-    @Query("SELECT * FROM brokers WHERE id = :id")
-    suspend fun getById(id: Long): BrokerEntity?
-
-    @Query("SELECT * FROM brokers WHERE id = :id")
-    fun observeBroker(id: Long): Flow<BrokerEntity>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(broker: BrokerEntity): Long
 
@@ -31,4 +19,10 @@ interface BrokerDao {
 
     @Query("DELETE FROM brokers WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM brokers ORDER BY id DESC")
+    fun observeAll(): Flow<List<BrokerEntity>>
+
+    @Query("SELECT * FROM brokers WHERE id = :id")
+    fun observe(id: Long): Flow<BrokerEntity>
 }
