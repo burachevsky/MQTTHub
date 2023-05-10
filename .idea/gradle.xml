@@ -27,6 +27,7 @@
             <option value="$PROJECT_DIR$/feature/add-tile" />
             <option value="$PROJECT_DIR$/feature/brokers" />
             <option value="$PROJECT_DIR$/feature/dashboards" />
+            <option value="$PROJECT_DIR$/feature/help-and-feedback" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/mqtt-service" />
             <option value="$PROJECT_DIR$/feature/settings" />

@@ -115,7 +115,6 @@
     <string name="home_enter_a_dashboard_name">Enter a dashboard name</string>
     <string name="home_add_new_broker">Add new broker</string>
     <string name="home_settings">Settings</string>
-    <string name="home_help_and_feedback">Help and feedback</string>
     <string name="home_version">MQTT Hub v%s</string>
 
     <string name="dashboards_min_items_dialog_message">Can\'t delete the only dashboard</string>
@@ -158,5 +157,8 @@
     <string name="mqtt_connection_service_button_disconnect">Disconnect</string>
     <string name="mqtt_connection_service_button_retry">Retry</string>
     <string name="mqtt_connection_service_button_dismiss">Dismiss</string>
+
+    <string name="help_and_feedback">Help and feedback</string>
+    <string name="help_and_feedback_telegram_message">Feedback contact: https://t.me/Burachevsky</string>
 
 </resources>

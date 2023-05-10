@@ -36,4 +36,10 @@ class HomeDrawerMenuItemStore {
         R.drawable.ic_settings,
         type = DrawerMenuItem.Type.Button(DrawerMenuId.DRAWER_BUTTON_SETTINGS),
     )
+
+    val helpAndFeedback = DrawerMenuItem(
+        Txt.of(R.string.help_and_feedback),
+        R.drawable.ic_help,
+        type = DrawerMenuItem.Type.Button(DrawerMenuId.DRAWER_BUTTON_HELP_AND_FEEDBACK)
+    )
 }

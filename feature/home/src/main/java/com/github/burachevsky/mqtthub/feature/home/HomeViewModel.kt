@@ -805,6 +805,7 @@ class HomeViewModel @Inject constructor(
             add(itemStore.addBrokerButton)
             add(DividerItem)
             add(itemStore.settingsButton)
+            add(itemStore.helpAndFeedback)
         }
     }
 
@@ -822,7 +823,9 @@ class HomeViewModel @Inject constructor(
                 navigateSettings()
             }
 
-            DrawerMenuId.DRAWER_BUTTON_HELP_AND_FEEDBACK -> {}
+            DrawerMenuId.DRAWER_BUTTON_HELP_AND_FEEDBACK -> closeDrawerAndNavigate {
+                navigateHelpAndFeedback()
+            }
 
             DrawerMenuId.DRAWER_BUTTON_EDIT_BROKERS -> closeDrawerAndNavigate {
                 navigateEditBrokers()

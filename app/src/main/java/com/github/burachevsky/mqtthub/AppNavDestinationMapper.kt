@@ -19,6 +19,7 @@ object AppNavDestinationMapper : NavDestinationMapper {
             NavDestination.Brokers -> R.id.navigateBrokers
             NavDestination.Selector -> R.id.navigateSelector
             NavDestination.Settings -> R.id.navigateSettings
+            NavDestination.HelpAndFeedback -> R.id.navigateHelpAndFeedback
         }
     }
 }

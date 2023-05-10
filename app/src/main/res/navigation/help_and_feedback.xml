@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/help_and_feedback"
+    app:startDestination="@id/helpAndFeedbackFragment">
+
+    <fragment
+        android:id="@+id/helpAndFeedbackFragment"
+        android:name="com.github.burachevsky.mqtthub.feature.helpandfeedback.HelpAndFeedbackFragment"
+        android:label="HelpAndFeedback"
+        tools:layout="@layout/fragment_help_and_feedback" />
+
+</navigation>
