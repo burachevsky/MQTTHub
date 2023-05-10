@@ -1,5 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.addtile.text
 
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.AddTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.ObserveTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.model.TextTileSizeId
 import com.github.burachevsky.mqtthub.core.model.Tile
@@ -12,10 +15,8 @@ import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.widget.SwitchItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleOption
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.AddTile
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.GetTile
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileViewModel
+import com.github.burachevsky.mqtthub.feature.addtile.QosId
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -26,10 +27,13 @@ class AddTextTileViewModel @Inject constructor(
     eventBus: EventBus,
     addTile: AddTile,
     updateTile: UpdateTile,
-    getTile: GetTile,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, dashboardId, tileId, dashboardPosition) {
+    observeTile: ObserveTile,
+) : AddTileViewModel(
+    eventBus, observeTile, updateTile, addTile,
+    dashboardId, tileId, dashboardPosition
+) {
 
-    override val title: Int = if (isEditMode()) R.string.edit_text_tile else R.string.new_text_tile
+    override val title: Int = if (isEditMode) R.string.edit_text_tile else R.string.new_text_tile
 
     private val enablePublishing = SwitchItem(
         text = Txt.of(R.string.enable_publishing),
@@ -78,64 +82,70 @@ class AddTextTileViewModel @Inject constructor(
         selectedValue = TileStyleId.OUTLINED,
     )
 
-    init {
-        init()
-    }
-
     private fun showPublishingField() {
-        if (publishTopic.text.isEmpty()) {
-            publishTopic.text = subscribeTopic.text
+        itemStore.run {
+            if (publishTopic.text.isEmpty()) {
+                publishTopic.text = subscribeTopic.text
+            }
         }
 
         update()
     }
 
-    override fun initFields(tile: Tile) {
-        name.text = tile.name
-        subscribeTopic.text = tile.subscribeTopic
-        enablePublishing.isChecked = tile.publishTopic.isNotEmpty()
-        publishTopic.text = tile.publishTopic
-        retain.isChecked = tile.retained
-        qos.selectedValue = tile.qos
-        notifyPayloadUpdate.isChecked = tile.notifyPayloadUpdate
-        size.selectedValue = tile.design.sizeId
-        style.selectedValue = tile.design.styleId
-        width.isChecked = tile.design.isFullSpan
-    }
-
     override fun collectTile(): Tile {
-        return (oldTile ?: Tile()).copy(
-            name = name.text,
-            subscribeTopic = subscribeTopic.text,
-            publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
-            notifyPayloadUpdate = notifyPayloadUpdate.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.TEXT,
-            stateList = emptyList(),
-            dashboardPosition = dashboardPosition,
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                sizeId = size.selectedValue,
-                isFullSpan = width.isChecked,
-            ),
-        )
+        return itemStore.run {
+            (tile.value ?: Tile()).copy(
+                name = name.text,
+                subscribeTopic = subscribeTopic.text,
+                publishTopic = if (enablePublishing.isChecked) publishTopic.text else "",
+                qos = qos.selectedValue,
+                retained = retain.isChecked,
+                notifyPayloadUpdate = notifyPayloadUpdate.isChecked,
+                dashboardId = dashboardId,
+                type = Tile.Type.TEXT,
+                stateList = emptyList(),
+                dashboardPosition = dashboardPosition,
+                design = Tile.Design(
+                    styleId = style.selectedValue,
+                    sizeId = size.selectedValue,
+                    isFullSpan = width.isChecked,
+                ),
+            )
+        }
     }
 
-    override fun list(): List<ListItem> {
-        return listOfNotNull(
-            name,
-            subscribeTopic,
-            if (enablePublishing.isChecked) publishTopic else null,
-            enablePublishing,
-            qos,
-            retain,
-            notifyPayloadUpdate,
-            size,
-            width,
-            style,
-            save,
-        )
+    override fun makeItemsListFromTile(tile: Tile?): List<ListItem> {
+        return itemStore.run {
+            name.text = tile?.name.orEmpty()
+            subscribeTopic.text = tile?.subscribeTopic.orEmpty()
+            enablePublishing.isChecked = tile?.publishTopic?.isNotEmpty() ?: false
+            publishTopic.text = tile?.publishTopic.orEmpty()
+            retain.isChecked = tile?.retained ?: false
+            qos.selectedValue = tile?.qos ?: QosId.Qos0
+            notifyPayloadUpdate.isChecked = tile?.notifyPayloadUpdate ?: false
+            size.selectedValue = tile?.design?.sizeId ?: TextTileSizeId.SMALL
+            style.selectedValue = tile?.design?.styleId ?: TileStyleId.OUTLINED
+            width.isChecked = tile?.design?.isFullSpan ?: false
+
+            makeItemsList()
+        }
+    }
+
+    override fun makeItemsList(): List<ListItem> {
+        return itemStore.run {
+            listOfNotNull(
+                name,
+                subscribeTopic,
+                if (enablePublishing.isChecked) publishTopic else null,
+                enablePublishing,
+                qos,
+                retain,
+                notifyPayloadUpdate,
+                size,
+                width,
+                style,
+                save,
+            )
+        }
     }
 }

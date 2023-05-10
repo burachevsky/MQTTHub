@@ -76,7 +76,7 @@ abstract class AddTileFragment<VM : AddTileViewModel> : Fragment(R.layout.fragme
             findNavController().navigateUp()
         }
 
-        collectOnStarted(viewModel.items, listAdapter::submitList)
+        viewModel.items.observe(viewLifecycleOwner, listAdapter::submitList)
 
         collectOnStarted(viewModel.itemChanged, listAdapter::notifyItemChanged)
     }

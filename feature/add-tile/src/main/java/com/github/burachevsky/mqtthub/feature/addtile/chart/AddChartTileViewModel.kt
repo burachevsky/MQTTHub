@@ -1,5 +1,8 @@
 package com.github.burachevsky.mqtthub.feature.addtile.chart
 
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.AddTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.ObserveTile
+import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.core.eventbus.EventBus
 import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.model.TileStyleId
@@ -12,10 +15,8 @@ import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleOption
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.AddTile
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.GetTile
-import com.github.burachevsky.mqtthub.core.domain.usecase.tile.UpdateTile
 import com.github.burachevsky.mqtthub.feature.addtile.AddTileViewModel
+import com.github.burachevsky.mqtthub.feature.addtile.QosId
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -24,12 +25,15 @@ class AddChartTileViewModel@Inject constructor(
     @Named(TILE_ID) tileId: Long,
     @Named(DASHBOARD_POSITION) dashboardPosition: Int,
     eventBus: EventBus,
-    getTile: GetTile,
+    observeTile: ObserveTile,
     updateTile: UpdateTile,
     addTile: AddTile,
-) : AddTileViewModel(eventBus, getTile, updateTile, addTile, dashboardId, tileId, dashboardPosition) {
+) : AddTileViewModel(
+    eventBus, observeTile, updateTile, addTile,
+    dashboardId, tileId, dashboardPosition
+) {
 
-    override val title: Int = if (isEditMode()) R.string.edit_chart else R.string.new_chart
+    override val title: Int = if (isEditMode) R.string.edit_chart else R.string.new_chart
 
     private val style = ToggleGroupItem(
         title = Txt.of(R.string.tile_background_style),
@@ -50,43 +54,40 @@ class AddChartTileViewModel@Inject constructor(
         selectedValue = TileStyleId.OUTLINED,
     )
 
-    init {
-        init()
-    }
-
-    override fun initFields(tile: Tile) {
-        name.text = tile.name
-        subscribeTopic.text = tile.subscribeTopic
-        retain.isChecked = tile.retained
-        qos.selectedValue = tile.qos
-        style.selectedValue = tile.design.styleId
-    }
-
-    override fun list(): List<ListItem> {
-        return listOf(
-            name,
-            subscribeTopic,
-            retain,
-            qos,
-            style,
-            save,
-        )
-    }
-
     override fun collectTile(): Tile {
-        return (oldTile ?: Tile()).copy(
-            name = name.text,
-            subscribeTopic = subscribeTopic.text,
-            qos = qos.selectedValue,
-            retained = retain.isChecked,
-            dashboardId = dashboardId,
-            type = Tile.Type.CHART,
-            stateList = emptyList(),
-            dashboardPosition = dashboardPosition,
-            design = Tile.Design(
-                styleId = style.selectedValue,
-                isFullSpan = true,
-            ),
-        )
+        return itemStore.run {
+            (tile.value ?: Tile()).copy(
+                name = name.text,
+                subscribeTopic = subscribeTopic.text,
+                qos = qos.selectedValue,
+                retained = retain.isChecked,
+                dashboardId = dashboardId,
+                type = Tile.Type.CHART,
+                stateList = emptyList(),
+                dashboardPosition = dashboardPosition,
+                design = Tile.Design(
+                    styleId = style.selectedValue,
+                    isFullSpan = true,
+                ),
+            )
+        }
+    }
+
+    override fun makeItemsListFromTile(tile: Tile?): List<ListItem> {
+        return itemStore.run {
+            name.text = tile?.name.orEmpty()
+            subscribeTopic.text = tile?.subscribeTopic.orEmpty()
+            retain.isChecked = tile?.retained ?: false
+            qos.selectedValue = tile?.qos ?: QosId.Qos0
+            style.selectedValue = tile?.design?.styleId ?: TileStyleId.OUTLINED
+
+            makeItemsList()
+        }
+    }
+
+    override fun makeItemsList(): List<ListItem> {
+        return itemStore.run {
+            listOf(name, subscribeTopic, retain, qos, style, save)
+        }
     }
 }
