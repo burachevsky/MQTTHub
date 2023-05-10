@@ -13,4 +13,5 @@ sealed class NavDestination {
     object Brokers : NavDestination()
     object Selector : NavDestination()
     object Settings : NavDestination()
+    object HelpAndFeedback : NavDestination()
 }

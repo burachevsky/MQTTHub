@@ -13,6 +13,7 @@ import com.github.burachevsky.mqtthub.feature.addtile.AddTileModule
 import com.github.burachevsky.mqtthub.feature.brokers.BrokersComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsComponent
 import com.github.burachevsky.mqtthub.feature.dashboards.DashboardsModule
+import com.github.burachevsky.mqtthub.feature.helpandfeedback.HelpAndFeedbackComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeComponent
 import com.github.burachevsky.mqtthub.feature.home.HomeModule
 import com.github.burachevsky.mqtthub.feature.mqttservice.MqttServiceComponent
@@ -32,7 +33,8 @@ class App : Application(),
     MqttServiceComponent.Provider,
     DashboardsComponent.Provider,
     BrokersComponent.Provider,
-    AddBrokerComponent.Provider {
+    AddBrokerComponent.Provider,
+    HelpAndFeedbackComponent.Provider {
 
     val appComponent: AppComponent by lazy(::initializeComponent)
 
@@ -81,6 +83,10 @@ class App : Application(),
 
     override fun addBrokerComponent(module: AddBrokerModule): AddBrokerComponent {
         return appComponent.addBrokerComponent(module)
+    }
+
+    override fun helpAndSupportComponent(): HelpAndFeedbackComponent {
+        return appComponent.helpAndFeedbackComponent()
     }
 
     private fun initializeComponent(): AppComponent {

@@ -139,4 +139,6 @@ class HomeNavigator(
     )
 
     fun navigateSettings() = navigate(NavDestination.Settings)
+
+    fun navigateHelpAndFeedback() = navigate(NavDestination.HelpAndFeedback)
 }

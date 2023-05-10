@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/help_and_feedback"/>
+
+    <TextView
+        android:id="@+id/telegramContactText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_and_feedback_telegram_message"
+        android:autoLink="all"
+        android:layout_margin="16dp" />
+
+</LinearLayout>

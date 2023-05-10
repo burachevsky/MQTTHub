@@ -2,7 +2,6 @@ package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.postDelayed
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.burachevsky.mqtthub.core.model.Tile
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
@@ -21,8 +20,8 @@ import com.github.burachevsky.mqtthub.feature.home.item.bindEditModeAndBackgroun
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMax
 import com.github.burachevsky.mqtthub.feature.home.item.sliderMin
 import com.github.burachevsky.mqtthub.feature.home.item.sliderStep
-import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.slider.Slider
+import timber.log.Timber
 
 data class SliderTileItem(
     override val tile: Tile,
@@ -69,33 +68,7 @@ class SliderTileItemViewHolder(
 
     private val binding = ListItemSliderTileBinding.bind(itemView)
 
-    private var sliderIsEnabled = true
-    private var currentPayload = 0f
-    private var isShowingLabelForDisabledSlider = false
-
     init {
-        binding.tile.setOnClickListener {
-            if (!sliderIsEnabled) {
-                binding.slider.run {
-                    if (isShowingLabelForDisabledSlider) {
-                        labelBehavior = LabelFormatter.LABEL_GONE
-                        isShowingLabelForDisabledSlider = false
-                    } else {
-                        labelBehavior = LabelFormatter.LABEL_VISIBLE
-                        isShowingLabelForDisabledSlider = true
-
-                        postDelayed(2000) {
-                            if (isShowingLabelForDisabledSlider) {
-                                labelBehavior = LabelFormatter.LABEL_GONE
-                                isShowingLabelForDisabledSlider = false
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
         binding.tile.setOnLongClickListener {
             listener.onLongClick(adapterPosition)
         }
@@ -114,9 +87,7 @@ class SliderTileItemViewHolder(
     override fun onStartTrackingTouch(slider: Slider) {}
 
     override fun onStopTrackingTouch(slider: Slider) {
-        if (sliderIsEnabled) {
-            listener.sliderValueChanged(adapterPosition, slider.value)
-        }
+        listener.sliderValueChanged(adapterPosition, slider.value)
     }
 
     override fun bind(item: ListItem, payloads: List<Int>) {
@@ -148,19 +119,19 @@ class SliderTileItemViewHolder(
     }
 
     private fun bindSliderParams(item: SliderTileItem) {
-        binding.slider.apply {
-            valueFrom = item.sliderMin()
-            valueTo = item.sliderMax()
-            stepSize = item.sliderStep()
+        try {
+            binding.slider.apply {
+                valueFrom = item.sliderMin()
+                valueTo = item.sliderMax()
+                stepSize = item.sliderStep()
+            }
+        } catch (e: Throwable) {
+            Timber.e(e)
         }
     }
 
     private fun bindPublishTopic(item: SliderTileItem) {
-        sliderIsEnabled = item.tile.publishTopic.isNotEmpty()
-        binding.slider.isEnabled = sliderIsEnabled
-        if (sliderIsEnabled) {
-            binding.slider.labelBehavior = LabelFormatter.LABEL_FLOATING
-        }
+        binding.slider.isEnabled = item.tile.publishTopic.isNotEmpty()
     }
 
     private fun bindPayload(item: SliderTileItem) {
@@ -169,7 +140,6 @@ class SliderTileItemViewHolder(
         binding.slider.apply {
             if (payload in valueFrom..valueTo) {
                 value = payload
-                currentPayload = payload
             }
         }
     }

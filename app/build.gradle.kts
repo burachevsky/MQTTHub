@@ -72,15 +72,16 @@ dependencies {
     implementation(project(":core:mqtt"))
     implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
+
     implementation(project(":feature:add-broker"))
     implementation(project(":feature:add-tile"))
-
     implementation(project(":feature:brokers"))
     implementation(project(":feature:mqtt-service"))
     implementation(project(":feature:dashboards"))
     implementation(project(":feature:home"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:tile-details"))
+    implementation(project(":feature:help-and-feedback"))
 
     kapt(libs.dagger.compiler)
 }

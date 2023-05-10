@@ -79,6 +79,20 @@ abstract class AddTileFragment<VM : AddTileViewModel> : Fragment(R.layout.fragme
         viewModel.items.observe(viewLifecycleOwner, listAdapter::submitList)
 
         collectOnStarted(viewModel.itemChanged, listAdapter::notifyItemChanged)
+
+        binding.toolbar.menu.clear()
+        if (viewModel.showHelpButton) {
+            binding.toolbar.inflateMenu(R.menu.help_menu)
+        }
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.help -> {
+                    viewModel.showHelp()
+                }
+            }
+
+            true
+        }
     }
 
     override fun onResume() {

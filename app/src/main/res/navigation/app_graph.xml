@@ -17,5 +17,6 @@
     <include app:graph="@navigation/add_slider_tile" />
     <include app:graph="@navigation/add_switch_tile" />
     <include app:graph="@navigation/add_text_tile" />
+    <include app:graph="@navigation/help_and_feedback" />
 
 </navigation>
