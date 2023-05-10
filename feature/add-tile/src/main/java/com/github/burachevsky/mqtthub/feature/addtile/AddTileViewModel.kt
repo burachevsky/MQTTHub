@@ -69,6 +69,8 @@ abstract class AddTileViewModel(
     private val _itemChanged = MutableSharedFlow<Int>()
     val itemChanged: SharedFlow<Int> = _itemChanged
 
+    open val showHelpButton = false
+
     private var goneToSettingsToAllowNotifications = false
     private var notificationsPermissionAlreadyRequested = false
     protected val notifyPayloadUpdate = SwitchItem(
@@ -84,6 +86,8 @@ abstract class AddTileViewModel(
             }
         }
     )
+
+    open fun showHelp() {}
 
     fun onNotificationPermissionResult(isGranted: Boolean) {
         if (!isGranted) {

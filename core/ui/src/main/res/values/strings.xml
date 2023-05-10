@@ -158,7 +158,13 @@
     <string name="mqtt_connection_service_button_retry">Retry</string>
     <string name="mqtt_connection_service_button_dismiss">Dismiss</string>
 
+    <string name="help">Help</string>
     <string name="help_and_feedback">Help and feedback</string>
     <string name="help_and_feedback_telegram_message">Feedback contact: https://t.me/Burachevsky</string>
+
+    <string name="chart_help_title">Chart payload json scheme</string>
+    <string name="chart_help_message">{\n&#160;&#160;&#160;&#160;\"y_title\": string,\n&#160;&#160;&#160;&#160;\"data\": [\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;{\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;\"x\": string,\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;\"y\": float\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;},\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;…\n&#160;&#160;&#160;&#160;]\n}</string>
+
+    <string name="button_ok">OK</string>
 
 </resources>
