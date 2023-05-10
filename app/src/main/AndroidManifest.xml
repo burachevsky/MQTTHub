@@ -20,23 +20,29 @@
         android:theme="@style/Theme.MQTTHub"
         tools:targetApi="33">
 
-        <profileable android:shell="true"/>
+        <!--<profileable android:shell="true"/>-->
 
         <activity android:name=".AppActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop">
 
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="*/*" />
             </intent-filter>
 
         </activity>
 
-        <service android:name=".feature.connection.BrokerConnectionService" />
+        <service android:name=".feature.mqttservice.MqttService" />
 
     </application>
 

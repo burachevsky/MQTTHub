@@ -41,12 +41,11 @@ import com.github.burachevsky.mqtthub.core.ui.ext.verticalLinearLayoutManager
 import com.github.burachevsky.mqtthub.core.ui.recycler.CompositeAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemMoveCallback
 import com.github.burachevsky.mqtthub.feature.home.databinding.FragmentHomeBinding
-import com.github.burachevsky.mqtthub.feature.home.drawer.HomeDrawerViewModel
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerLabelItemAdapter
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItem
-import com.github.burachevsky.mqtthub.feature.home.drawer.item.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.TileItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerLabelItemAdapter
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItem
+import com.github.burachevsky.mqtthub.feature.home.item.drawer.DrawerMenuItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ButtonTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.ChartTileItemAdapter
 import com.github.burachevsky.mqtthub.feature.home.item.tile.SliderTileItem
@@ -67,9 +66,6 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
     override val binding by viewBinding(FragmentHomeBinding::bind)
     override val viewModel: HomeViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
-
-    @Inject
-    lateinit var drawerManager: HomeDrawerViewModel
 
     private val tileItemListener = object : TileItem.Listener {
 
@@ -100,14 +96,14 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         DrawerLabelItemAdapter(
             object : DrawerLabelItem.Listener {
                 override fun onClick(position: Int) {
-                    drawerManager.onLabelButtonClick(position)
+                    viewModel.onDrawerLabelButtonClick(position)
                 }
             }
         ),
         DrawerMenuItemAdapter(
             object : DrawerMenuItem.Listener {
                 override fun onClick(position: Int) {
-                    drawerManager.onMenuItemClick(position)
+                    viewModel.onDrawerMenuItemClick(position)
                 }
             }
         ),
@@ -115,7 +111,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            vibrateAsEditModeChanged()
+            vibrate()
             viewModel.navigateUp()
         }
     }
@@ -233,6 +229,10 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
             is ImportDashboard -> {
                 fileImporter.launch(ContentType.JSON)
             }
+
+            is EditModeVibrate -> {
+                vibrate()
+            }
         }
 
         return false
@@ -280,7 +280,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
 
         binding.toolbar.setNavigationOnClickListener {
             if (viewModel.editMode.value.isEditMode) {
-                vibrateAsEditModeChanged()
+                vibrate()
                 viewModel.navigateUp()
             } else {
                 binding.drawerLayout.open()
@@ -318,7 +318,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
             }
         }
 
-        collectOnStarted(drawerManager.items, drawerListAdapter::submitList)
+        collectOnStarted(viewModel.drawerItems, drawerListAdapter::submitList)
         collectOnStarted(viewModel.editMode, ::bindEditMode)
         collectOnStarted(viewModel.dashboardName) {
             if (!viewModel.editMode.value.isEditMode) {
@@ -367,12 +367,13 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         when (id) {
             R.id.edit -> viewModel.editTileClicked()
             R.id.edit_mode -> {
-                vibrateAsEditModeChanged()
+                vibrate()
                 viewModel.editModeClicked()
             }
             R.id.delete -> viewModel.deleteTilesClicked()
             R.id.duplicate -> viewModel.duplicateTileClicked()
             R.id.newTile -> viewModel.addTileClicked()
+            R.id.selectAll -> viewModel.selectAllClicked()
             else -> return false
         }
         return true
@@ -451,7 +452,7 @@ class HomeFragment : Fragment(featureR.layout.fragment_home),
         uri?.let(viewModel::importDashboard)
     }
 
-    private fun vibrateAsEditModeChanged() {
+    private fun vibrate() {
         requireContext().getSystemService<Vibrator>()
             ?.vibrate(VibrationEffect.createOneShot(10, 255))
     }

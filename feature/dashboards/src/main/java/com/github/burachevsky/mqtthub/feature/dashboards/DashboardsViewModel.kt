@@ -1,63 +1,45 @@
 package com.github.burachevsky.mqtthub.feature.dashboards
 
 import androidx.lifecycle.ViewModel
-import com.github.burachevsky.mqtthub.core.eventbus.EventBus
+import androidx.lifecycle.viewModelScope
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.AddDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ObserveDashboards
+import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.core.model.Dashboard
 import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.container.VM
 import com.github.burachevsky.mqtthub.core.ui.container.viewModelContainer
 import com.github.burachevsky.mqtthub.core.ui.event.AlertDialog
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardCreated
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardDeleted
-import com.github.burachevsky.mqtthub.core.ui.event.DashboardEdited
 import com.github.burachevsky.mqtthub.core.ui.ext.get
 import com.github.burachevsky.mqtthub.core.ui.recycler.ListItem
 import com.github.burachevsky.mqtthub.core.ui.text.Txt
 import com.github.burachevsky.mqtthub.core.ui.text.of
 import com.github.burachevsky.mqtthub.core.ui.text.withArgs
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.AddDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.DeleteDashboard
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.GetDashboards
-import com.github.burachevsky.mqtthub.domain.usecase.dashboard.UpdateDashboard
 import com.github.burachevsky.mqtthub.feature.dashboards.item.DashboardItem
 import com.github.burachevsky.mqtthub.feature.dashboards.item.ItemConfig
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class DashboardsViewModel @Inject constructor(
-    addNew: Boolean,
-    private val getDashboards: GetDashboards,
-    private val eventBus: EventBus,
     private val addDashboard: AddDashboard,
     private val updateDashboard: UpdateDashboard,
     private val deleteDashboard: DeleteDashboard,
+    private val addNew: Boolean,
+    observeDashboards: ObserveDashboards,
 ) : ViewModel(), VM<DashboardsNavigator> {
 
     override val container = viewModelContainer()
 
-    private val _items: MutableStateFlow<List<ListItem>> = MutableStateFlow(emptyList())
-    val items: StateFlow<List<ListItem>> = _items
+    val items: StateFlow<List<ListItem>> = observeDashboards()
+        .map(::makeItemsList)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    init {
-        container.launch(Dispatchers.Main) {
-            val dashboards = getDashboards()
-
-            _items.value = listOf(
-                DashboardItem(
-                    config = ItemConfig.CreateNew,
-                    initFocus = addNew
-                )
-            ) + dashboards.map {
-                DashboardItem(
-                    config = ItemConfig.Default,
-                    initText = it.name,
-                    dashboard = it,
-                )
-            }
-        }
-    }
+    private var isInitialized = false
 
     fun submit(position: Int) {
         val item = items.get<DashboardItem>(position)
@@ -67,22 +49,7 @@ class DashboardsViewModel @Inject constructor(
             is ItemConfig.CreateNew -> {
                 if (itemText.isNotEmpty()) {
                     container.launch(Dispatchers.Main) {
-                        val dashboard = addDashboard(
-                            Dashboard(name = itemText)
-                        )
-
-                        _items.value = _items.value.toMutableList().apply {
-                            add(
-                                NEW_ITEM_POSITION,
-                                DashboardItem(
-                                    config = ItemConfig.Default,
-                                    initText = dashboard.name,
-                                    dashboard = dashboard,
-                                )
-                            )
-                        }
-
-                        eventBus.send(DashboardCreated(dashboard))
+                       addDashboard(Dashboard(name = itemText))
                     }
                 }
             }
@@ -90,18 +57,7 @@ class DashboardsViewModel @Inject constructor(
             is ItemConfig.Default -> {
                 container.launch(Dispatchers.Main) {
                     item.dashboard?.let { dashboard ->
-                        val editedDashboard = dashboard.copy(name = itemText)
-
-                        updateDashboard(editedDashboard)
-
-                        _items.value = _items.value.toMutableList().apply {
-                            this[position] = item.copy(
-                                initText = editedDashboard.name,
-                                dashboard = editedDashboard
-                            )
-                        }
-
-                        eventBus.send(DashboardEdited(editedDashboard))
+                        updateDashboard(dashboard.copy(name = itemText))
                     }
                 }
             }
@@ -122,12 +78,6 @@ class DashboardsViewModel @Inject constructor(
                 container.launch(Dispatchers.Main) {
                     item.dashboard?.id?.let { dashboardId ->
                         deleteDashboard(dashboardId)
-
-                        _items.value = _items.value.toMutableList().apply {
-                            removeAt(position)
-                        }
-
-                        eventBus.send(DashboardDeleted(dashboardId))
                     }
                 }
             }
@@ -162,8 +112,25 @@ class DashboardsViewModel @Inject constructor(
         }
     }
 
+    private fun makeItemsList(dashboards: List<Dashboard>): List<ListItem> {
+        val initFocusOnAddField = addNew && !isInitialized
+        isInitialized = true
+
+        return listOf(
+            DashboardItem(
+                config = ItemConfig.CreateNew,
+                initFocus = initFocusOnAddField
+            )
+        ) + dashboards.map {
+            DashboardItem(
+                config = ItemConfig.Default,
+                initText = it.name,
+                dashboard = it,
+            )
+        }
+    }
+
     companion object {
-        private const val NEW_ITEM_POSITION = 1
         private const val MIN_LIST_ITEMS = 2
     }
 }

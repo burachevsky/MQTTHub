@@ -34,7 +34,7 @@ class BrokersFragment : Fragment(R.layout.fragment_brokers),
         BrokerItemAdapter(
             object : BrokerItem.Listener {
                 override fun onClick(position: Int) {
-                    //viewModel.brokerClicked(position)
+                    viewModel.brokerClicked(position)
                 }
 
                 override fun onEditClick(position: Int) {
@@ -60,8 +60,6 @@ class BrokersFragment : Fragment(R.layout.fragment_brokers),
             adapter = listAdapter
         }
 
-        collectOnStarted(viewModel.items, listAdapter::submitList)
-
         binding.addBrokersButton.setOnClickListener {
             viewModel.addBrokerClicked()
         }
@@ -69,6 +67,8 @@ class BrokersFragment : Fragment(R.layout.fragment_brokers),
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+
+        collectOnStarted(viewModel.items, listAdapter::submitList)
 
         collectOnStarted(viewModel.noBrokersYet) {
             binding.noBrokersText.isVisible = it

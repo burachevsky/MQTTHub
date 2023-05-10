@@ -10,7 +10,11 @@ interface Payload {
 
         fun map(payload: String, type: Tile.Type): Payload {
             return when (type) {
-                Tile.Type.CHART -> Converter.fromJson<ChartPayload>(payload)
+                Tile.Type.CHART -> when {
+                    payload.isEmpty() -> ChartPayload("", "", emptyList())
+                    else -> Converter.fromJson<ChartPayload>(payload)
+                }
+
                 else -> StringPayload(payload)
             }
         }

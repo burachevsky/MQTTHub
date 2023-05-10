@@ -41,23 +41,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
     implementation(project(":core:domain"))
-    implementation(project(":core:eventbus"))
     implementation(project(":core:ui"))
     implementation(project(":core:mqtt"))
 
-    implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.drawerlayout)
-    implementation(libs.viewbindingpropertydelegate.noreflection)
-    implementation(libs.mpandroidchart)
-    implementation(libs.lifecycle.livedata.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.compiler)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
-    implementation(libs.timber)
-    implementation(libs.rotatelayout)
 }

@@ -15,22 +15,22 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/common" />
             <option value="$PROJECT_DIR$/core/data" />
-            <option value="$PROJECT_DIR$/core/database" />
+            <option value="$PROJECT_DIR$/core/db" />
             <option value="$PROJECT_DIR$/core/domain" />
-            <option value="$PROJECT_DIR$/core/eventbus" />
+            <option value="$PROJECT_DIR$/core/event-bus" />
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/mqtt" />
             <option value="$PROJECT_DIR$/core/preferences" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/addbroker" />
-            <option value="$PROJECT_DIR$/feature/addtile" />
+            <option value="$PROJECT_DIR$/feature/add-broker" />
+            <option value="$PROJECT_DIR$/feature/add-tile" />
             <option value="$PROJECT_DIR$/feature/brokers" />
-            <option value="$PROJECT_DIR$/feature/connection" />
             <option value="$PROJECT_DIR$/feature/dashboards" />
             <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/mqtt-service" />
             <option value="$PROJECT_DIR$/feature/settings" />
-            <option value="$PROJECT_DIR$/feature/tiledetails" />
+            <option value="$PROJECT_DIR$/feature/tile-details" />
           </set>
         </option>
       </GradleProjectSettings>

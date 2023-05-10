@@ -4,9 +4,8 @@ import com.github.burachevsky.mqtthub.core.data.mapper.asEntity
 import com.github.burachevsky.mqtthub.core.data.mapper.asModel
 import com.github.burachevsky.mqtthub.core.data.repository.TileRepository
 import com.github.burachevsky.mqtthub.core.data.repository.impl.cache.TileMemoryCache
-import com.github.burachevsky.mqtthub.core.database.dao.TileDao
+import com.github.burachevsky.mqtthub.core.db.dao.TileDao
 import com.github.burachevsky.mqtthub.core.model.Tile
-import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -19,7 +18,7 @@ class TileRepositoryImpl @Inject constructor(
     private suspend fun <T> withMemoryCache(action: suspend (TileMemoryCache).() -> T): T {
         return memoryCache.apply(
             initializer = {
-                tileDao.getAllTiles().map {
+                tileDao.getAll().map {
                     it.asModel()
                 }
             },
@@ -34,6 +33,18 @@ class TileRepositoryImpl @Inject constructor(
             insert(inserted)
         }
         return inserted
+    }
+
+    override suspend fun insertTiles(tiles: List<Tile>): List<Tile> {
+        val insertedTiles = tiles.map { tile ->
+            tile.copy(id = tileDao.insert(tile.asEntity()))
+        }
+
+        withMemoryCache {
+            insert(insertedTiles)
+        }
+
+        return insertedTiles
     }
 
     override suspend fun updateTile(tile: Tile) {
@@ -74,29 +85,17 @@ class TileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTile(id: Long): Tile {
-        return withMemoryCache {
-            getById(id)
-        }
-    }
-
     override suspend fun getDashboardTiles(dashboardId: Long): List<Tile> {
         return withMemoryCache {
             getDashboardTiles(dashboardId)
         }
     }
 
-    override suspend fun getAllTiles(): List<Tile> {
-        return withMemoryCache {
-            getAll()
-        }
-    }
-
     override fun observeTile(id: Long): Flow<Tile> {
-        return tileDao.observeTile(id).map { it.asModel() }
+        return tileDao.observe(id).map { it.asModel() }
     }
 
-    override fun observeTopicUpdates(): Flow<TopicUpdate> {
+    override fun observeTopicUpdates(): Flow<Set<String>> {
         return memoryCache.observeTopicUpdates()
     }
 }

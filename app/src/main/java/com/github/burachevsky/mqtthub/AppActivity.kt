@@ -1,10 +1,12 @@
 package com.github.burachevsky.mqtthub
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.UiModeManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -21,19 +23,22 @@ import com.github.burachevsky.mqtthub.core.ui.container.SystemBarsSizeProvider
 import com.github.burachevsky.mqtthub.core.ui.container.ViewController
 import com.github.burachevsky.mqtthub.core.ui.container.viewContainer
 import com.github.burachevsky.mqtthub.core.ui.di.ViewModelFactory
-import com.github.burachevsky.mqtthub.core.ui.event.StartNewBrokerConnection
+import com.github.burachevsky.mqtthub.core.ui.event.StartNewMqttConnection
 import com.github.burachevsky.mqtthub.core.ui.event.SwitchTheme
 import com.github.burachevsky.mqtthub.core.ui.ext.getNavigationBarHeightFromSystemAttribute
 import com.github.burachevsky.mqtthub.core.ui.ext.getStatusBarHeightFromSystemAttribute
 import com.github.burachevsky.mqtthub.core.ui.navigation.NavControllerProvider
+import com.github.burachevsky.mqtthub.core.ui.notification.isNotificationsPermissionGranted
 import com.github.burachevsky.mqtthub.databinding.ActivityAppBinding
-import com.github.burachevsky.mqtthub.feature.connection.BrokerConnectionService
+import com.github.burachevsky.mqtthub.feature.mqttservice.MqttService
 import com.google.android.material.color.DynamicColors
+import timber.log.Timber
 import javax.inject.Inject
 
 class AppActivity : AppCompatActivity(),
     ViewController<AppViewModel>, AppEventHandler,
-    SystemBarsSizeProvider, NavControllerProvider, NavDestinationMapper.Provider {
+    SystemBarsSizeProvider by AppSystemBarsSizeProvider,
+    NavControllerProvider, NavDestinationMapper.Provider {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory<AppViewModel>
@@ -42,8 +47,11 @@ class AppActivity : AppCompatActivity(),
     override val viewModel: AppViewModel by viewModels { viewModelFactory }
     override val container by viewContainer()
 
-    override var statusBarHeight = 0
-    override var navigationBarHeight = 0
+    private val requestPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        startMqttConnectionService()
+    }
 
     private var contentIsSet = false
 
@@ -51,9 +59,42 @@ class AppActivity : AppCompatActivity(),
         (application as App).appComponent.inject(this)
         setupActivityAppearance()
         super.onCreate(savedInstanceState)
-        startBrokerConnectionService()
         setContentView(R.layout.activity_app)
 
+        if (AppSystemBarsSizeProvider.isInitialized) {
+            setContent()
+        } else {
+            initializeSystemBarsAndSetContent()
+        }
+
+        if (isNotificationsPermissionGranted()) {
+            startMqttConnectionService()
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermission.launch(POST_NOTIFICATIONS)
+            }
+        }
+
+        Timber.d("oncreate intent: $intent")
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Timber.d("new intent: $intent")
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        when (intent?.action) {
+            Intent.ACTION_VIEW -> {
+                this.intent = null
+                intent.data?.let(viewModel::importDashboard)
+            }
+        }
+    }
+
+    private fun initializeSystemBarsAndSetContent() {
         binding.root.rootView.setOnApplyWindowInsetsListener { _, insets ->
             if (contentIsSet)
                 return@setOnApplyWindowInsetsListener insets
@@ -87,8 +128,8 @@ class AppActivity : AppCompatActivity(),
                 return true
             }
 
-            is StartNewBrokerConnection -> {
-                startBrokerConnectionService()
+            is StartNewMqttConnection -> {
+                startMqttConnectionService()
             }
         }
 
@@ -144,7 +185,7 @@ class AppActivity : AppCompatActivity(),
         }
     }
 
-    private fun startBrokerConnectionService() {
-        startService(Intent(this, BrokerConnectionService::class.java))
+    private fun startMqttConnectionService() {
+        startService(Intent(this, MqttService::class.java))
     }
 }

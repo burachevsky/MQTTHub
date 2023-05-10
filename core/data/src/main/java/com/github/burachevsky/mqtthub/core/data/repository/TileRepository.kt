@@ -1,12 +1,13 @@
 package com.github.burachevsky.mqtthub.core.data.repository
 
 import com.github.burachevsky.mqtthub.core.model.Tile
-import com.github.burachevsky.mqtthub.core.model.TopicUpdate
 import kotlinx.coroutines.flow.Flow
 
 interface TileRepository {
 
     suspend fun insertTile(tile: Tile): Tile
+
+    suspend fun insertTiles(tiles: List<Tile>): List<Tile>
 
     suspend fun updateTile(tile: Tile)
 
@@ -21,13 +22,9 @@ interface TileRepository {
         payload: String
     ): List<Tile>
 
-    suspend fun getTile(id: Long): Tile
-
     suspend fun getDashboardTiles(dashboardId: Long): List<Tile>
-
-    suspend fun getAllTiles(): List<Tile>
 
     fun observeTile(id: Long): Flow<Tile>
 
-    fun observeTopicUpdates(): Flow<TopicUpdate>
+    fun observeTopicUpdates(): Flow<Set<String>>
 }

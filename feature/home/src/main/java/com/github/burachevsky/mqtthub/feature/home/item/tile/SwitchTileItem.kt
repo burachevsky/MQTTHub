@@ -2,7 +2,6 @@ package com.github.burachevsky.mqtthub.feature.home.item.tile
 
 import android.view.Gravity
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.CompoundButton.OnCheckedChangeListener
@@ -57,7 +56,7 @@ data class SwitchTileItem(
 class SwitchTileItemViewHolder(
     itemView: View,
     private val listener: TileItem.Listener
-) : ItemViewHolder(itemView), OnCheckedChangeListener, OnClickListener {
+) : ItemViewHolder(itemView), OnCheckedChangeListener {
 
     private val binding = ListItemSwitchTileBinding.bind(itemView)
 
@@ -91,29 +90,24 @@ class SwitchTileItemViewHolder(
         }
     }
 
-    override fun onClick(v: View?) {
-        listener.onClick(adapterPosition)
-    }
-
     override fun bind(item: ListItem) {
         item as SwitchTileItem
         this.item = item
 
         bindName(item)
         bindSwitchState(item)
-        bindPublishTopic(item)
         bindAppearance(item)
     }
 
     override fun bind(item: ListItem, payloads: List<Int>) {
         item as SwitchTileItem
+        this.item = item
 
         payloads.forEach {
             when (it) {
                 NAME_CHANGED -> bindName(item)
                 SWITCH_STATE_CHANGED -> bindSwitchState(item)
                 APPEARANCE_CHANGED -> bindAppearance(item)
-                PUBLISH_TOPIC_CHANGED -> bindPublishTopic(item)
             }
         }
     }
@@ -137,15 +131,6 @@ class SwitchTileItemViewHolder(
             if (isChecked != newState) {
                 changeCheckedWithoutTriggering(newState)
             }
-        }
-    }
-
-    private fun bindPublishTopic(item: SwitchTileItem) {
-        val hasTopic = item.tile.publishTopic.isNotEmpty()
-
-        binding.tileSwitch.apply {
-            setOnClickListener(if (hasTopic) this@SwitchTileItemViewHolder else null)
-            isClickable = hasTopic
         }
     }
 

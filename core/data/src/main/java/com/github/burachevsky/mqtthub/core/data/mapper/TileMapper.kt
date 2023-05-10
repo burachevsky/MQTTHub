@@ -1,7 +1,7 @@
 package com.github.burachevsky.mqtthub.core.data.mapper
 
 import com.github.burachevsky.mqtthub.core.common.Converter
-import com.github.burachevsky.mqtthub.core.database.entity.TileEntity
+import com.github.burachevsky.mqtthub.core.db.entity.TileEntity
 import com.github.burachevsky.mqtthub.core.model.ChartPayload
 import com.github.burachevsky.mqtthub.core.model.Payload
 import com.github.burachevsky.mqtthub.core.model.Tile
@@ -36,6 +36,9 @@ fun Payload.asEntity(): String {
 fun TileEntity.asModel(): Tile {
     val tileType = Tile.Type.valueOf(type)
 
+    val stateList = stateList.asStateListModel()
+    val payload = payload.asPayloadModel(tileType)
+
     return Tile(
         id = id,
         name = name,
@@ -44,9 +47,9 @@ fun TileEntity.asModel(): Tile {
         qos = qos,
         retained = retained,
         type = tileType,
-        payload = payload.asPayloadModel(tileType),
+        payload = payload,
         notifyPayloadUpdate = notifyPayloadUpdate,
-        stateList = Converter.fromJson(stateList),
+        stateList = stateList,
         dashboardId = dashboardId,
         dashboardPosition = dashboardPosition,
         design = Tile.Design(
@@ -59,4 +62,12 @@ fun TileEntity.asModel(): Tile {
 
 fun String.asPayloadModel(type: Tile.Type): Payload {
     return Payload.map(this, type)
+}
+
+fun String.asStateListModel(): List<Tile.State> {
+    return try {
+        Converter.fromJson(this)
+    } catch (e: Throwable) {
+        emptyList()
+    }
 }

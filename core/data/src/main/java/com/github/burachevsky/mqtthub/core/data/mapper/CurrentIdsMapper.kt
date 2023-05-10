@@ -1,6 +1,6 @@
 package com.github.burachevsky.mqtthub.core.data.mapper
 
-import com.github.burachevsky.mqtthub.core.database.entity.CurrentIdsEntity
+import com.github.burachevsky.mqtthub.core.db.entity.CurrentIdsEntity
 import com.github.burachevsky.mqtthub.core.model.CurrentIds
 
 fun CurrentIds.asEntity(): CurrentIdsEntity {

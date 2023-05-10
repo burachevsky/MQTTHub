@@ -16,7 +16,7 @@ import com.github.burachevsky.mqtthub.core.ui.widget.SubtitleItem
 import com.github.burachevsky.mqtthub.core.ui.widget.SwitchItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleGroupItem
 import com.github.burachevsky.mqtthub.core.ui.widget.ToggleOption
-import com.github.burachevsky.mqtthub.domain.usecase.settings.GetSettings
+import com.github.burachevsky.mqtthub.core.domain.usecase.settings.GetSettings
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

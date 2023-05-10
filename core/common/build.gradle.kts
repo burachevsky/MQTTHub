@@ -9,6 +9,7 @@ java {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.gson)
+    api(libs.kotlinx.coroutines)
+    api(libs.gson)
+    api(libs.dagger)
 }

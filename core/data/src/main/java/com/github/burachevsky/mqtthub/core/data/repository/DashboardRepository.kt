@@ -1,6 +1,7 @@
 package com.github.burachevsky.mqtthub.core.data.repository
 
 import com.github.burachevsky.mqtthub.core.model.Dashboard
+import com.github.burachevsky.mqtthub.core.model.Tile
 import kotlinx.coroutines.flow.Flow
 
 interface DashboardRepository {
@@ -11,15 +12,13 @@ interface DashboardRepository {
 
     suspend fun updateDashboard(dashboard: Dashboard)
 
-    suspend fun getDashboards(): List<Dashboard>
-
-    fun observeDashboards(): Flow<List<Dashboard>>
-
-    fun observeCurrentDashboard(): Flow<Dashboard>
-
     suspend fun updateDashboardName(dashboardId: Long, name: String)
 
     suspend fun packDashboardForExport(id: Long): String
 
-    suspend fun importDashboardFromJson(json: String): Dashboard
+    suspend fun importDashboardFromJson(json: String, ): Pair<Long, List<Tile>>
+
+    fun observeDashboards(): Flow<List<Dashboard>>
+
+    fun observeDashboard(id: Long): Flow<Dashboard?>
 }

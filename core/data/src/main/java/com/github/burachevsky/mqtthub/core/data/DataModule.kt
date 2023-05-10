@@ -10,8 +10,8 @@ import com.github.burachevsky.mqtthub.core.data.repository.impl.CurrentIdsReposi
 import com.github.burachevsky.mqtthub.core.data.repository.impl.DashboardRepositoryImpl
 import com.github.burachevsky.mqtthub.core.data.repository.impl.FileRepositoryImpl
 import com.github.burachevsky.mqtthub.core.data.repository.impl.TileRepositoryImpl
-import com.github.burachevsky.mqtthub.core.database.DaoModule
-import com.github.burachevsky.mqtthub.core.database.DatabaseModule
+import com.github.burachevsky.mqtthub.core.db.DaoModule
+import com.github.burachevsky.mqtthub.core.db.DatabaseModule
 import dagger.Binds
 import dagger.Module
 

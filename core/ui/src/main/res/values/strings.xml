@@ -63,6 +63,7 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="duplicate">Duplicate</string>
+    <string name="select_all">Select all</string>
     <string name="change_dashboard_name">Change name</string>
     <string name="dashboard_name">Dashboard name</string>
     <string name="dashboard_actions">Dashboard actions</string>
@@ -134,7 +135,7 @@
 
     <string name="dashboard_exported_successfully">Dashboard exported successfully</string>
     <string name="dashboard_imported_successfully">Dashboard imported successfully</string>
-    <string name="failed_to_import_dashboard">The file is corrupt and cannot be opened</string>
+    <string name="failed_to_import_dashboard">The file is corrupt</string>
     <string name="dashboard_deleted">Dashboard deleted</string>
 
     <string name="remove_dashboard_title">Delete dashboard?</string>
@@ -145,17 +146,17 @@
 
     <string name="notify_payload_update">Notify payload changes</string>
     <string name="notification_channel_name_payload_updates">Payload updates</string>
-    <string name="notification_channel_name_broker_connection">Broker connection</string>
+    <string name="notification_channel_name_mqtt_connection">Broker connection</string>
 
     <string name="notification_required_dialog_title">Notifications permission is required to use this feature</string>
     <string name="notification_required_dialog_message">To be notified about payload updates you have to allow the app to use notifications.\n\nConsider enabling notifications for &appname; manually in settings.</string>
     <string name="notification_required_dialog_settings_button">Go to notification settings</string>
 
-    <string name="broker_connection_service_message_connected">Connected</string>
-    <string name="broker_connection_service_message_connecting">Connecting…</string>
-    <string name="broker_connection_service_message_connection_failed">Connection failed</string>
-    <string name="broker_connection_service_button_disconnect">Disconnect</string>
-    <string name="broker_connection_service_button_retry">Retry</string>
-    <string name="broker_connection_service_button_dismiss">Dismiss</string>
+    <string name="mqtt_connection_service_message_connected">Connected</string>
+    <string name="mqtt_connection_service_message_connecting">Connecting…</string>
+    <string name="mqtt_connection_service_message_connection_failed">Connection failed</string>
+    <string name="mqtt_connection_service_button_disconnect">Disconnect</string>
+    <string name="mqtt_connection_service_button_retry">Retry</string>
+    <string name="mqtt_connection_service_button_dismiss">Dismiss</string>
 
 </resources>

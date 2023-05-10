@@ -20,9 +20,8 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(project(":core:model"))
+    implementation(project(":core:common"))
+    api(project(":core:model"))
 
-    implementation(libs.dagger)
     kapt(libs.dagger.compiler)
-    implementation(libs.kotlinx.coroutines.core)
 }
