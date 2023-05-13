@@ -99,14 +99,22 @@ class AppActivity : AppCompatActivity(),
             if (contentIsSet)
                 return@setOnApplyWindowInsetsListener insets
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                val navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                statusBarHeight = statusBarInsets.top
-                navigationBarHeight = navigationBarInsets.bottom
-            } else {
-                statusBarHeight = getStatusBarHeightFromSystemAttribute()
-                navigationBarHeight = getNavigationBarHeightFromSystemAttribute()
+            if (!AppSystemBarsSizeProvider.isInitialized) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+
+                    val navigationBarInsets = insets.getInsets(
+                        WindowInsetsCompat.Type.navigationBars()
+                    )
+
+                    statusBarHeight = statusBarInsets.top
+                    navigationBarHeight = navigationBarInsets.bottom
+                } else {
+                    statusBarHeight = getStatusBarHeightFromSystemAttribute()
+                    navigationBarHeight = getNavigationBarHeightFromSystemAttribute()
+                }
+
+                AppSystemBarsSizeProvider.isInitialized = true
             }
 
             setContent()
