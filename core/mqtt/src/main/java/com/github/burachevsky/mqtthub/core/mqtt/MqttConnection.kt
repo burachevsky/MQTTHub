@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
@@ -85,7 +86,12 @@ class MqttConnection(
             Timber.d("MqttConnection: connecting to $broker")
 
             execSafely(MqttConnectionEvent::FailedToConnect) {
-                mqttClient.connect()
+                mqttClient.connect(
+                    MqttConnectOptions().apply {
+                        isAutomaticReconnect = true
+                        isCleanSession = false
+                    }
+                )
             }
         }
     }
