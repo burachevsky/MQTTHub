@@ -145,6 +145,7 @@ class MqttService : Service() {
             .setContentTitle(brokerName)
             .setContentText(getString(config.textRes))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOngoing(true)
             .setContentIntent(
                 PendingIntent.getActivity(
                     this,
