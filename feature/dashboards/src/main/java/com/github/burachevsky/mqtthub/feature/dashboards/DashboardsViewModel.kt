@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.dashboards
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.burachevsky.mqtthub.core.domain.usecase.currentids.UpdateCurrentDashboard
 import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.AddDashboard
 import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.DeleteDashboard
 import com.github.burachevsky.mqtthub.core.domain.usecase.dashboard.ObserveDashboards
@@ -30,6 +31,7 @@ class DashboardsViewModel @Inject constructor(
     private val updateDashboard: UpdateDashboard,
     private val deleteDashboard: DeleteDashboard,
     private val addNew: Boolean,
+    private val updateCurrentDashboard: UpdateCurrentDashboard,
     observeDashboards: ObserveDashboards,
 ) : ViewModel(), VM<DashboardsNavigator> {
 
@@ -41,15 +43,23 @@ class DashboardsViewModel @Inject constructor(
 
     private var isInitialized = false
 
-    fun submit(position: Int) {
+    fun selectDashboard(position: Int) {
+        items.get<DashboardItem>(position).dashboard?.id?.let { dashboardId ->
+            container.launch(Dispatchers.Default) {
+                updateCurrentDashboard(dashboardId)
+                container.navigator { back() }
+            }
+        }
+    }
+
+    fun submit(position: Int, text: String) {
         val item = items.get<DashboardItem>(position)
-        val itemText = item.text
 
         when (item.config) {
             is ItemConfig.CreateNew -> {
-                if (itemText.isNotEmpty()) {
+                if (text.isNotEmpty()) {
                     container.launch(Dispatchers.Main) {
-                       addDashboard(Dashboard(name = itemText))
+                        addDashboard(Dashboard(name = text))
                     }
                 }
             }
@@ -57,7 +67,7 @@ class DashboardsViewModel @Inject constructor(
             is ItemConfig.Default -> {
                 container.launch(Dispatchers.Main) {
                     item.dashboard?.let { dashboard ->
-                        updateDashboard(dashboard.copy(name = itemText))
+                        updateDashboard(dashboard.copy(name = text))
                     }
                 }
             }

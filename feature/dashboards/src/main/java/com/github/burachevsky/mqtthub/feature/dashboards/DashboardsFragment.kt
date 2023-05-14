@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.SimpleItemAnimator
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.burachevsky.mqtthub.core.ui.container.ViewController
 import com.github.burachevsky.mqtthub.core.ui.container.viewContainer
@@ -32,8 +33,12 @@ class DashboardsFragment : Fragment(R.layout.fragment_dashboards),
     private val listAdapter = CompositeAdapter(
         DashboardItemAdapter(
             object : DashboardItem.Listener {
-                override fun onSubmitClicked(position: Int) {
-                    viewModel.submit(position)
+                override fun onDashboardClicked(position: Int) {
+                    viewModel.selectDashboard(position)
+                }
+
+                override fun onSubmitClicked(position: Int, text: String) {
+                    viewModel.submit(position, text)
                 }
 
                 override fun onDeleteClicked(position: Int) {
@@ -54,6 +59,7 @@ class DashboardsFragment : Fragment(R.layout.fragment_dashboards),
         binding.recyclerView.apply {
             layoutManager = verticalLinearLayoutManager()
             adapter = listAdapter
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             collectOnStarted(viewModel.items, listAdapter::submitList)
         }
 

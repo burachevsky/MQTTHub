@@ -38,6 +38,7 @@
             android:paddingVertical="16dp"
             android:paddingStart="16dp"
             android:paddingEnd="0dp"
+            android:imeOptions="actionDone"
             tools:hint="Create new dashboard" />
 
     </com.google.android.material.textfield.TextInputLayout>

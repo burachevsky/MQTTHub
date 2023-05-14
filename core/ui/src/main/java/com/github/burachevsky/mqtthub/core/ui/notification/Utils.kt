@@ -47,13 +47,40 @@ fun Context.notifyPayloadUpdate(notifyList: List<Tile>) {
 }
 
 fun Context.notifyPayloadUpdate(tile: Tile) {
-    val builder = NotificationCompat
+    val group = "${tile.id}"
+
+    val payloadNotification = NotificationCompat
         .Builder(this, NotificationChannelId.PAYLOAD_UPDATES)
         .setSmallIcon(R.drawable.ic_notification_small)
         .setContentTitle(tile.name)
         .setContentText(tile.payload.stringValue)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setGroup("${tile.id}")
+        .setGroup(group)
+        .setContentIntent(
+            PendingIntent.getActivity(
+                this,
+                0,
+                Intent().setClassName(
+                    this,
+                    "com.github.burachevsky.mqtthub.AppActivity"
+                ).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                },
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        )
+        .setAutoCancel(true)
+        .build()
+
+    val payloadSummary = NotificationCompat
+        .Builder(this, NotificationChannelId.PAYLOAD_UPDATES)
+        .setSmallIcon(R.drawable.ic_notification_small)
+        .setNumber(5)
+        .setContentTitle(tile.name)
+        .setContentText(tile.payload.stringValue)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setStyle(NotificationCompat.InboxStyle())
+        .setGroup(group)
         .setGroupSummary(true)
         .setContentIntent(
             PendingIntent.getActivity(
@@ -69,6 +96,7 @@ fun Context.notifyPayloadUpdate(tile: Tile) {
             )
         )
         .setAutoCancel(true)
+        .build()
 
     val permissionGranted = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
@@ -80,7 +108,9 @@ fun Context.notifyPayloadUpdate(tile: Tile) {
     }
 
     if (permissionGranted) {
-        NotificationManagerCompat.from(this)
-            .notify(NotificationId.next(), builder.build())
+        NotificationManagerCompat.from(this).apply {
+            notify(NotificationId.next(), payloadNotification)
+            notify(group, NotificationId.payloadUpdatesSummary, payloadSummary)
+        }
     }
 }

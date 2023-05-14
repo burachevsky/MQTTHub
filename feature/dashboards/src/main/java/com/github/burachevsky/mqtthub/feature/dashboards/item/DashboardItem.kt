@@ -2,6 +2,7 @@ package com.github.burachevsky.mqtthub.feature.dashboards.item
 
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.github.burachevsky.mqtthub.core.model.Dashboard
@@ -9,7 +10,6 @@ import com.github.burachevsky.mqtthub.core.ui.R
 import com.github.burachevsky.mqtthub.core.ui.ext.clearFocusAndHideKeyboard
 import com.github.burachevsky.mqtthub.core.ui.ext.requestFocusAndShowKeyboard
 import com.github.burachevsky.mqtthub.core.ui.ext.setFocus
-import com.github.burachevsky.mqtthub.core.ui.ext.setOnEnterListener
 import com.github.burachevsky.mqtthub.core.ui.ext.showKeyboard
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemAdapter
 import com.github.burachevsky.mqtthub.core.ui.recycler.ItemViewHolder
@@ -42,7 +42,9 @@ data class DashboardItem(
 
     interface Listener {
 
-        fun onSubmitClicked(position: Int)
+        fun onDashboardClicked(position: Int)
+
+        fun onSubmitClicked(position: Int, text: String)
 
         fun onDeleteClicked(position: Int)
     }
@@ -89,8 +91,11 @@ class DashboardItemViewHolder(
             field?.text = it?.toString().orEmpty()
         }
 
-        binding.editText.setOnEnterListener {
-            submitClicked()
+        binding.editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                submitClicked()
+                true
+            } else false
         }
 
         binding.editText.setOnFocusChangeListener { _, hasFocus ->
@@ -116,6 +121,8 @@ class DashboardItemViewHolder(
                 }
             } else if (isCreateNew) {
                 binding.editText.requestFocusAndShowKeyboard()
+            } else {
+                listener.onDashboardClicked(adapterPosition)
             }
         }
 
@@ -127,7 +134,7 @@ class DashboardItemViewHolder(
     private fun submitClicked() {
         if (binding.editText.isFocused) {
             binding.editText.clearFocusAndHideKeyboard()
-            listener.onSubmitClicked(adapterPosition)
+            listener.onSubmitClicked(adapterPosition, field?.text.orEmpty())
             if (field!!.config is ItemConfig.CreateNew) {
                 binding.editText.setText("")
             }
